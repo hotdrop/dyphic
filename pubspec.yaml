@@ -1,0 +1,35 @@
+name: dalico
+description: My Daily Life Condition Management App.
+
+# pub.devには公開しないのでnone
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: ">=2.8.0 <3.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+
+  flutter_hooks: ^0.15.0
+  hooks_riverpod: ^0.12.4
+
+  shared_preferences: ^0.5.12+2
+
+  # other
+  package_info: ^0.4.3
+  logger: ^0.9.4
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  pedantic: ^1.8.0+1
+
+flutter:
+
+  uses-material-design: true
