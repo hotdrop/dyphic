@@ -14,13 +14,12 @@ class AppSettings extends ChangeNotifier {
 
   bool get isDarkMode => _repo.isDarkMode();
 
-  Future<void> setLightTheme() async {
-    await _repo.changeLightMode();
-    notifyListeners();
-  }
-
-  Future<void> setDarkTheme() async {
-    await _repo.changeDarkMode();
+  Future<void> changeTheme(bool isDark) async {
+    if (isDark) {
+      await _repo.changeDarkMode();
+    } else {
+      await _repo.changeLightMode();
+    }
     notifyListeners();
   }
 }
