@@ -15,17 +15,18 @@ class App extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<AppSettings>(
-        future: AppSettings.create(),
-        builder: (context, snapshot) {
-          if (!snapshot.hasData) {
-            return _SplashScreen();
-          } else {
-            return ChangeNotifierProvider<AppSettings>(
-              create: (_) => snapshot.data,
-              child: _MyApp(),
-            );
-          }
-        });
+      future: AppSettings.create(),
+      builder: (context, snapshot) {
+        if (!snapshot.hasData) {
+          return _SplashScreen();
+        } else {
+          return ChangeNotifierProvider<AppSettings>(
+            create: (_) => snapshot.data,
+            child: _MyApp(),
+          );
+        }
+      },
+    );
   }
 }
 

@@ -18,6 +18,10 @@ dependencies:
   # design
   provider: ^4.3.2
 
+  # ui
+  table_calendar: ^2.3.3
+
+  # storage
   shared_preferences: ^0.5.12+2
 
   # other

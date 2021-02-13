@@ -1,5 +1,5 @@
 import 'package:dalico/common/app_strings.dart';
-import 'package:dalico/ui/calender/calender_page.dart';
+import 'package:dalico/ui/calender/calendar_page.dart';
 import 'package:dalico/ui/medicine/medicine_page.dart';
 import 'package:dalico/ui/setting/settings_page.dart';
 import 'package:flutter/material.dart';
