@@ -1,19 +1,19 @@
 import 'package:dalico/model/app_settings.dart';
-import 'package:dalico/model/calendar_event.dart';
+import 'package:dalico/model/medicine.dart';
 
-class EventApi {
-  const EventApi._();
+class MedicineApi {
+  const MedicineApi._();
 
-  factory EventApi.create() {
-    return EventApi._();
+  factory MedicineApi.create() {
+    return MedicineApi._();
   }
 
-  Future<List<Event>> findByLatest(AppSettings appSettings) async {
+  Future<List<Medicine>> findByLatest(AppSettings appSettings) async {
     // TODO storageのjson取得
     //  Firebase storageのjsonの更新日付を取得する。取得できなかったりログインしていなければ終了
     //  appSettingsで保持している日付 < 更新日付
-    //    String json = await _service.readEventJson();
-    //    return EventJson.parse(json)
+    //    String json = await _service.readMedicineJson();
+    //    return MedicineJson.parse(json)
     //  それ以外 []
     return [];
   }

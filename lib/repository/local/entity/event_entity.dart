@@ -27,7 +27,7 @@ class EventEntity {
       $columnMonth INTEGER,
       $columnDay INTEGER,
       $columnType INTEGER,
-      $columnName TEXT,
+      $columnName TEXT
     )
   ''';
 
