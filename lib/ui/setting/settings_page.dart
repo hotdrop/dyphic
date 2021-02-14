@@ -34,10 +34,7 @@ class SettingsPage extends StatelessWidget {
 
   Widget _loadView(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        centerTitle: true,
-        title: Text(AppStrings.settingsPageTitle),
-      ),
+      appBar: AppBar(centerTitle: true, title: Text(AppStrings.settingsPageTitle)),
       body: Center(
         child: _contentsView(context),
       ),

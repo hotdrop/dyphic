@@ -4,10 +4,12 @@ class Medicine {
   const Medicine({
     @required this.name,
     @required this.isOral,
-    @required this.detail,
+    @required this.memo,
+    this.imagePath = '',
   });
 
   final String name;
   final bool isOral;
-  final String detail;
+  final String memo;
+  final String imagePath;
 }

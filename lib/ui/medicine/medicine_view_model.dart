@@ -16,9 +16,9 @@ class MedicineViewModel extends ChangeNotifier {
   List<Medicine> get medicines => _medicines;
   PageState pageState = PageNowLoading();
 
-  Future<void> init(AppSettings appSettings) async {
+  Future<void> init() async {
     _nowLoading();
-    _medicines = await _repository.findAll(appSettings);
+    _medicines = await _repository.findAll();
     _loadSuccess();
   }
 

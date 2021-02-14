@@ -1,23 +1,19 @@
-import 'package:dalico/model/app_settings.dart';
+import 'package:dalico/common/app_logger.dart';
 import 'package:dalico/model/medicine.dart';
-import 'package:dalico/repository/local/medicine_database.dart';
 import 'package:dalico/repository/remote/medicine_api.dart';
 
 class MedicineRepository {
-  const MedicineRepository._(this._medicineApi, this._medicineDb);
+  const MedicineRepository._(this._medicineApi);
 
   factory MedicineRepository.create() {
-    return MedicineRepository._(MedicineApi.create(), MedicineDatabase.create());
+    return MedicineRepository._(MedicineApi.create());
   }
 
   final MedicineApi _medicineApi;
-  final MedicineDatabase _medicineDb;
 
-  Future<List<Medicine>> findAll(AppSettings appSettings) async {
-    final latestMedicines = await _medicineApi.findByLatest(appSettings);
-    if (latestMedicines.isNotEmpty) {
-      await _medicineDb.update(latestMedicines);
-    }
-    return await _medicineDb.findAll();
+  Future<List<Medicine>> findAll() async {
+    final medicines = await _medicineApi.findAll();
+    AppLogger.i('MedicineApiでお薬情報を取得しました。データ数: ${medicines.length}');
+    return medicines;
   }
 }
