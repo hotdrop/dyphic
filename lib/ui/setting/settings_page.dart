@@ -7,13 +7,11 @@ import 'package:dalico/model/page_state.dart';
 import 'package:dalico/ui/setting/settings_view_model.dart';
 
 class SettingsPage extends StatelessWidget {
-  const SettingsPage();
-
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider<SettingsViewModel>(
-      create: (_) => SettingsViewModel.create(),
-      builder: (context, child) {
+      create: (_) => SettingsViewModel.create()..init(),
+      builder: (context, _) {
         final pageState = context.select<SettingsViewModel, PageState>((vm) => vm.pageState);
         if (pageState.nowLoading()) {
           return _loadingView();

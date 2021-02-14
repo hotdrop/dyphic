@@ -4,9 +4,7 @@ import 'package:package_info/package_info.dart';
 import 'package:dalico/model/page_state.dart';
 
 class SettingsViewModel extends ChangeNotifier {
-  SettingsViewModel._() {
-    load();
-  }
+  SettingsViewModel._();
 
   factory SettingsViewModel.create() {
     return SettingsViewModel._();
@@ -17,11 +15,9 @@ class SettingsViewModel extends ChangeNotifier {
 
   PageState pageState = PageNowLoading();
 
-  Future<void> load() async {
+  Future<void> init() async {
     _nowLoading();
-
     _packageInfo = await PackageInfo.fromPlatform();
-
     _loadSuccess();
   }
 

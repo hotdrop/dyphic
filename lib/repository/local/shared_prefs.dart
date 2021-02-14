@@ -1,18 +1,18 @@
 import 'package:shared_preferences/shared_preferences.dart';
 
-class AppSettingsDao {
-  AppSettingsDao._(this._prefs);
+class SharedPrefs {
+  const SharedPrefs._(this._prefs);
 
-  static Future<AppSettingsDao> getInstance({SharedPreferences argPrefs}) async {
+  static Future<SharedPrefs> getInstance({SharedPreferences argPrefs}) async {
     if (_instance == null) {
       final prefs = argPrefs != null ? argPrefs : await SharedPreferences.getInstance();
-      _instance = AppSettingsDao._(prefs);
+      _instance = SharedPrefs._(prefs);
     }
     return _instance;
   }
 
-  static AppSettingsDao _instance;
-  SharedPreferences _prefs;
+  static SharedPrefs _instance;
+  final SharedPreferences _prefs;
 
   static const _darkModeKey = 'DARK_MODE';
 
