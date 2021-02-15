@@ -44,11 +44,8 @@ class MedicinePage extends StatelessWidget {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
-          final int lastOrder = viewModel.getLastOrder();
-          final bool isUpdate = await Navigator.of(context).push<bool>(
-                MaterialPageRoute(builder: (_) => MedicineEditPage(medicine: Medicine.createEmpty(lastOrder))),
-              ) ??
-              false;
+          int lastOrder = viewModel.getLastOrder();
+          bool isUpdate = await Navigator.of(context).push<bool>(MaterialPageRoute(builder: (_) => MedicineEditPage(Medicine.createEmpty(lastOrder)))) ?? false;
           AppLogger.i('戻り値: $isUpdate');
           if (isUpdate) {
             await viewModel.reload();
@@ -67,7 +64,16 @@ class MedicinePage extends StatelessWidget {
       childAspectRatio: 3 / 4,
       children: List.generate(
         medicine.length,
-        (index) => MedicineCardView(medicine[index]),
+        (index) => MedicineCardView(
+          medicine: medicine[index],
+          onTapEvent: () async {
+            bool isUpdate = await Navigator.of(context).push<bool>(MaterialPageRoute(builder: (_) => MedicineEditPage(medicine[index]))) ?? false;
+            AppLogger.i('戻り値: $isUpdate');
+            if (isUpdate) {
+              await viewModel.reload();
+            }
+          },
+        ),
       ),
     );
   }

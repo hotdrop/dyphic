@@ -12,14 +12,14 @@ import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 
 class MedicineEditPage extends StatelessWidget {
-  const MedicineEditPage({@required this.medicine});
+  const MedicineEditPage(this._medicine);
 
-  final Medicine medicine;
+  final Medicine _medicine;
 
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider<MedicineEditViewModel>(
-      create: (_) => MedicineEditViewModel.create()..init(medicine),
+      create: (_) => MedicineEditViewModel.create()..init(_medicine),
       builder: (context, _) {
         final pageState = context.select<MedicineEditViewModel, PageState>((vm) => vm.pageState);
         if (pageState.nowLoading()) {
@@ -42,7 +42,7 @@ class MedicineEditPage extends StatelessWidget {
   }
 
   Widget _loadSuccessView(BuildContext context) {
-    final title = medicine.name.isEmpty ? AppStrings.medicineRegisterPageTitle : AppStrings.medicineEditPageTitle;
+    final title = _medicine.name.isEmpty ? AppStrings.medicineRegisterPageTitle : AppStrings.medicineEditPageTitle;
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
@@ -76,7 +76,7 @@ class MedicineEditPage extends StatelessWidget {
     return AppTextField.singleLine(
       label: AppStrings.medicineNameLabel,
       isRequired: true,
-      initValue: medicine.name,
+      initValue: _medicine.name,
       onChanged: (v) {
         viewModel.inputName(v);
       },
@@ -86,7 +86,7 @@ class MedicineEditPage extends StatelessWidget {
   Widget _switchOralView(BuildContext context) {
     final viewModel = Provider.of<MedicineEditViewModel>(context);
     return AppRadio(
-        initSelectedOral: medicine.isOral,
+        initSelectedOral: _medicine.isOral,
         onChange: (v) {
           viewModel.inputOral(v);
         });
@@ -103,7 +103,7 @@ class MedicineEditPage extends StatelessWidget {
         ),
         Text(AppStrings.medicineMemoAttentionLabel, style: Theme.of(context).textTheme.caption),
         AppTextField.multiLine(
-          initValue: medicine.memo,
+          initValue: _medicine.memo,
           onChanged: (inputVal) {
             viewModel.inputMemo(inputVal);
           },

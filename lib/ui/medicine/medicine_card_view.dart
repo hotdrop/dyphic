@@ -1,12 +1,14 @@
+import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+
 import 'package:dalico/common/app_strings.dart';
 import 'package:dalico/model/medicine.dart';
-import 'package:flutter/material.dart';
 
 class MedicineCardView extends StatelessWidget {
-  MedicineCardView(this._medicine);
+  MedicineCardView({@required this.medicine, @required this.onTapEvent});
 
-  final Medicine _medicine;
+  final Medicine medicine;
+  final Function onTapEvent;
 
   @override
   Widget build(BuildContext context) {
@@ -15,14 +17,14 @@ class MedicineCardView extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _imageView(_medicine.imagePath),
-            _titleView(context, _medicine.name),
-            _oralTypeView(context, _medicine.isOral),
+            _imageView(medicine.imagePath),
+            _titleView(context, medicine.name),
+            _oralTypeView(context, medicine.isOral),
             _colorDivider(context),
-            _memoView(context, _medicine.memo),
+            _memoView(context, medicine.memo),
           ],
         ),
-        onTap: () {},
+        onTap: () => onTapEvent(),
       ),
     );
   }
@@ -56,7 +58,7 @@ class MedicineCardView extends StatelessWidget {
   }
 
   Widget _oralTypeView(BuildContext context, bool isOral) {
-    final oralStr = _medicine.isOral ? AppStrings.medicinePageOralName : AppStrings.medicinePageNotOralName;
+    final oralStr = medicine.isOral ? AppStrings.medicinePageOralName : AppStrings.medicinePageNotOralName;
     return Padding(
       padding: EdgeInsets.only(left: 8.0),
       child: Text(
