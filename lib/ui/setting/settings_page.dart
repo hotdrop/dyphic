@@ -14,16 +14,16 @@ class SettingsPage extends StatelessWidget {
       builder: (context, _) {
         final pageState = context.select<SettingsViewModel, PageState>((vm) => vm.pageState);
         if (pageState.nowLoading()) {
-          return _loadingView();
+          return _nowLoadingView();
         } else {
-          return _loadView(context);
+          return _loadSuccessView(context);
         }
       },
-      child: _loadingView(),
+      child: _nowLoadingView(),
     );
   }
 
-  Widget _loadingView() {
+  Widget _nowLoadingView() {
     return Scaffold(
       appBar: AppBar(centerTitle: true, title: const Text(AppStrings.settingsPageTitle)),
       body: Center(
@@ -32,7 +32,7 @@ class SettingsPage extends StatelessWidget {
     );
   }
 
-  Widget _loadView(BuildContext context) {
+  Widget _loadSuccessView(BuildContext context) {
     return Scaffold(
       appBar: AppBar(centerTitle: true, title: Text(AppStrings.settingsPageTitle)),
       body: Center(

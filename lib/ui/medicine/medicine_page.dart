@@ -1,9 +1,13 @@
-import 'package:dalico/common/app_strings.dart';
-import 'package:dalico/model/page_state.dart';
-import 'package:dalico/ui/medicine/medicine_card_view.dart';
-import 'package:dalico/ui/medicine/medicine_view_model.dart';
+import 'package:dalico/common/app_logger.dart';
+import 'package:dalico/model/medicine.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
+import 'package:dalico/common/app_strings.dart';
+import 'package:dalico/model/page_state.dart';
+import 'package:dalico/ui/medicine/edit/medicine_edit_page.dart';
+import 'package:dalico/ui/medicine/medicine_card_view.dart';
+import 'package:dalico/ui/medicine/medicine_view_model.dart';
 
 class MedicinePage extends StatelessWidget {
   @override
@@ -13,16 +17,16 @@ class MedicinePage extends StatelessWidget {
       builder: (context, _) {
         final pageState = context.select<MedicineViewModel, PageState>((vm) => vm.pageState);
         if (pageState.nowLoading()) {
-          return _loadingView();
+          return _nowLoadingView();
         } else {
-          return _loadView(context);
+          return _loadSuccessView(context);
         }
       },
-      child: _loadingView(),
+      child: _nowLoadingView(),
     );
   }
 
-  Widget _loadingView() {
+  Widget _nowLoadingView() {
     return Scaffold(
       appBar: AppBar(centerTitle: true, title: const Text(AppStrings.medicinePageTitle)),
       body: Center(
@@ -31,11 +35,26 @@ class MedicinePage extends StatelessWidget {
     );
   }
 
-  Widget _loadView(BuildContext context) {
+  Widget _loadSuccessView(BuildContext context) {
+    final viewModel = Provider.of<MedicineViewModel>(context);
     return Scaffold(
       appBar: AppBar(centerTitle: true, title: Text(AppStrings.medicinePageTitle)),
       body: Center(
         child: _contentsView(context),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () async {
+          final int lastOrder = viewModel.getLastOrder();
+          final bool isUpdate = await Navigator.of(context).push<bool>(
+                MaterialPageRoute(builder: (_) => MedicineEditPage(medicine: Medicine.createEmpty(lastOrder))),
+              ) ??
+              false;
+          AppLogger.i('戻り値: $isUpdate');
+          if (isUpdate) {
+            await viewModel.reload();
+          }
+        },
+        child: Icon(Icons.add),
       ),
     );
   }

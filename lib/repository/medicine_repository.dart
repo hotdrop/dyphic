@@ -16,4 +16,8 @@ class MedicineRepository {
     AppLogger.i('MedicineApiでお薬情報を取得しました。データ数: ${medicines.length}');
     return medicines;
   }
+
+  Future<void> save(Medicine medicine) async {
+    return await _medicineApi.save(medicine);
+  }
 }

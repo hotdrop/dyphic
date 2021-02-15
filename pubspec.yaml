@@ -21,6 +21,9 @@ dependencies:
 
   # ui
   table_calendar: ^2.3.3
+  image_picker: ^0.6.7+22
+  awesome_dialog: ^1.3.1
+  progress_dialog: ^1.2.4
 
   # network
   cached_network_image: ^2.5.0

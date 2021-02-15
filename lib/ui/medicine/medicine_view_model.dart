@@ -1,4 +1,5 @@
-import 'package:dalico/model/app_settings.dart';
+import 'dart:math';
+
 import 'package:dalico/model/medicine.dart';
 import 'package:dalico/model/page_state.dart';
 import 'package:dalico/repository/medicine_repository.dart';
@@ -20,6 +21,18 @@ class MedicineViewModel extends ChangeNotifier {
     _nowLoading();
     _medicines = await _repository.findAll();
     _loadSuccess();
+  }
+
+  Future<void> reload() async {
+    _nowLoading();
+    _medicines = await _repository.findAll();
+    _loadSuccess();
+  }
+
+  int getLastOrder() {
+    // sortされている前提
+    final lastOrder = _medicines.last.order;
+    return lastOrder + 1;
   }
 
   void _nowLoading() {
