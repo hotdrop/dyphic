@@ -21,11 +21,11 @@ class MedicineEditPage extends StatelessWidget {
     return ChangeNotifierProvider<MedicineEditViewModel>(
       create: (_) => MedicineEditViewModel.create()..init(_medicine),
       builder: (context, _) {
-        final pageState = context.select<MedicineEditViewModel, PageState>((vm) => vm.pageState);
-        if (pageState.nowLoading()) {
-          return _nowLoadingView();
-        } else {
+        final pageState = context.select<MedicineEditViewModel, PageLoadingState>((vm) => vm.pageState);
+        if (pageState.isLoadSuccess) {
           return _loadSuccessView(context);
+        } else {
+          return _nowLoadingView();
         }
       },
       child: _nowLoadingView(),

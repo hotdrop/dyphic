@@ -1,21 +1,19 @@
 import 'package:dyphic/common/app_logger.dart';
 import 'package:dyphic/model/medicine.dart';
-import 'package:dyphic/model/page_state.dart';
 import 'package:dyphic/repository/medicine_repository.dart';
-import 'package:flutter/material.dart';
+import 'package:dyphic/ui/notifier_view_model.dart';
 
-class MedicineEditViewModel extends ChangeNotifier {
+class MedicineEditViewModel extends NotifierViewModel {
   MedicineEditViewModel._(this._repository);
 
-  factory MedicineEditViewModel.create() {
-    return MedicineEditViewModel._(MedicineRepository.create());
+  factory MedicineEditViewModel.create({MedicineRepository argRepo}) {
+    final repo = argRepo ?? MedicineRepository.create();
+    return MedicineEditViewModel._(repo);
   }
 
   final MedicineRepository _repository;
-  PageState pageState = PageNowLoading();
 
   _InputItem _inputItem;
-
   String get imageFilePath => _inputItem.imagePath;
   bool get canSave => _inputItem.isCompletedRequiredFields();
 
@@ -23,9 +21,8 @@ class MedicineEditViewModel extends ChangeNotifier {
   String get errorMessage => _errorMessage;
 
   void init(Medicine medicine) {
-    _nowLoading();
     _inputItem = _InputItem.create(medicine);
-    _loadSuccess();
+    loadSuccess();
   }
 
   void inputName(String name) {
@@ -62,18 +59,11 @@ class MedicineEditViewModel extends ChangeNotifier {
       return false;
     }
   }
-
-  void _nowLoading() {
-    pageState = PageNowLoading();
-    notifyListeners();
-  }
-
-  void _loadSuccess() {
-    pageState = PageLoaded();
-    notifyListeners();
-  }
 }
 
+///
+/// 入力保持用のクラス
+///
 class _InputItem {
   _InputItem._(this.name, this.isOral, this.memo, this.imagePath, this.order);
 

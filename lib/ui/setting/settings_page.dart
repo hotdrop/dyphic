@@ -9,39 +9,30 @@ import 'package:dyphic/ui/setting/settings_view_model.dart';
 class SettingsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider<SettingsViewModel>(
-      create: (_) => SettingsViewModel.create()..init(),
-      builder: (context, _) {
-        final pageState = context.select<SettingsViewModel, PageState>((vm) => vm.pageState);
-        if (pageState.nowLoading()) {
-          return _nowLoadingView();
-        } else {
-          return _loadSuccessView(context);
-        }
-      },
-      child: _nowLoadingView(),
+    return Scaffold(
+      appBar: AppBar(centerTitle: true, title: const Text(AppStrings.settingsPageTitle)),
+      body: ChangeNotifierProvider<SettingsViewModel>(
+        create: (_) => SettingsViewModel.create()..init(),
+        builder: (context, _) {
+          final pageState = context.select<SettingsViewModel, PageLoadingState>((vm) => vm.pageState);
+          if (pageState.isLoadSuccess) {
+            return _loadSuccessView(context);
+          } else {
+            return _nowLoadingView();
+          }
+        },
+        child: _nowLoadingView(),
+      ),
     );
   }
 
   Widget _nowLoadingView() {
-    return Scaffold(
-      appBar: AppBar(centerTitle: true, title: const Text(AppStrings.settingsPageTitle)),
-      body: Center(
-        child: CircularProgressIndicator(),
-      ),
+    return Center(
+      child: CircularProgressIndicator(),
     );
   }
 
   Widget _loadSuccessView(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(centerTitle: true, title: Text(AppStrings.settingsPageTitle)),
-      body: Center(
-        child: _contentsView(context),
-      ),
-    );
-  }
-
-  Widget _contentsView(BuildContext context) {
     return ListView(
       children: [
         _rowAppVersion(context),

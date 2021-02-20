@@ -15,11 +15,11 @@ class RecordPage extends StatelessWidget {
     return ChangeNotifierProvider<RecordViewModel>(
       create: (_) => RecordViewModel.create(_id)..init(),
       builder: (context, _) {
-        final pageState = context.select<RecordViewModel, PageState>((vm) => vm.pageState);
-        if (pageState.nowLoading()) {
-          return _nowLoadingView();
-        } else {
+        final pageState = context.select<RecordViewModel, PageLoadingState>((vm) => vm.pageState);
+        if (pageState.isLoadSuccess) {
           return _loadSuccessView(context);
+        } else {
+          return _nowLoadingView();
         }
       },
       child: _nowLoadingView(),

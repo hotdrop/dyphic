@@ -1,9 +1,8 @@
-import 'package:dyphic/model/page_state.dart';
 import 'package:dyphic/model/record.dart';
 import 'package:dyphic/repository/record_repository.dart';
-import 'package:flutter/material.dart';
+import 'package:dyphic/ui/notifier_view_model.dart';
 
-class RecordViewModel extends ChangeNotifier {
+class RecordViewModel extends NotifierViewModel {
   RecordViewModel._(this.id, this._repository);
 
   factory RecordViewModel.create(int id) {
@@ -12,24 +11,12 @@ class RecordViewModel extends ChangeNotifier {
 
   final int id;
   final RecordRepository _repository;
-  PageState pageState = PageNowLoading();
 
   Record _record;
   Record get record => _record;
 
   Future<void> init() async {
-    _nowLoading();
     _record = await _repository.find(id);
-    _loadSuccess();
-  }
-
-  void _nowLoading() {
-    pageState = PageNowLoading();
-    notifyListeners();
-  }
-
-  void _loadSuccess() {
-    pageState = PageLoaded();
-    notifyListeners();
+    loadSuccess();
   }
 }

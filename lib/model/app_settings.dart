@@ -3,22 +3,22 @@ import 'package:flutter/material.dart';
 import 'package:dyphic/repository/app_settings_repository.dart';
 
 class AppSettings extends ChangeNotifier {
-  AppSettings._(this._repo);
+  AppSettings._(this._repository);
 
   static Future<AppSettings> create({AppSettingsRepository argRepo}) async {
-    final repo = argRepo != null ? argRepo : await AppSettingsRepository.getInstance();
+    final repo = argRepo ?? await AppSettingsRepository.create();
     return AppSettings._(repo);
   }
 
-  AppSettingsRepository _repo;
+  final AppSettingsRepository _repository;
 
-  bool get isDarkMode => _repo.isDarkMode();
+  bool get isDarkMode => _repository.isDarkMode();
 
   Future<void> changeTheme(bool isDark) async {
     if (isDark) {
-      await _repo.changeDarkMode();
+      await _repository.changeDarkMode();
     } else {
-      await _repo.changeLightMode();
+      await _repository.changeLightMode();
     }
     notifyListeners();
   }

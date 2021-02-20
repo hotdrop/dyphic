@@ -1,40 +1,28 @@
-import 'package:dyphic/model/app_settings.dart';
-import 'package:flutter/material.dart';
+import 'package:dyphic/ui/notifier_view_model.dart';
 import 'package:dyphic/model/calendar_event.dart';
-import 'package:dyphic/model/page_state.dart';
 import 'package:dyphic/repository/event_repository.dart';
 import 'package:dyphic/repository/record_repository.dart';
 
-class CalendarViewModel extends ChangeNotifier {
+class CalendarViewModel extends NotifierViewModel {
   CalendarViewModel._(this._recordRepository, this._eventRepository);
 
-  factory CalendarViewModel.create() {
-    return CalendarViewModel._(RecordRepository.create(), EventRepository.create());
+  factory CalendarViewModel.create({RecordRepository argRecordRepo, EventRepository argEventRepo}) {
+    final recordRepository = argRecordRepo ?? RecordRepository.create();
+    final eventRepository = argEventRepo ?? EventRepository.create();
+    return CalendarViewModel._(recordRepository, eventRepository);
   }
 
-  RecordRepository _recordRepository;
-  EventRepository _eventRepository;
+  final RecordRepository _recordRepository;
+  final EventRepository _eventRepository;
 
-  PageState pageState = PageNowLoading();
   List<CalendarEvent> _events;
   List<CalendarEvent> get calendarEvents => _events;
 
-  Future<void> init(AppSettings appSettings) async {
-    _nowLoading();
-    final events = await _eventRepository.findAll(appSettings);
+  Future<void> init() async {
+    final events = await _eventRepository.findAll();
     final recordIds = await _recordRepository.findIds();
     _events = _merge(events, recordIds);
-    _loadSuccess();
-  }
-
-  void _nowLoading() {
-    pageState = PageNowLoading();
-    notifyListeners();
-  }
-
-  void _loadSuccess() {
-    pageState = PageLoaded();
-    notifyListeners();
+    loadSuccess();
   }
 
   List<CalendarEvent> _merge(List<Event> events, List<EventRecord> eventRecords) {

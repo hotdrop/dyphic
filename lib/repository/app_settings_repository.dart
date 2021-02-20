@@ -1,29 +1,31 @@
-import 'package:dyphic/repository/local/shared_prefs.dart';
+import 'package:dyphic/repository/local/app_data_source.dart';
 
 ///
 /// アプリの設定に関する情報は全てここから取得する
 ///
 class AppSettingsRepository {
-  const AppSettingsRepository._(this._prefs);
+  const AppSettingsRepository._();
 
-  static Future<AppSettingsRepository> getInstance({SharedPrefs argPrefs}) async {
-    if (_instance == null) {
-      final prefs = argPrefs != null ? argPrefs : await SharedPrefs.getInstance();
-      _instance = AppSettingsRepository._(prefs);
-    }
-    return _instance;
+  static Future<AppSettingsRepository> create({AppDataSource argAppDs}) async {
+    final instance = AppSettingsRepository._();
+    await instance._init(appDataSource: argAppDs);
+    return instance;
   }
 
-  static AppSettingsRepository _instance;
-  final SharedPrefs _prefs;
+  static AppDataSource _appDataSource;
 
-  bool isDarkMode() => _prefs == null ? false : _prefs.isDarkMode();
+  Future<void> _init({AppDataSource appDataSource}) async {
+    _appDataSource = appDataSource ?? AppDataSource.create();
+    await _appDataSource.init();
+  }
+
+  bool isDarkMode() => _appDataSource == null ? false : _appDataSource.isDarkMode();
 
   Future<void> changeDarkMode() async {
-    await _prefs.saveDarkMode();
+    await _appDataSource.saveDarkMode();
   }
 
   Future<void> changeLightMode() async {
-    await _prefs.saveLightMode();
+    await _appDataSource.saveLightMode();
   }
 }

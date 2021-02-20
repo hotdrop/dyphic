@@ -5,8 +5,9 @@ import 'package:dyphic/repository/remote/medicine_api.dart';
 class MedicineRepository {
   const MedicineRepository._(this._medicineApi);
 
-  factory MedicineRepository.create() {
-    return MedicineRepository._(MedicineApi.create());
+  factory MedicineRepository.create({MedicineApi argApi}) {
+    final api = argApi ?? MedicineApi.create();
+    return MedicineRepository._(api);
   }
 
   final MedicineApi _medicineApi;

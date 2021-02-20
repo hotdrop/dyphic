@@ -4,11 +4,11 @@ import 'package:dyphic/model/calendar_event.dart';
 import 'package:dyphic/repository/local/db_provider.dart';
 import 'package:dyphic/repository/local/entity/event_entity.dart';
 
-class EventDatabase {
-  const EventDatabase._(this._dbProvider);
+class EventDataSource {
+  const EventDataSource._(this._dbProvider);
 
-  factory EventDatabase.create() {
-    return EventDatabase._(DBProvider.instance);
+  factory EventDataSource.create() {
+    return EventDataSource._(DBProvider.instance);
   }
 
   final DBProvider _dbProvider;

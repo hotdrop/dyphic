@@ -6,8 +6,9 @@ import 'package:dyphic/repository/remote/record_api.dart';
 class RecordRepository {
   const RecordRepository._(this._recordApi);
 
-  factory RecordRepository.create() {
-    return RecordRepository._(RecordApi.create());
+  factory RecordRepository.create({RecordApi argApi}) {
+    final api = argApi ?? RecordApi.create();
+    return RecordRepository._(api);
   }
 
   final RecordApi _recordApi;

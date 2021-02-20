@@ -1,3 +1,25 @@
+class PageLoadingState {
+  PageLoadingState._(this._state);
+
+  factory PageLoadingState.nowLoading() {
+    return PageLoadingState._(_PageLoadingStateEnum.nowLoading);
+  }
+
+  factory PageLoadingState.loadSuccess() {
+    return PageLoadingState._(_PageLoadingStateEnum.success);
+  }
+
+  factory PageLoadingState.loadError() {
+    return PageLoadingState._(_PageLoadingStateEnum.error);
+  }
+
+  final _PageLoadingStateEnum _state;
+
+  bool get isLoadSuccess => _state == _PageLoadingStateEnum.success;
+}
+
+enum _PageLoadingStateEnum { nowLoading, success, error }
+
 abstract class PageState {
   bool nowLoading();
   bool loadSuccess();

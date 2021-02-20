@@ -16,7 +16,7 @@ class App extends StatelessWidget {
   Widget build(BuildContext context) {
     return FutureBuilder<AppSettings>(
       future: AppSettings.create(),
-      builder: (context, snapshot) {
+      builder: (_, snapshot) {
         if (!snapshot.hasData) {
           return _SplashScreen();
         } else {

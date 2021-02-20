@@ -10,7 +10,6 @@ analyzer:
 
 linter:
   rules:
-    - avoid_types_on_closure_parameters
     - avoid_void_async
     - avoid_relative_lib_imports
     - await_only_futures

@@ -1,47 +1,37 @@
 import 'dart:math';
 
+import 'package:dyphic/common/app_logger.dart';
 import 'package:dyphic/model/medicine.dart';
-import 'package:dyphic/model/page_state.dart';
 import 'package:dyphic/repository/medicine_repository.dart';
-import 'package:flutter/material.dart';
+import 'package:dyphic/ui/notifier_view_model.dart';
 
-class MedicineViewModel extends ChangeNotifier {
+class MedicineViewModel extends NotifierViewModel {
   MedicineViewModel._(this._repository);
 
-  factory MedicineViewModel.create() {
-    return MedicineViewModel._(MedicineRepository.create());
+  factory MedicineViewModel.create({MedicineRepository argRepo}) {
+    final repo = argRepo ?? MedicineRepository.create();
+    return MedicineViewModel._(repo);
   }
 
   final MedicineRepository _repository;
+
   List<Medicine> _medicines;
   List<Medicine> get medicines => _medicines;
-  PageState pageState = PageNowLoading();
 
   Future<void> init() async {
-    _nowLoading();
     _medicines = await _repository.findAll();
-    _loadSuccess();
+    loadSuccess();
   }
 
   Future<void> reload() async {
-    _nowLoading();
+    nowLoading();
     _medicines = await _repository.findAll();
-    _loadSuccess();
+    loadSuccess();
   }
 
   int getLastOrder() {
-    // sortされている前提
-    final lastOrder = _medicines.last.order;
+    final lastOrder = _medicines.map((e) => e.order).reduce(max);
+    AppLogger.d('お薬の並び順のラストオーダー: $lastOrder');
     return lastOrder + 1;
-  }
-
-  void _nowLoading() {
-    pageState = PageNowLoading();
-    notifyListeners();
-  }
-
-  void _loadSuccess() {
-    pageState = PageLoaded();
-    notifyListeners();
   }
 }
