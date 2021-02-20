@@ -2,7 +2,7 @@ import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:progress_dialog/progress_dialog.dart';
 
-import 'package:dalico/common/app_strings.dart';
+import 'package:dyphic/common/app_strings.dart';
 
 class AppDialog {
   const AppDialog._(

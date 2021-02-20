@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
-import 'package:dalico/common/app_strings.dart';
-import 'package:dalico/ui/calender/calendar_page.dart';
-import 'package:dalico/ui/medicine/medicine_page.dart';
-import 'package:dalico/ui/setting/settings_page.dart';
+import 'package:dyphic/common/app_strings.dart';
+import 'package:dyphic/ui/calender/calendar_page.dart';
+import 'package:dyphic/ui/medicine/medicine_page.dart';
+import 'package:dyphic/ui/setting/settings_page.dart';
 
 class MainPage extends StatefulWidget {
   @override

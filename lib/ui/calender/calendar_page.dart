@@ -1,8 +1,8 @@
-import 'package:dalico/common/app_strings.dart';
-import 'package:dalico/model/app_settings.dart';
-import 'package:dalico/model/page_state.dart';
-import 'package:dalico/ui/calender/calendar_view_model.dart';
-import 'package:dalico/ui/widget/app_calender.dart';
+import 'package:dyphic/common/app_strings.dart';
+import 'package:dyphic/model/app_settings.dart';
+import 'package:dyphic/model/page_state.dart';
+import 'package:dyphic/ui/calender/calendar_view_model.dart';
+import 'package:dyphic/ui/widget/app_calender.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 

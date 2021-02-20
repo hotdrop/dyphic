@@ -1,6 +1,6 @@
-import 'package:dalico/model/page_state.dart';
-import 'package:dalico/model/record.dart';
-import 'package:dalico/repository/record_repository.dart';
+import 'package:dyphic/model/page_state.dart';
+import 'package:dyphic/model/record.dart';
+import 'package:dyphic/repository/record_repository.dart';
 import 'package:flutter/material.dart';
 
 class RecordViewModel extends ChangeNotifier {

@@ -1,5 +1,5 @@
-import 'package:dalico/model/calendar_event.dart';
-import 'package:dalico/model/record.dart';
+import 'package:dyphic/model/calendar_event.dart';
+import 'package:dyphic/model/record.dart';
 
 class RecordApi {
   const RecordApi._();

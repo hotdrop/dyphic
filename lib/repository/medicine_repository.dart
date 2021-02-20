@@ -1,6 +1,6 @@
-import 'package:dalico/common/app_logger.dart';
-import 'package:dalico/model/medicine.dart';
-import 'package:dalico/repository/remote/medicine_api.dart';
+import 'package:dyphic/common/app_logger.dart';
+import 'package:dyphic/model/medicine.dart';
+import 'package:dyphic/repository/remote/medicine_api.dart';
 
 class MedicineRepository {
   const MedicineRepository._(this._medicineApi);

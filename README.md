@@ -1,4 +1,4 @@
-# dalico
+# dyphic
 
 My Daily Life Condition Management App.
 

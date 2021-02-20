@@ -1,13 +1,13 @@
-import 'package:dalico/common/app_logger.dart';
-import 'package:dalico/model/medicine.dart';
+import 'package:dyphic/common/app_logger.dart';
+import 'package:dyphic/model/medicine.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import 'package:dalico/common/app_strings.dart';
-import 'package:dalico/model/page_state.dart';
-import 'package:dalico/ui/medicine/edit/medicine_edit_page.dart';
-import 'package:dalico/ui/medicine/medicine_card_view.dart';
-import 'package:dalico/ui/medicine/medicine_view_model.dart';
+import 'package:dyphic/common/app_strings.dart';
+import 'package:dyphic/model/page_state.dart';
+import 'package:dyphic/ui/medicine/edit/medicine_edit_page.dart';
+import 'package:dyphic/ui/medicine/medicine_card_view.dart';
+import 'package:dyphic/ui/medicine/medicine_view_model.dart';
 
 class MedicinePage extends StatelessWidget {
   @override

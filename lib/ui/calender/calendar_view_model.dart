@@ -1,9 +1,9 @@
-import 'package:dalico/model/app_settings.dart';
+import 'package:dyphic/model/app_settings.dart';
 import 'package:flutter/material.dart';
-import 'package:dalico/model/calendar_event.dart';
-import 'package:dalico/model/page_state.dart';
-import 'package:dalico/repository/event_repository.dart';
-import 'package:dalico/repository/record_repository.dart';
+import 'package:dyphic/model/calendar_event.dart';
+import 'package:dyphic/model/page_state.dart';
+import 'package:dyphic/repository/event_repository.dart';
+import 'package:dyphic/repository/record_repository.dart';
 
 class CalendarViewModel extends ChangeNotifier {
   CalendarViewModel._(this._recordRepository, this._eventRepository);

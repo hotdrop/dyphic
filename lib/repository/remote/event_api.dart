@@ -1,5 +1,5 @@
-import 'package:dalico/model/app_settings.dart';
-import 'package:dalico/model/calendar_event.dart';
+import 'package:dyphic/model/app_settings.dart';
+import 'package:dyphic/model/calendar_event.dart';
 
 class EventApi {
   const EventApi._();

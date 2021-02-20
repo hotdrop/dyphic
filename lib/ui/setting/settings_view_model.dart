@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:package_info/package_info.dart';
 
-import 'package:dalico/model/page_state.dart';
+import 'package:dyphic/model/page_state.dart';
 
 class SettingsViewModel extends ChangeNotifier {
   SettingsViewModel._();

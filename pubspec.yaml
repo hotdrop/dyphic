@@ -1,5 +1,5 @@
-name: dailylico
-description: My Daily Life Condition Management App.
+name: dyphic
+description: Daily physical condition recording App.
 
 # pub.devには公開しないのでnone
 publish_to: 'none'

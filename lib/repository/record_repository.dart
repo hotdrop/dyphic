@@ -1,7 +1,7 @@
-import 'package:dalico/common/app_logger.dart';
-import 'package:dalico/model/calendar_event.dart';
-import 'package:dalico/model/record.dart';
-import 'package:dalico/repository/remote/record_api.dart';
+import 'package:dyphic/common/app_logger.dart';
+import 'package:dyphic/model/calendar_event.dart';
+import 'package:dyphic/model/record.dart';
+import 'package:dyphic/repository/remote/record_api.dart';
 
 class RecordRepository {
   const RecordRepository._(this._recordApi);

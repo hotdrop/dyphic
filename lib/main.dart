@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
 
-import 'package:dalico/common/app_theme.dart';
-import 'package:dalico/common/app_strings.dart';
-import 'package:dalico/model/app_settings.dart';
-import 'package:dalico/ui/main_page.dart';
+import 'package:dyphic/common/app_theme.dart';
+import 'package:dyphic/common/app_strings.dart';
+import 'package:dyphic/model/app_settings.dart';
+import 'package:dyphic/ui/main_page.dart';
 
 void main() {
   runApp(App());

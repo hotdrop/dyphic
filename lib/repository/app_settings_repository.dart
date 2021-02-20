@@ -1,4 +1,4 @@
-import 'package:dalico/repository/local/shared_prefs.dart';
+import 'package:dyphic/repository/local/shared_prefs.dart';
 
 ///
 /// アプリの設定に関する情報は全てここから取得する

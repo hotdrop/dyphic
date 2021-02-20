@@ -1,8 +1,8 @@
 import 'package:sqflite/sqflite.dart';
 
-import 'package:dalico/model/calendar_event.dart';
-import 'package:dalico/repository/local/db_provider.dart';
-import 'package:dalico/repository/local/entity/event_entity.dart';
+import 'package:dyphic/model/calendar_event.dart';
+import 'package:dyphic/repository/local/db_provider.dart';
+import 'package:dyphic/repository/local/entity/event_entity.dart';
 
 class EventDatabase {
   const EventDatabase._(this._dbProvider);

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:dalico/model/medicine.dart';
+import 'package:dyphic/model/medicine.dart';
 
 class Record {
   Record({

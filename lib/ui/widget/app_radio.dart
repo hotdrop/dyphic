@@ -1,4 +1,4 @@
-import 'package:dalico/common/app_strings.dart';
+import 'package:dyphic/common/app_strings.dart';
 import 'package:flutter/material.dart';
 
 class AppRadio extends StatefulWidget {

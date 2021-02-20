@@ -1,8 +1,8 @@
 import 'dart:math';
 
-import 'package:dalico/model/medicine.dart';
-import 'package:dalico/model/page_state.dart';
-import 'package:dalico/repository/medicine_repository.dart';
+import 'package:dyphic/model/medicine.dart';
+import 'package:dyphic/model/page_state.dart';
+import 'package:dyphic/repository/medicine_repository.dart';
 import 'package:flutter/material.dart';
 
 class MedicineViewModel extends ChangeNotifier {

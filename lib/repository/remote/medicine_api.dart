@@ -1,4 +1,4 @@
-import 'package:dalico/model/medicine.dart';
+import 'package:dyphic/model/medicine.dart';
 
 class MedicineApi {
   const MedicineApi._();

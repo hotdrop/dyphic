@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'package:dalico/repository/app_settings_repository.dart';
+import 'package:dyphic/repository/app_settings_repository.dart';
 
 class AppSettings extends ChangeNotifier {
   AppSettings._(this._repo);

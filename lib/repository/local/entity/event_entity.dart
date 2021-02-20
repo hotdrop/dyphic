@@ -1,4 +1,4 @@
-import 'package:dalico/model/calendar_event.dart';
+import 'package:dyphic/model/calendar_event.dart';
 
 class EventEntity {
   EventEntity(this.year, this.month, this.day, this.type, this.name);

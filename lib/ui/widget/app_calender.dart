@@ -1,9 +1,9 @@
-import 'package:dalico/model/app_settings.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:table_calendar/table_calendar.dart';
 
-import 'package:dalico/model/calendar_event.dart';
+import 'package:dyphic/model/app_settings.dart';
+import 'package:dyphic/model/calendar_event.dart';
 
 class AppCalendar extends StatefulWidget {
   const AppCalendar({Key key, this.events}) : super(key: key);

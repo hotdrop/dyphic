@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
-import 'package:dalico/common/app_strings.dart';
-import 'package:dalico/model/medicine.dart';
+import 'package:dyphic/common/app_strings.dart';
+import 'package:dyphic/model/medicine.dart';
 
 class MedicineCardView extends StatelessWidget {
   MedicineCardView({@required this.medicine, @required this.onTapEvent});
