@@ -39,9 +39,7 @@ class MedicinePage extends StatelessWidget {
     final viewModel = Provider.of<MedicineViewModel>(context);
     return Scaffold(
       appBar: AppBar(centerTitle: true, title: Text(AppStrings.medicinePageTitle)),
-      body: Center(
-        child: _contentsView(context),
-      ),
+      body: _contentsView(context),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
           int lastOrder = viewModel.getLastOrder();

@@ -2,11 +2,11 @@ class AppStrings {
   static const String appTitle = '生活管理';
 
   static const String calenderPageTitle = 'カレンダー';
+  static const String recordPageTitle = '記録情報';
 
   static const String medicinePageTitle = 'お薬';
   static const String medicinePageOralName = '内服薬';
   static const String medicinePageNotOralName = '頓服薬';
-
   static const String medicineRegisterPageTitle = 'お薬情報登録';
   static const String medicineEditPageTitle = 'お薬情報編集';
   static const String medicineNameLabel = 'お薬名';
