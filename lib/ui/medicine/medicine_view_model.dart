@@ -6,7 +6,9 @@ import 'package:dyphic/repository/medicine_repository.dart';
 import 'package:dyphic/ui/notifier_view_model.dart';
 
 class MedicineViewModel extends NotifierViewModel {
-  MedicineViewModel._(this._repository);
+  MedicineViewModel._(this._repository) {
+    _init();
+  }
 
   factory MedicineViewModel.create({MedicineRepository argRepo}) {
     final repo = argRepo ?? MedicineRepository.create();
@@ -18,7 +20,7 @@ class MedicineViewModel extends NotifierViewModel {
   List<Medicine> _medicines;
   List<Medicine> get medicines => _medicines;
 
-  Future<void> init() async {
+  Future<void> _init() async {
     _medicines = await _repository.findAll();
     loadSuccess();
   }

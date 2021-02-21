@@ -13,7 +13,7 @@ class MedicinePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider<MedicineViewModel>(
-      create: (_) => MedicineViewModel.create()..init(),
+      create: (_) => MedicineViewModel.create(),
       builder: (context, _) {
         final pageState = context.select<MedicineViewModel, PageLoadingState>((vm) => vm.pageState);
         if (pageState.isLoadSuccess) {

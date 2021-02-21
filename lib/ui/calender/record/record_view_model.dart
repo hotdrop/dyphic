@@ -6,7 +6,9 @@ import 'package:dyphic/repository/record_repository.dart';
 import 'package:dyphic/ui/notifier_view_model.dart';
 
 class RecordViewModel extends NotifierViewModel {
-  RecordViewModel._(this.date, this._repository, this._medicineRepository);
+  RecordViewModel._(this.date, this._repository, this._medicineRepository) {
+    _init();
+  }
 
   factory RecordViewModel.create(DateTime date, {RecordRepository argRecordRepo, MedicineRepository argMedicineRepo}) {
     final recordRepo = argRecordRepo ?? RecordRepository.create();
@@ -24,7 +26,7 @@ class RecordViewModel extends NotifierViewModel {
   List<Medicine> get allMedicines => _allMedicines;
   List<String> get takenMedicineNames => record.medicines.map((e) => e.name).toList();
 
-  Future<void> init() async {
+  Future<void> _init() async {
     _record = await _repository.find(date);
     _allMedicines = await _medicineRepository.findAll();
     loadSuccess();

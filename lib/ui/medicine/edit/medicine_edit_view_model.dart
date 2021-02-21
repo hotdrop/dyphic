@@ -4,14 +4,18 @@ import 'package:dyphic/repository/medicine_repository.dart';
 import 'package:dyphic/ui/notifier_view_model.dart';
 
 class MedicineEditViewModel extends NotifierViewModel {
-  MedicineEditViewModel._(this._repository);
+  MedicineEditViewModel._(this._originalMedicine, this._repository) {
+    _init();
+  }
 
-  factory MedicineEditViewModel.create({MedicineRepository argRepo}) {
+  factory MedicineEditViewModel.create(Medicine medicine, {MedicineRepository argRepo}) {
     final repo = argRepo ?? MedicineRepository.create();
-    return MedicineEditViewModel._(repo);
+    return MedicineEditViewModel._(medicine, repo);
   }
 
   final MedicineRepository _repository;
+
+  Medicine _originalMedicine;
 
   _InputItem _inputItem;
   String get imageFilePath => _inputItem.imagePath;
@@ -20,8 +24,8 @@ class MedicineEditViewModel extends NotifierViewModel {
   String _errorMessage = '';
   String get errorMessage => _errorMessage;
 
-  void init(Medicine medicine) {
-    _inputItem = _InputItem.create(medicine);
+  void _init() {
+    _inputItem = _InputItem.create(_originalMedicine);
     loadSuccess();
   }
 

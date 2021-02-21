@@ -12,7 +12,7 @@ class CalenderPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(centerTitle: true, title: const Text(AppStrings.calenderPageTitle)),
       body: ChangeNotifierProvider<CalendarViewModel>(
-        create: (_) => CalendarViewModel.create()..init(),
+        create: (_) => CalendarViewModel.create(),
         builder: (context, viewModel) {
           final pageState = context.select<CalendarViewModel, PageLoadingState>((vm) => vm.pageState);
           if (pageState.isLoadSuccess) {

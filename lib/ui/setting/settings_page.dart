@@ -12,7 +12,7 @@ class SettingsPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(centerTitle: true, title: const Text(AppStrings.settingsPageTitle)),
       body: ChangeNotifierProvider<SettingsViewModel>(
-        create: (_) => SettingsViewModel.create()..init(),
+        create: (_) => SettingsViewModel.create(),
         builder: (context, _) {
           final pageState = context.select<SettingsViewModel, PageLoadingState>((vm) => vm.pageState);
           if (pageState.isLoadSuccess) {

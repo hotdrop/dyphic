@@ -21,7 +21,7 @@ class MedicineEditPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(centerTitle: true, title: Text(AppStrings.medicineEditPageTitle)),
       body: ChangeNotifierProvider<MedicineEditViewModel>(
-        create: (_) => MedicineEditViewModel.create()..init(_medicine),
+        create: (_) => MedicineEditViewModel.create(_medicine),
         builder: (context, _) {
           final pageState = context.select<MedicineEditViewModel, PageLoadingState>((vm) => vm.pageState);
           if (pageState.isLoadSuccess) {

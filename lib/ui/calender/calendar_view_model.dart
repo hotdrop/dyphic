@@ -4,7 +4,9 @@ import 'package:dyphic/repository/event_repository.dart';
 import 'package:dyphic/repository/record_repository.dart';
 
 class CalendarViewModel extends NotifierViewModel {
-  CalendarViewModel._(this._recordRepository, this._eventRepository);
+  CalendarViewModel._(this._recordRepository, this._eventRepository) {
+    _init();
+  }
 
   factory CalendarViewModel.create({RecordRepository argRecordRepo, EventRepository argEventRepo}) {
     final recordRepository = argRecordRepo ?? RecordRepository.create();
@@ -18,7 +20,7 @@ class CalendarViewModel extends NotifierViewModel {
   List<CalendarEvent> _events;
   List<CalendarEvent> get calendarEvents => _events;
 
-  Future<void> init() async {
+  Future<void> _init() async {
     final events = await _eventRepository.findAll();
     final recordIds = await _recordRepository.findIds();
     _events = _merge(events, recordIds);

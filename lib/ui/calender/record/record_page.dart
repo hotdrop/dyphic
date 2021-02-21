@@ -18,7 +18,7 @@ class RecordPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(centerTitle: true, title: Text(Record.formatDate(_date))),
       body: ChangeNotifierProvider<RecordViewModel>(
-        create: (_) => RecordViewModel.create(_date)..init(),
+        create: (_) => RecordViewModel.create(_date),
         builder: (context, _) {
           final pageState = context.select<RecordViewModel, PageLoadingState>((vm) => vm.pageState);
           if (pageState.isLoadSuccess) {
@@ -44,8 +44,8 @@ class RecordPage extends StatelessWidget {
       child: ListView(
         children: <Widget>[
           _temperatureViewArea(context),
-          _medicineViewArea(context),
           // _conditionViewArea(),
+          _medicineViewArea(context),
           // _foodViewArea(),
           // _memoView(),
         ],
@@ -84,29 +84,24 @@ class RecordPage extends StatelessWidget {
         padding: const EdgeInsets.only(left: 4, right: 4, top: 12),
         child: Column(
           children: [
-            _medicineViewTitle(),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                SizedBox(width: 28, height: 28, child: Image.asset('res/images/ic_medical.png')),
+                SizedBox(width: 8),
+                Text(AppStrings.recordMedicalTitle),
+              ],
+            ),
             MedicineChips(
               medicines: viewModel.allMedicines,
               selectedNames: viewModel.takenMedicineNames,
               onChange: (selectedNamesSet) {
-                final list = selectedNamesSet.toList();
-                viewModel.changeSelectedMedicine(list);
+                viewModel.changeSelectedMedicine(selectedNamesSet.toList());
               },
             ),
           ],
         ),
       ),
-    );
-  }
-
-  Widget _medicineViewTitle() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: <Widget>[
-        SizedBox(width: 28, height: 28, child: Image.asset('res/images/ic_medical.png')),
-        SizedBox(width: 8),
-        Text(AppStrings.recordMedicalTitle),
-      ],
     );
   }
 
