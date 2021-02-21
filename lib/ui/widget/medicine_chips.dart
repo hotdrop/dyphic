@@ -43,7 +43,6 @@ class _MedicineChipsState extends State<MedicineChips> {
   @override
   Widget build(BuildContext context) {
     return Wrap(
-      alignment: WrapAlignment.start,
       direction: Axis.horizontal,
       spacing: 8.0,
       children: _makeChips(),

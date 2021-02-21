@@ -26,6 +26,19 @@ class AppStrings {
   static const String medicineSaveSuccess = '保存しました！';
   static const String medicineSaveError = '保存に失敗しました。';
 
+  static const String conditionPageTitle = '体調管理';
+  static const String conditionOverview = 'この画面では体調に関する症状を登録・編集できます。';
+  static const String conditionDetail = '「頭痛」や「腹痛」など大まかな症状を登録し、細かい症状は日々の記録画面にある体調メモに書いていくことをオススメします。';
+  static const String conditionInputLabel = '症状名';
+  static const String conditionNewButton = '新しく登録する';
+  static const String conditionNewDialogTitle = '新規登録';
+  static const String conditionNewDialogDetail = '新しい症状名を登録します。よろしいですか？';
+  static const String conditionNewDialogSuccess = '登録が完了しました';
+  static const String conditionEditButton = '症状名を修正する';
+  static const String conditionEditDialogTitle = '症状名修正';
+  static const String conditionEditDialogDetail = '既存の症状名を修正します。これまで記録時に選択してきた症状名も全て更新されるので注意してください。修正しますか？';
+  static const String conditionEditDialogSuccess = '修正が完了しました';
+
   static const String settingsPageTitle = '設定';
   static const String settingsAppVersionLabel = 'アプリバージョン';
   static const String settingsChangeAppThemeLabel = 'テーマ切り替え';

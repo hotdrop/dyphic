@@ -65,6 +65,7 @@ class _AppTextFieldState extends State<AppTextField> {
 
   TextFormField _createTextFormField() {
     return TextFormField(
+      textCapitalization: TextCapitalization.words,
       decoration: InputDecoration(
         labelText: label,
         border: const OutlineInputBorder(

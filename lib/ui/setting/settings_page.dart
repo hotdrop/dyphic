@@ -1,3 +1,4 @@
+import 'package:dyphic/ui/widget/app_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -37,7 +38,7 @@ class SettingsPage extends StatelessWidget {
       children: [
         _rowAppVersion(context),
         _rowThemeModeSwitch(context),
-        Divider(color: Theme.of(context).accentColor),
+        DividerThemeColor.create(),
       ],
     );
   }

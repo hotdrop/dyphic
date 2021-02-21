@@ -8,6 +8,10 @@ class AppTheme {
     accentColor: Colors.lightBlue,
     primaryColorDark: Colors.indigoAccent,
     backgroundColor: Colors.white,
+    buttonTheme: ButtonThemeData(
+      buttonColor: Colors.lightBlue,
+      textTheme: ButtonTextTheme.accent,
+    ),
   );
 
   static final ThemeData dark = ThemeData.dark().copyWith(

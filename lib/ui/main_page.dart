@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'package:dyphic/ui/condition/condition_page.dart';
 import 'package:dyphic/common/app_strings.dart';
 import 'package:dyphic/ui/calender/calendar_page.dart';
 import 'package:dyphic/ui/medicine/medicine_page.dart';
@@ -24,7 +25,11 @@ class _MainPageState extends State<MainPage> {
         elevation: 12.0,
         type: BottomNavigationBarType.fixed,
         showUnselectedLabels: false,
-        items: _allDestinations.map((item) => BottomNavigationBarItem(label: item.title, icon: Icon(item.icon))).toList(),
+        items: _allDestinations
+            .map(
+              (item) => BottomNavigationBarItem(label: item.title, icon: Icon(item.icon)),
+            )
+            .toList(),
         onTap: (i) {
           setState(() {
             _currentIdx = i;
@@ -40,6 +45,8 @@ class _MainPageState extends State<MainPage> {
         return CalenderPage();
       case 1:
         return MedicinePage();
+      case 2:
+        return ConditionPage();
       default:
         return SettingsPage();
     }
@@ -55,5 +62,6 @@ class Destination {
 const _allDestinations = <Destination>[
   Destination(AppStrings.calenderPageTitle, Icons.calendar_today),
   Destination(AppStrings.medicinePageTitle, Icons.medical_services),
+  Destination(AppStrings.conditionPageTitle, Icons.sentiment_satisfied_rounded),
   Destination(AppStrings.settingsPageTitle, Icons.settings),
 ];
