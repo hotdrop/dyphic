@@ -81,14 +81,16 @@ class RecordPage extends StatelessWidget {
     final viewModel = Provider.of<RecordViewModel>(context);
     return Card(
       child: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.only(left: 4, right: 4, top: 12),
         child: Column(
           children: [
             _medicineViewTitle(),
             MedicineChips(
-              viewModel.record.medicines,
-              addOnTap: () {
-                // TODO 全部表示してChoiceChipsにする
+              medicines: viewModel.allMedicines,
+              selectedNames: viewModel.takenMedicineNames,
+              onChange: (selectedNamesSet) {
+                final list = selectedNamesSet.toList();
+                viewModel.changeSelectedMedicine(list);
               },
             ),
           ],

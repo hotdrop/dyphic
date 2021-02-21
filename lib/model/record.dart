@@ -4,7 +4,6 @@ import 'package:intl/intl.dart';
 
 class Record {
   Record({
-    // @required this.id,
     @required this.date,
     @required this.cycle,
     this.morningTemperature,
@@ -18,7 +17,6 @@ class Record {
     this.memo,
   });
 
-  // final int id;
   final DateTime date;
   final int cycle;
   final double morningTemperature;

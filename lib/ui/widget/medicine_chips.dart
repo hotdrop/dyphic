@@ -1,11 +1,44 @@
 import 'package:dyphic/model/medicine.dart';
 import 'package:flutter/material.dart';
 
-class MedicineChips extends StatelessWidget {
-  const MedicineChips(this._medicines, {@required this.addOnTap});
+class MedicineChips extends StatefulWidget {
+  const MedicineChips({
+    @required this.medicines,
+    @required this.selectedNames,
+    @required this.onChange,
+  });
 
-  final List<Medicine> _medicines;
-  final Function addOnTap;
+  final List<Medicine> medicines;
+  final List<String> selectedNames;
+  final void Function(Set<String>) onChange;
+
+  @override
+  _MedicineChipsState createState() => _MedicineChipsState();
+}
+
+class _MedicineChipsState extends State<MedicineChips> {
+  Set<String> _selectedNames;
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.selectedNames.isNotEmpty) {
+      _selectedNames = widget.selectedNames.toSet();
+    } else {
+      _selectedNames = <String>{};
+    }
+  }
+
+  void updateState(bool isSelect, String name) {
+    setState(() {
+      if (isSelect) {
+        _selectedNames.add(name);
+      } else {
+        _selectedNames.remove(name);
+      }
+      widget.onChange(_selectedNames);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -13,31 +46,19 @@ class MedicineChips extends StatelessWidget {
       alignment: WrapAlignment.start,
       direction: Axis.horizontal,
       spacing: 8.0,
-      children: _chips(),
+      children: _makeChips(),
     );
   }
 
-  List<Widget> _chips() {
-    List<Widget> widgets = [];
-    if (_medicines.isNotEmpty) {
-      widgets.addAll(_medicines.map((e) => _makeActionChip(e)));
-    }
-    widgets.add(
-      IconButton(
-        icon: Icon(Icons.add_circle_outline),
-        onPressed: () => addOnTap(),
-      ),
-    );
-    return widgets;
-  }
-
-  Widget _makeActionChip(Medicine medicine) {
-    return ActionChip(
-      label: Text(medicine.name),
-      tooltip: medicine.memo,
-      onPressed: () {
-        // TODO 飲んだ薬から削除する
-      },
-    );
+  List<Widget> _makeChips() {
+    return widget.medicines.map((e) => e.name).map((name) {
+      return FilterChip(
+        key: ValueKey<String>(name),
+        label: Text(name),
+        selected: _selectedNames.contains(name) ? true : false,
+        onSelected: (isSelect) => updateState(isSelect, name),
+        selectedColor: Theme.of(context).accentColor.withOpacity(0.6),
+      );
+    }).toList();
   }
 }
