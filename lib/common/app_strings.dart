@@ -7,6 +7,8 @@ class AppStrings {
   static const String recordTemperatureNight = '夜の体温';
   static const String recordTemperatureUnit = '度';
   static const String recordTemperatureNonSet = '未登録';
+  static const String recordConditionTitle = '今日の体調';
+  static const String recordConditionMemoTitle = '体調メモ';
   static const String recordMedicalTitle = '飲んだ薬';
 
   static const String medicinePageTitle = 'お薬';

@@ -1,6 +1,10 @@
+import 'package:dyphic/common/app_colors.dart';
 import 'package:dyphic/common/app_strings.dart';
 import 'package:dyphic/model/record.dart';
+import 'package:dyphic/ui/widget/app_chips.dart';
 import 'package:dyphic/ui/widget/app_temperature.dart';
+import 'package:dyphic/ui/widget/app_text_field.dart';
+import 'package:dyphic/ui/widget/app_widget.dart';
 import 'package:dyphic/ui/widget/medicine_chips.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -44,10 +48,11 @@ class RecordPage extends StatelessWidget {
       child: ListView(
         children: <Widget>[
           _temperatureViewArea(context),
-          // _conditionViewArea(),
+          _conditionViewArea(context),
           _medicineViewArea(context),
           // _foodViewArea(),
           // _memoView(),
+          // _saveButton(),
         ],
       ),
     );
@@ -55,58 +60,82 @@ class RecordPage extends StatelessWidget {
 
   Widget _temperatureViewArea(BuildContext context) {
     final viewModel = Provider.of<RecordViewModel>(context);
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: <Widget>[
-            AppTemperature.morning(
-                temperature: viewModel.record.morningTemperature,
-                onTap: () {
-                  // TODO 値更新
-                }),
-            AppTemperature.night(
-                temperature: viewModel.record.nightTemperature,
-                onTap: () {
-                  // TODO 値更新
-                }),
-          ],
-        ),
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: <Widget>[
+          AppTemperature.morning(
+              temperature: viewModel.record.morningTemperature,
+              onTap: () {
+                // TODO 値更新
+              }),
+          AppTemperature.night(
+              temperature: viewModel.record.nightTemperature,
+              onTap: () {
+                // TODO 値更新
+              }),
+        ],
+      ),
+    );
+  }
+
+  Widget _conditionViewArea(BuildContext context) {
+    final viewModel = Provider.of<RecordViewModel>(context);
+    return Padding(
+      padding: const EdgeInsets.only(left: 4, right: 4, top: 12),
+      child: Column(
+        children: [
+          _contentsTitle(
+            title: AppStrings.recordConditionTitle,
+            icon: Icon(Icons.sentiment_satisfied_rounded, color: AppColors.condition),
+          ),
+          DividerThemeColor.createWithPadding(),
+          AppChips(
+            names: viewModel.allConditionNames,
+            selectedNames: viewModel.selectConditionNames,
+            selectedColor: AppColors.condition,
+            onChange: (selectedNamesSet) {
+              viewModel.changeSelectedMedicine(selectedNamesSet.toList());
+            },
+          ),
+          _contentsTitle(
+            title: AppStrings.recordConditionMemoTitle,
+            icon: Icon(Icons.note, color: AppColors.condition),
+          ),
+          SizedBox(height: 8),
+          AppTextField.multiLine(
+            limitLine: 3,
+            initValue: viewModel.record.conditionMemo,
+            onChanged: null, // TODO 未実装
+          ),
+        ],
       ),
     );
   }
 
   Widget _medicineViewArea(BuildContext context) {
     final viewModel = Provider.of<RecordViewModel>(context);
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.only(left: 4, right: 4, top: 12),
-        child: Column(
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                SizedBox(width: 28, height: 28, child: Image.asset('res/images/ic_medical.png')),
-                SizedBox(width: 8),
-                Text(AppStrings.recordMedicalTitle),
-              ],
-            ),
-            MedicineChips(
-              medicines: viewModel.allMedicines,
-              selectedNames: viewModel.takenMedicineNames,
-              onChange: (selectedNamesSet) {
-                viewModel.changeSelectedMedicine(selectedNamesSet.toList());
-              },
-            ),
-          ],
-        ),
+    return Padding(
+      padding: const EdgeInsets.only(left: 4, right: 4, top: 12),
+      child: Column(
+        children: [
+          _contentsTitle(
+            title: AppStrings.recordMedicalTitle,
+            icon: Icon(Icons.medical_services, color: AppColors.medicine),
+          ),
+          DividerThemeColor.createWithPadding(),
+          AppChips(
+            names: viewModel.allMedicineNames,
+            selectedNames: viewModel.takenMedicineNames,
+            selectedColor: AppColors.medicine,
+            onChange: (selectedNamesSet) {
+              viewModel.changeSelectedMedicine(selectedNamesSet.toList());
+            },
+          ),
+        ],
       ),
     );
-  }
-
-  Widget _conditionViewArea() {
-    // TODO
   }
 
   Widget _foodViewArea() {
@@ -115,5 +144,16 @@ class RecordPage extends StatelessWidget {
 
   Widget _memoView() {
     // TODO
+  }
+
+  Widget _contentsTitle({String title, Icon icon}) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: <Widget>[
+        icon,
+        SizedBox(width: 8),
+        Text(title),
+      ],
+    );
   }
 }

@@ -13,6 +13,9 @@ class ConditionApi {
     return [
       Condition(1, '頭痛'),
       Condition(2, '腹痛'),
+      Condition(3, '倦怠感'),
+      Condition(4, '便秘'),
+      Condition(5, '筋肉痛'),
     ];
   }
 

@@ -1,4 +1,5 @@
 import 'package:dyphic/model/calendar_event.dart';
+import 'package:dyphic/model/condition.dart';
 import 'package:dyphic/model/medicine.dart';
 import 'package:dyphic/model/record.dart';
 
@@ -29,7 +30,7 @@ class RecordApi {
       morningTemperature: 36.5,
       nightTemperature: 36.7,
       medicines: getMedicines,
-      conditions: ['頭痛', '倦怠感', '便秘'],
+      conditions: [Condition(1, '頭痛'), Condition(3, '倦怠感'), Condition(4, '便秘')],
       conditionMemo: '便秘は7日目・・',
       breakfast: 'パン',
       lunch: 'うどん',

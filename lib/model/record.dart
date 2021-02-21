@@ -1,3 +1,4 @@
+import 'package:dyphic/model/condition.dart';
 import 'package:flutter/material.dart';
 import 'package:dyphic/model/medicine.dart';
 import 'package:intl/intl.dart';
@@ -22,7 +23,7 @@ class Record {
   final double morningTemperature;
   final double nightTemperature;
   final List<Medicine> medicines;
-  final List<String> conditions;
+  final List<Condition> conditions;
   final String conditionMemo;
   final String breakfast;
   final String lunch;

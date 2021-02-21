@@ -16,9 +16,10 @@ class AppTextField extends StatefulWidget {
   factory AppTextField.multiLine({
     String initValue,
     bool isRequired = false,
+    int limitLine = 6,
     @required void Function(String) onChanged,
   }) {
-    return AppTextField._('', initValue, isRequired, 6, onChanged);
+    return AppTextField._('', initValue, isRequired, limitLine, onChanged);
   }
 
   final String label;
