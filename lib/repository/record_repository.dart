@@ -19,9 +19,9 @@ class RecordRepository {
     return recordIds;
   }
 
-  Future<Record> find(int id) async {
-    AppLogger.i('id $id の記録情報を取得します。');
-    return await _recordApi.find(id);
+  Future<Record> find(DateTime date) async {
+    AppLogger.i('${Record.makeRecordId(date)} の記録情報を取得します。');
+    return await _recordApi.find(date);
   }
 
   Future<void> save(Record record) async {

@@ -1,3 +1,4 @@
+import 'package:dyphic/model/record.dart';
 import 'package:flutter/material.dart';
 
 class CalendarEvent {
@@ -5,31 +6,37 @@ class CalendarEvent {
     @required this.date,
     @required this.type,
     @required this.name,
-    @required this.recordId,
+    @required this.haveRecord,
   });
 
   factory CalendarEvent.create(Event event, EventRecord record) {
-    return CalendarEvent(date: event.date, type: event.type, name: event.name, recordId: record.recordId);
+    return CalendarEvent(date: event.date, type: event.type, name: event.name, haveRecord: true);
   }
 
   factory CalendarEvent.createOnlyRecord(EventRecord record) {
-    return CalendarEvent(date: record.date, type: EventType.none, name: '', recordId: record.recordId);
+    return CalendarEvent(date: record.date, type: EventType.none, name: '', haveRecord: true);
   }
 
   factory CalendarEvent.createOnlyEvent(Event event) {
-    return CalendarEvent(date: event.date, type: event.type, name: event.name, recordId: noneRecordId);
+    return CalendarEvent(date: event.date, type: event.type, name: event.name, haveRecord: false);
   }
 
-  static int noneRecordId = 0;
+  factory CalendarEvent.createEmpty(DateTime date) {
+    return CalendarEvent(date: date, type: null, name: null, haveRecord: false);
+  }
 
   final DateTime date;
   final EventType type;
   final String name;
-  final int recordId;
+  final bool haveRecord;
 
   bool typeMedical() => type == EventType.hospital;
   bool typeInjection() => type == EventType.injection;
-  bool isRecord() => recordId != noneRecordId;
+  bool isRecord() => haveRecord;
+
+  static bool isSameDay(DateTime date1, DateTime date2) {
+    return date1.year == date2.year && date1.month == date2.month && date1.day == date2.day;
+  }
 }
 
 enum EventType { none, hospital, injection }
@@ -61,9 +68,7 @@ class Event {
 class EventRecord {
   EventRecord({
     @required this.date,
-    @required this.recordId,
   });
 
   final DateTime date;
-  final int recordId;
 }

@@ -2,13 +2,17 @@ class AppStrings {
   static const String appTitle = '生活管理';
 
   static const String calenderPageTitle = 'カレンダー';
-  static const String recordPageTitle = '記録情報';
+
+  static const String recordTemperatureMorning = '朝の体温';
+  static const String recordTemperatureNight = '夜の体温';
+  static const String recordTemperatureUnit = '度';
+  static const String recordTemperatureNonSet = '未登録';
+  static const String recordMedicalTitle = '飲んだ薬';
 
   static const String medicinePageTitle = 'お薬';
   static const String medicinePageOralName = '内服薬';
   static const String medicinePageNotOralName = '頓服薬';
-  static const String medicineRegisterPageTitle = 'お薬情報登録';
-  static const String medicineEditPageTitle = 'お薬情報編集';
+  static const String medicineEditPageTitle = 'お薬情報';
   static const String medicineNameLabel = 'お薬名';
   static const String medicineOralLabel = '内服薬';
   static const String medicineNotOralLabel = '頓服薬';

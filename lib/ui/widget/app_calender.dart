@@ -1,3 +1,4 @@
+import 'package:dyphic/ui/calender/record/record_page.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:table_calendar/table_calendar.dart';
@@ -23,7 +24,16 @@ class _AppCalendarState extends State<AppCalendar> {
   void initState() {
     super.initState();
     _events = {};
-    widget.events.forEach((event) => _events[event.date] = [event]);
+    final nowDate = DateTime.now();
+    widget.events.forEach((event) {
+      _events[event.date] = [event];
+      if (CalendarEvent.isSameDay(nowDate, event.date)) {
+        _selectedItem = event;
+      }
+    });
+    if (_selectedItem == null) {
+      _selectedItem = CalendarEvent.createEmpty(nowDate);
+    }
     _calendarController = CalendarController();
   }
 
@@ -35,7 +45,7 @@ class _AppCalendarState extends State<AppCalendar> {
 
   void _onDaySelected(DateTime date, {CalendarEvent selectedItem}) {
     setState(() {
-      _selectedItem = selectedItem;
+      _selectedItem = selectedItem ?? CalendarEvent.createEmpty(date);
     });
   }
 
@@ -91,7 +101,7 @@ class _AppCalendarState extends State<AppCalendar> {
     if (event.typeInjection()) {
       markers.add(Positioned(bottom: -1, child: Icon(Icons.colorize, size: 20.0, color: Colors.red)));
     }
-    if (event.isRecord()) {
+    if (event.haveRecord) {
       markers.add(Positioned(right: -2, bottom: -2, child: Icon(Icons.check_circle, size: 20.0, color: Colors.green)));
     }
 
@@ -114,7 +124,22 @@ class _AppCalendarState extends State<AppCalendar> {
         ),
         child: Padding(
           padding: EdgeInsets.all(8.0),
-          child: Text(_selectedItem != null ? _selectedItem.name : '未登録です！登録しましょう！'),
+          child: Column(
+            children: [
+              Text(_selectedItem.haveRecord ? _selectedItem.name : '未登録です！登録しましょう！'),
+              OutlineButton(
+                child: Text('編集画面へ'),
+                onPressed: () async {
+                  final selectDate = _selectedItem.date;
+                  bool isUpdate = await Navigator.of(context).push<bool>(
+                        MaterialPageRoute(builder: (_) => RecordPage(selectDate)),
+                      ) ??
+                      false;
+                  // TODO このボタンイベントは呼び元に委ねた方がいいか
+                },
+              ),
+            ],
+          ),
         ),
       ),
     );

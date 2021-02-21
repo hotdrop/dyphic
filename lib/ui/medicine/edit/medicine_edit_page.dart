@@ -18,41 +18,30 @@ class MedicineEditPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider<MedicineEditViewModel>(
-      create: (_) => MedicineEditViewModel.create()..init(_medicine),
-      builder: (context, _) {
-        final pageState = context.select<MedicineEditViewModel, PageLoadingState>((vm) => vm.pageState);
-        if (pageState.isLoadSuccess) {
-          return _loadSuccessView(context);
-        } else {
-          return _nowLoadingView();
-        }
-      },
-      child: _nowLoadingView(),
+    return Scaffold(
+      appBar: AppBar(centerTitle: true, title: Text(AppStrings.medicineEditPageTitle)),
+      body: ChangeNotifierProvider<MedicineEditViewModel>(
+        create: (_) => MedicineEditViewModel.create()..init(_medicine),
+        builder: (context, _) {
+          final pageState = context.select<MedicineEditViewModel, PageLoadingState>((vm) => vm.pageState);
+          if (pageState.isLoadSuccess) {
+            return _loadSuccessView(context);
+          } else {
+            return _nowLoadingView();
+          }
+        },
+        child: _nowLoadingView(),
+      ),
     );
   }
 
   Widget _nowLoadingView() {
-    return Scaffold(
-      appBar: AppBar(centerTitle: true, title: const Text(AppStrings.medicinePageTitle)),
-      body: Center(
-        child: CircularProgressIndicator(),
-      ),
+    return Center(
+      child: CircularProgressIndicator(),
     );
   }
 
   Widget _loadSuccessView(BuildContext context) {
-    final title = _medicine.name.isEmpty ? AppStrings.medicineRegisterPageTitle : AppStrings.medicineEditPageTitle;
-    return Scaffold(
-      appBar: AppBar(
-        centerTitle: true,
-        title: Text(title),
-      ),
-      body: _contentsView(context),
-    );
-  }
-
-  Widget _contentsView(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(left: 32.0, right: 32.0, top: 16.0),
       child: ListView(
