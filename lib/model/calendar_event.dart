@@ -1,4 +1,3 @@
-import 'package:dyphic/model/record.dart';
 import 'package:flutter/material.dart';
 
 class CalendarEvent {

@@ -39,7 +39,10 @@ class MedicineCardView extends StatelessWidget {
               imageUrl: imagePath,
               fit: BoxFit.fill,
               placeholder: (context, url) => CircularProgressIndicator(),
-              errorWidget: (context, url, dynamic error) => Image.asset('res/images/medicine_default.png', fit: BoxFit.cover),
+              errorWidget: (context, url, dynamic error) => Image.asset(
+                'res/images/medicine_default.png',
+                fit: BoxFit.cover,
+              ),
             ),
           ),
         ],

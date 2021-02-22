@@ -46,15 +46,15 @@ class _AppChipsState extends State<AppChips> {
     return Wrap(
       direction: Axis.horizontal,
       spacing: 8.0,
-      children: _makeChips(),
+      children: _makeChips(context),
     );
   }
 
-  List<Widget> _makeChips() {
+  List<Widget> _makeChips(BuildContext context) {
     return widget.names.map((name) {
       return FilterChip(
         key: ValueKey<String>(name),
-        label: Text(name),
+        label: Text(name, style: TextStyle(fontSize: 12.0)),
         selected: _selectedNames.contains(name) ? true : false,
         onSelected: (isSelect) => updateState(isSelect, name),
         selectedColor: widget.selectedColor,
