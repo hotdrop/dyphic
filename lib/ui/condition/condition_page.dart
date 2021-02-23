@@ -34,7 +34,7 @@ class ConditionPage extends StatelessWidget {
   }
 
   Widget _loadSuccessView(BuildContext context) {
-    return Column(
+    return ListView(
       children: [
         _overview(context),
         _clearButton(context),
@@ -123,6 +123,8 @@ class ConditionPage extends StatelessWidget {
         border: OutlineInputBorder(),
         filled: true,
       ),
+      autovalidateMode: AutovalidateMode.always,
+      validator: (String inputVal) => viewModel.inputValidator(inputVal),
       onFieldSubmitted: (String value) {
         viewModel.input(value);
       },

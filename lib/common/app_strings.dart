@@ -39,6 +39,7 @@ class AppStrings {
   static const String conditionOverview = 'この画面では体調に関する症状を登録・編集できます。';
   static const String conditionDetail = '「頭痛」や「腹痛」など大まかな症状を登録し、細かい症状は日々の記録画面にある体調メモに書いていくことをオススメします。';
   static const String conditionInputLabel = '症状名';
+  static const String conditionInputDuplicateMessage = 'この症状名は既に登録されています。';
   static const String conditionNewButton = '新しく登録する';
   static const String conditionNewDialogTitle = '新規登録';
   static const String conditionNewDialogDetail = '新しい症状名を登録します。よろしいですか？';

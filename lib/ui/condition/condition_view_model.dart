@@ -1,4 +1,5 @@
 import 'package:dyphic/common/app_logger.dart';
+import 'package:dyphic/common/app_strings.dart';
 import 'package:dyphic/model/condition.dart';
 import 'package:dyphic/repository/condition_repository.dart';
 import 'package:dyphic/ui/notifier_view_model.dart';
@@ -22,7 +23,8 @@ class ConditionViewModel extends NotifierViewModel {
 
   TextEditingController _controller = TextEditingController();
   TextEditingController get editController => _controller;
-  bool get enableOnSave => _controller.text.isNotEmpty;
+  bool _enableOnSave = false;
+  bool get enableOnSave => _enableOnSave;
 
   Future<void> _init() async {
     conditions = await _repository.findAll();
@@ -32,7 +34,25 @@ class ConditionViewModel extends NotifierViewModel {
   void selectCondition(Condition con) {
     _selectedCondition = con;
     _controller.text = con.name;
+    _enableOnSave = true;
     notifyListeners();
+  }
+
+  String inputValidator(String inputVal) {
+    if (inputVal.isEmpty) {
+      _enableOnSave = false;
+      return null;
+    }
+
+    // 自分以外で入力値と重複する名前がある場合は重複エラー
+    Condition sameNameCondition = conditions.firstWhere((c) => c.name == inputVal, orElse: () => null);
+    if (sameNameCondition != null && sameNameCondition.id != _selectedCondition.id) {
+      _enableOnSave = false;
+      return AppStrings.conditionInputDuplicateMessage;
+    }
+
+    _enableOnSave = true;
+    return null;
   }
 
   void input(String name) {
@@ -46,7 +66,7 @@ class ConditionViewModel extends NotifierViewModel {
 
   Future<bool> onSave() async {
     AppLogger.d('${_controller.text} を保存します。');
-    // TODO 自身のID以外で同名が登録されていないか重複チェックする。
+
     final c = _selectedCondition.copyWith(newName: _controller.text);
     try {
       await _repository.save(c);
@@ -64,6 +84,7 @@ class ConditionViewModel extends NotifierViewModel {
 
   void clear() {
     _selectedCondition = Condition.empty();
+    _enableOnSave = false;
     _controller.clear();
     notifyListeners();
   }

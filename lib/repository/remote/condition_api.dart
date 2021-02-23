@@ -24,6 +24,7 @@ class ConditionApi {
   }
 
   Future<void> save(Condition condition) async {
+    // TODO Firebaseに保存する
     AppLogger.d('体調情報を保存します。\n${condition.toString()}');
   }
 }
