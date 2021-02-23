@@ -46,6 +46,7 @@ class ConditionViewModel extends NotifierViewModel {
 
   Future<bool> onSave() async {
     AppLogger.d('${_controller.text} を保存します。');
+    // TODO 自身のID以外で同名が登録されていないか重複チェックする。
     final c = _selectedCondition.copyWith(newName: _controller.text);
     try {
       await _repository.save(c);
