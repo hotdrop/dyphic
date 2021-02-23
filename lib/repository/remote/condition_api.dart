@@ -10,21 +10,20 @@ class ConditionApi {
 
   Future<List<Condition>> findAll() async {
     // TODO Firestoreから取得する
-    return [
+    final conditions = [
       Condition(1, '頭痛'),
       Condition(2, '腹痛'),
       Condition(3, '倦怠感'),
       Condition(4, '便秘'),
       Condition(5, '筋肉痛'),
     ];
+
+    AppLogger.d('お薬情報を全て取得しました。データ数: ${conditions.length}');
+
+    return conditions;
   }
 
   Future<void> save(Condition condition) async {
-    // TODO 登録/更新する
-    if (condition.exist) {
-      AppLogger.d('${condition.name} を更新します。');
-    } else {
-      AppLogger.d('${condition.name} を登録します。');
-    }
+    AppLogger.d('体調情報を保存します。\n${condition.toString()}');
   }
 }

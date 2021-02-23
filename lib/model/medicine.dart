@@ -18,4 +18,15 @@ class Medicine {
   final String memo;
   final String imagePath;
   final int order;
+
+  @override
+  String toString() {
+    return '''
+    name: $name
+    isOral: $isOral
+    memo: $memo
+    imagePath: $imagePath
+    order: $order
+    ''';
+  }
 }

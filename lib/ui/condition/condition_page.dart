@@ -151,15 +151,16 @@ class ConditionPage extends StatelessWidget {
     return RaisedButton(
       child: Text(buttonName, style: TextStyle(color: Colors.white)),
       onPressed: viewModel.enableOnSave
-          ? () {
-              AppDialog.createInfo(
+          ? () async {
+              final dialog = AppDialog.createInfo(
                 title: dialogTitle,
                 description: dialogDetail,
                 successMessage: dialogSuccessMessage,
-                errorMessage: viewModel.errorMessage,
+                errorMessage: AppStrings.conditionEditDialogError,
                 onOkPress: viewModel.onSave,
                 onSuccessOkPress: viewModel.refresh,
-              ).show(context);
+              );
+              await dialog.show(context);
             }
           : null,
     );

@@ -12,6 +12,10 @@ class AppStrings {
   static const String recordMedicalTitle = '飲んだ薬';
   static const String recordMealsTitle = '今日のご飯';
   static const String recordMemoTitle = '今日のメモ';
+  static const String recordSaveDialogTitle = '保存';
+  static const String recordSaveDialogDetail = 'この内容で保存します。よろしいですか？';
+  static const String recordSaveDialogSuccess = '保存しました。';
+  static const String recordSaveDialogError = 'エラーが発生しました。';
 
   static const String medicinePageTitle = 'お薬';
   static const String medicinePageOralName = '内服薬';
@@ -25,10 +29,11 @@ class AppStrings {
   static const String medicineImageOverviewLabel = 'カメラボタンでお薬の写真を撮って保存することができます。';
   static const String medicineStartCameraLabel = 'カメラを起動する';
   static const String medicineSaveButton = 'この内容で保存する';
-  static const String medicineSaveAttention = 'この内容で保存します。よろしいですか？';
   static const String medicineNotSaveAttention = 'お薬の名前が未入力です。';
-  static const String medicineSaveSuccess = '保存しました！';
-  static const String medicineSaveError = '保存に失敗しました。';
+  static const String medicineSaveDialogTitle = '保存';
+  static const String medicineSaveDialogDetail = 'この内容で保存します。よろしいですか？';
+  static const String medicineSaveDialogSuccess = '保存しました。';
+  static const String medicineSaveDialogError = 'エラーが発生しました。';
 
   static const String conditionPageTitle = '体調管理';
   static const String conditionOverview = 'この画面では体調に関する症状を登録・編集できます。';
@@ -42,6 +47,7 @@ class AppStrings {
   static const String conditionEditDialogTitle = '症状名修正';
   static const String conditionEditDialogDetail = '既存の症状名を修正します。これまで記録時に選択してきた症状名も全て更新されるので注意してください。修正しますか？';
   static const String conditionEditDialogSuccess = '修正が完了しました';
+  static const String conditionEditDialogError = 'エラーが発生しました。';
 
   static const String settingsPageTitle = '設定';
   static const String settingsAppVersionLabel = 'アプリバージョン';

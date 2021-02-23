@@ -148,10 +148,10 @@ class MedicineEditPage extends StatelessWidget {
             return;
           }
           final dialog = AppDialog.createInfo(
-            title: AppStrings.medicineSaveButton,
-            description: AppStrings.medicineSaveAttention,
-            successMessage: AppStrings.medicineSaveSuccess,
-            errorMessage: viewModel.errorMessage,
+            title: AppStrings.medicineSaveDialogTitle,
+            description: AppStrings.medicineSaveDialogDetail,
+            successMessage: AppStrings.medicineSaveDialogSuccess,
+            errorMessage: AppStrings.medicineSaveDialogError,
             onOkPress: viewModel.save,
             onSuccessOkPress: () {
               Navigator.pop(context, true);

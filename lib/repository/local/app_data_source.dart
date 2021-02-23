@@ -1,3 +1,4 @@
+import 'package:dyphic/common/app_logger.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AppDataSource {
@@ -40,5 +41,7 @@ class AppDataSource {
 
   Future<DateTime> getPrevSaveEventDate() async {
     // TODO 前回イベント情報を保存した日付を取得する
+    final previousEventGetDate = DateTime.now();
+    AppLogger.i('前回イベント情報を保存した日付を取得しました。\n  取得した日付: $previousEventGetDate');
   }
 }

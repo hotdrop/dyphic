@@ -6,7 +6,6 @@ import 'package:intl/intl.dart';
 class Record {
   Record({
     @required this.date,
-    @required this.cycle,
     this.morningTemperature,
     this.nightTemperature,
     this.medicines,
@@ -19,7 +18,6 @@ class Record {
   });
 
   final DateTime date;
-  final int cycle;
   final double morningTemperature;
   final double nightTemperature;
   final List<Medicine> medicines;
@@ -37,5 +35,21 @@ class Record {
   static int makeRecordId(DateTime date) {
     final str = DateFormat('yyyyMMdd').format(date);
     return int.parse(str);
+  }
+
+  @override
+  String toString() {
+    return '''
+    date: $date
+    morningTemperature: $morningTemperature
+    nightTemperature: $nightTemperature
+    medicines: ${medicines.map((e) => e.name).toList()}
+    conditions: ${conditions.map((e) => e.name).toList()}
+    conditionMemo: $conditionMemo
+    breakfast: $breakfast
+    lunch: $lunch
+    dinner: $dinner
+    memo: $memo
+    ''';
   }
 }

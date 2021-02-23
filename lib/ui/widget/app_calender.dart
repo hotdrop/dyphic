@@ -1,3 +1,4 @@
+import 'package:dyphic/common/app_logger.dart';
 import 'package:dyphic/ui/calender/record/record_page.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -136,6 +137,9 @@ class _AppCalendarState extends State<AppCalendar> {
                       ) ??
                       false;
                   // TODO このボタンイベントは呼び元に委ねた方がいいか
+                  if (isUpdate) {
+                    AppLogger.d('記録情報が更新されました。');
+                  }
                 },
               ),
             ],

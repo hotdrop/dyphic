@@ -27,7 +27,7 @@ class CalendarViewModel extends NotifierViewModel {
     loadSuccess();
   }
 
-  List<CalendarEvent> _merge(List<Event> events, List<EventRecord> eventRecords) {
+  List<CalendarEvent> _merge(List<Event> events, List<EventRecordDate> eventRecords) {
     final eventMap = Map.fromIterables(events.map((e) => e.date), events.map((e) => e));
     final addedEventMap = <DateTime, bool>{};
     List<CalendarEvent> results = [];

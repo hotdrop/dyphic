@@ -1,4 +1,3 @@
-import 'package:dyphic/common/app_logger.dart';
 import 'package:dyphic/model/condition.dart';
 import 'package:dyphic/repository/remote/condition_api.dart';
 
@@ -13,9 +12,7 @@ class ConditionRepository {
   final ConditionApi _conditionApi;
 
   Future<List<Condition>> findAll() async {
-    final conditions = await _conditionApi.findAll();
-    AppLogger.i('ConditionApiでお薬情報を取得しました。データ数: ${conditions.length}');
-    return conditions;
+    return await _conditionApi.findAll();
   }
 
   Future<void> save(Condition condition) async {

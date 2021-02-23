@@ -2,6 +2,7 @@ import 'package:dyphic/common/app_colors.dart';
 import 'package:dyphic/common/app_strings.dart';
 import 'package:dyphic/model/record.dart';
 import 'package:dyphic/ui/widget/app_chips.dart';
+import 'package:dyphic/ui/widget/app_dialog.dart';
 import 'package:dyphic/ui/widget/app_meal_card.dart';
 import 'package:dyphic/ui/widget/app_temperature.dart';
 import 'package:dyphic/ui/widget/app_text_field.dart';
@@ -18,36 +19,44 @@ class RecordPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(centerTitle: true, title: Text(Record.formatDate(_date))),
-      body: ChangeNotifierProvider<RecordViewModel>(
-        create: (_) => RecordViewModel.create(_date),
-        builder: (context, _) {
-          final pageState = context.select<RecordViewModel, PageLoadingState>((vm) => vm.pageState);
-          if (pageState.isLoadSuccess) {
-            return _loadSuccessView(context);
-          } else {
-            return _nowLoadingView();
-          }
-        },
-        child: _nowLoadingView(),
-      ),
-      floatingActionButton: FloatingActionButton(
-        child: Icon(Icons.save),
-        onPressed: () {
-          // TODO 内容を保存する
-        },
-      ),
+    return ChangeNotifierProvider<RecordViewModel>(
+      create: (_) => RecordViewModel.create(_date),
+      builder: (context, _) {
+        final pageState = context.select<RecordViewModel, PageLoadingState>((vm) => vm.pageState);
+        if (pageState.isLoadSuccess) {
+          return _loadSuccessView(context);
+        } else {
+          return _nowLoadingView();
+        }
+      },
+      child: _nowLoadingView(),
     );
   }
 
   Widget _nowLoadingView() {
-    return Center(
-      child: CircularProgressIndicator(),
+    return Scaffold(
+      appBar: AppBar(
+        centerTitle: true,
+        title: Text(Record.formatDate(_date)),
+      ),
+      body: Center(
+        child: CircularProgressIndicator(),
+      ),
     );
   }
 
   Widget _loadSuccessView(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        centerTitle: true,
+        title: Text(Record.formatDate(_date)),
+      ),
+      body: _contentsView(context),
+      floatingActionButton: _saveFloatingActionButton(context),
+    );
+  }
+
+  Widget _contentsView(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(top: 4.0, left: 16.0, right: 16.0, bottom: 16.0),
       child: ListView(
@@ -75,14 +84,14 @@ class RecordPage extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: <Widget>[
           AppTemperature.morning(
-              temperature: viewModel.record.morningTemperature,
+              temperature: viewModel.inputRecord.morningTemperature,
               onTap: () {
-                // TODO 値更新
+                // TODO 入力ダイアログを出して値を更新する
               }),
           AppTemperature.night(
-              temperature: viewModel.record.nightTemperature,
+              temperature: viewModel.inputRecord.nightTemperature,
               onTap: () {
-                // TODO 値更新
+                // TODO 入力ダイアログを出して値を更新する
               }),
         ],
       ),
@@ -99,18 +108,20 @@ class RecordPage extends StatelessWidget {
         ),
         AppChips(
           names: viewModel.allConditionNames,
-          selectedNames: viewModel.selectConditionNames,
+          selectedNames: viewModel.inputRecord.selectConditionNames,
           selectedColor: AppColors.condition,
           onChange: (selectedNamesSet) {
-            viewModel.changeSelectedMedicine(selectedNamesSet.toList());
+            viewModel.changeSelectedCondition(selectedNamesSet.toList());
           },
         ),
         SizedBox(height: 8),
         AppTextField.multiLine(
           limitLine: 3,
-          initValue: viewModel.record.conditionMemo,
+          initValue: viewModel.inputRecord.conditionMemo,
           hintText: AppStrings.recordConditionMemoHint,
-          onChanged: null, // TODO 未実装
+          onChanged: (String inputVal) {
+            viewModel.inputConditionMemo(inputVal);
+          },
         ),
       ],
     );
@@ -126,7 +137,7 @@ class RecordPage extends StatelessWidget {
         ),
         AppChips(
           names: viewModel.allMedicineNames,
-          selectedNames: viewModel.takenMedicineNames,
+          selectedNames: viewModel.inputRecord.selectMedicineNames,
           selectedColor: AppColors.medicine,
           onChange: (selectedNamesSet) {
             viewModel.changeSelectedMedicine(selectedNamesSet.toList());
@@ -138,7 +149,6 @@ class RecordPage extends StatelessWidget {
 
   Widget _mealViewArea(BuildContext context) {
     final viewModel = Provider.of<RecordViewModel>(context);
-    final record = viewModel.record;
     return Column(
       children: [
         _contentsTitle(
@@ -153,25 +163,25 @@ class RecordPage extends StatelessWidget {
             children: [
               MealCard(
                 type: MealType.morning,
-                detail: record.breakfast,
+                detail: viewModel.inputRecord.breakfast,
                 onTap: () {
-                  // TODO テキストダイアログを表示する
+                  // TODO 入力ダイアログを出して値を更新する
                 },
               ),
               SizedBox(width: 8),
               MealCard(
                 type: MealType.lunch,
-                detail: record.lunch,
+                detail: viewModel.inputRecord.lunch,
                 onTap: () {
-                  // TODO テキストダイアログを表示する
+                  // TODO 入力ダイアログを出して値を更新する
                 },
               ),
               SizedBox(width: 8),
               MealCard(
                 type: MealType.dinner,
-                detail: record.dinner,
+                detail: viewModel.inputRecord.dinner,
                 onTap: () {
-                  // TODO テキストダイアログを表示する
+                  // TODO 入力ダイアログを出して値を更新する
                 },
               ),
             ],
@@ -192,10 +202,32 @@ class RecordPage extends StatelessWidget {
         SizedBox(height: 8),
         AppTextField.multiLine(
           limitLine: 10,
-          initValue: viewModel.record.memo,
-          onChanged: null, // TODO 未実装
+          initValue: viewModel.inputRecord.memo,
+          onChanged: (String inputVal) {
+            viewModel.inputMemo(inputVal);
+          },
         ),
       ],
+    );
+  }
+
+  Widget _saveFloatingActionButton(BuildContext context) {
+    final viewModel = Provider.of<RecordViewModel>(context);
+    return FloatingActionButton(
+      child: Icon(Icons.save),
+      onPressed: () async {
+        final dialog = AppDialog.createInfo(
+          title: AppStrings.recordSaveDialogTitle,
+          description: AppStrings.recordSaveDialogDetail,
+          successMessage: AppStrings.recordSaveDialogSuccess,
+          errorMessage: AppStrings.recordSaveDialogError,
+          onOkPress: viewModel.save,
+          onSuccessOkPress: () {
+            Navigator.pop(context, true);
+          },
+        );
+        await dialog.show(context);
+      },
     );
   }
 

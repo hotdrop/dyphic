@@ -8,11 +8,11 @@ class CalendarEvent {
     @required this.haveRecord,
   });
 
-  factory CalendarEvent.create(Event event, EventRecord record) {
+  factory CalendarEvent.create(Event event, EventRecordDate record) {
     return CalendarEvent(date: event.date, type: event.type, name: event.name, haveRecord: true);
   }
 
-  factory CalendarEvent.createOnlyRecord(EventRecord record) {
+  factory CalendarEvent.createOnlyRecord(EventRecordDate record) {
     return CalendarEvent(date: record.date, type: EventType.none, name: '', haveRecord: true);
   }
 
@@ -64,8 +64,8 @@ class Event {
 }
 
 /// データ取得時以外は使わない
-class EventRecord {
-  EventRecord({
+class EventRecordDate {
+  EventRecordDate({
     @required this.date,
   });
 

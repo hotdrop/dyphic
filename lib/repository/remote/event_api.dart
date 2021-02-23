@@ -1,3 +1,4 @@
+import 'package:dyphic/common/app_logger.dart';
 import 'package:dyphic/model/calendar_event.dart';
 
 class EventApi {
@@ -14,6 +15,7 @@ class EventApi {
     //    String json = await _service.readEventJson();
     //    return EventJson.parse(json)
     //  それ以外 []
+    AppLogger.d('Storageからイベント情報を取得しました。イベント数: 0');
     return [];
   }
 }

@@ -15,4 +15,9 @@ class Condition {
   Condition copyWith({String newName}) {
     return Condition(id, newName);
   }
+
+  @override
+  String toString() {
+    return ' id: $id \n name: $name';
+  }
 }

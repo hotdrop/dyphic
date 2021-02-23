@@ -24,9 +24,6 @@ class ConditionViewModel extends NotifierViewModel {
   TextEditingController get editController => _controller;
   bool get enableOnSave => _controller.text.isNotEmpty;
 
-  String _errorMessage = '';
-  String get errorMessage => _errorMessage;
-
   Future<void> _init() async {
     conditions = await _repository.findAll();
     loadSuccess();
@@ -55,7 +52,6 @@ class ConditionViewModel extends NotifierViewModel {
       return true;
     } catch (e, s) {
       await AppLogger.e('体調情報の保存に失敗しました。', e, s);
-      _errorMessage = '$e';
       return false;
     }
   }

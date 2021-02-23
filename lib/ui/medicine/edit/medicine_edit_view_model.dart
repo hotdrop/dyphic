@@ -21,9 +21,6 @@ class MedicineEditViewModel extends NotifierViewModel {
   String get imageFilePath => _inputItem.imagePath;
   bool get canSave => _inputItem.isCompletedRequiredFields();
 
-  String _errorMessage = '';
-  String get errorMessage => _errorMessage;
-
   void _init() {
     _inputItem = _InputItem.create(_originalMedicine);
     loadSuccess();
@@ -59,7 +56,6 @@ class MedicineEditViewModel extends NotifierViewModel {
       return true;
     } catch (e, s) {
       await AppLogger.e('お薬情報の保存に失敗しました。', e, s);
-      _errorMessage = '$e';
       return false;
     }
   }
