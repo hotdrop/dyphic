@@ -1,12 +1,16 @@
 import 'package:dyphic/common/app_logger.dart';
 import 'package:dyphic/model/medicine.dart';
+import 'package:dyphic/service/app_firebase.dart';
 
 class MedicineApi {
-  const MedicineApi._();
+  const MedicineApi._(this._appFirebase);
 
-  factory MedicineApi.create() {
-    return MedicineApi._();
+  factory MedicineApi.create({AppFirebase argFirebase}) {
+    final firebase = argFirebase ?? AppFirebase.getInstance();
+    return MedicineApi._(firebase);
   }
+
+  final AppFirebase _appFirebase;
 
   Future<List<Medicine>> findAll() async {
     // TODO Firestoreから取得

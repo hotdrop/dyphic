@@ -3,13 +3,17 @@ import 'package:dyphic/model/calendar_event.dart';
 import 'package:dyphic/model/condition.dart';
 import 'package:dyphic/model/medicine.dart';
 import 'package:dyphic/model/record.dart';
+import 'package:dyphic/service/app_firebase.dart';
 
 class RecordApi {
-  const RecordApi._();
+  const RecordApi._(this._appFirebase);
 
-  factory RecordApi.create() {
-    return RecordApi._();
+  factory RecordApi.create({AppFirebase argFirebase}) {
+    final firebase = argFirebase ?? AppFirebase.getInstance();
+    return RecordApi._(firebase);
   }
+
+  final AppFirebase _appFirebase;
 
   Future<List<EventRecord>> findEventRecords() async {
     // TODO Firestoreから必要なデータのみ取得する。接続できない場合は空を返す

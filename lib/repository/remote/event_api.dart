@@ -1,12 +1,16 @@
 import 'package:dyphic/common/app_logger.dart';
 import 'package:dyphic/model/calendar_event.dart';
+import 'package:dyphic/service/app_firebase.dart';
 
 class EventApi {
-  const EventApi._();
+  const EventApi._(this._appFirebase);
 
-  factory EventApi.create() {
-    return EventApi._();
+  factory EventApi.create({AppFirebase argFirebase}) {
+    final firebase = argFirebase ?? AppFirebase.getInstance();
+    return EventApi._(firebase);
   }
+
+  final AppFirebase _appFirebase;
 
   Future<List<Event>> findByLatest(DateTime prevSaveEventDate) async {
     // TODO storageのjson取得

@@ -38,7 +38,7 @@ class CalenderPage extends StatelessWidget {
     return AppCalendar(
       events: viewModel.calendarEvents,
       onReturnEditPage: (isUpdate) {
-        // TODO
+        // TODO 記録情報が更新されたらカレンダーをリロードする。いちいち全部リロードは効率悪いので対象データだけにしたい。
         if (isUpdate) {
           AppLogger.d('記録情報が更新されました。');
         } else {

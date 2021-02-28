@@ -1,12 +1,16 @@
 import 'package:dyphic/common/app_logger.dart';
 import 'package:dyphic/model/condition.dart';
+import 'package:dyphic/service/app_firebase.dart';
 
 class ConditionApi {
-  const ConditionApi._();
+  const ConditionApi._(this._appFirebase);
 
-  factory ConditionApi.create() {
-    return ConditionApi._();
+  factory ConditionApi.create({AppFirebase argFirebase}) {
+    final firebase = argFirebase ?? AppFirebase.getInstance();
+    return ConditionApi._(firebase);
   }
+
+  final AppFirebase _appFirebase;
 
   Future<List<Condition>> findAll() async {
     // TODO Firestoreから取得する
