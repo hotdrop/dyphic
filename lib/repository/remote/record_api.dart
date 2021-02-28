@@ -11,14 +11,24 @@ class RecordApi {
     return RecordApi._();
   }
 
-  Future<List<EventRecordDate>> findEventDates() async {
-    // TODO Firestoreからdateだけ取得する。接続できない場合は空を返す
-    final eventRecordDates = [
-      EventRecordDate(date: DateTime(2021, 2, 10)),
-      EventRecordDate(date: DateTime(2021, 2, 11)),
+  Future<List<EventRecord>> findEventRecords() async {
+    // TODO Firestoreから必要なデータのみ取得する。接続できない場合は空を返す
+    final eventRecords = [
+      EventRecord(
+        date: DateTime(2021, 2, 10),
+        conditions: ['腹痛', '胃痛', '筋肉痛'],
+        medicines: ['ビオフェルミン', 'キャベジン'],
+        memo: null,
+      ),
+      EventRecord(
+        date: DateTime(2021, 2, 11),
+        conditions: ['腹痛'],
+        medicines: ['ビオフェルミン'],
+        memo: 'アイウエオアイウエオアイウエオアイウエオアイウエオアイウエオアイウエオアイウエオアイウエオアイウエオ',
+      ),
     ];
-    AppLogger.d('記録情報が登録された日付を全て取得しました。登録数: ${eventRecordDates.length}');
-    return eventRecordDates;
+    AppLogger.d('記録情報が登録された日付を全て取得しました。登録数: ${eventRecords.length}');
+    return eventRecords;
   }
 
   Future<Record> find(DateTime date) async {

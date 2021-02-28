@@ -12,8 +12,8 @@ class RecordRepository {
 
   final RecordApi _recordApi;
 
-  Future<List<EventRecordDate>> findIds() async {
-    return await _recordApi.findEventDates();
+  Future<List<EventRecord>> findEventRecords() async {
+    return await _recordApi.findEventRecords();
   }
 
   Future<Record> find(DateTime date) async {

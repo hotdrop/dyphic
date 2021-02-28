@@ -2,6 +2,9 @@ class AppStrings {
   static const String appTitle = '生活管理';
 
   static const String calenderPageTitle = 'カレンダー';
+  static const String calenderNoEvent = '予定なし';
+  static const String calenderUnRegisterLabel = 'この日の記録は未登録です。\n[記録情報へ]ボタンをタップして記録しましょう。';
+  static const String calenderRecordEditButton = '記録情報へ';
 
   static const String recordTemperatureMorning = '朝の体温';
   static const String recordTemperatureNight = '夜の体温';

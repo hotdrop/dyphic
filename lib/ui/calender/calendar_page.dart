@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import 'package:dyphic/ui/widget/app_calender.dart';
+import 'package:dyphic/ui/calender/calendar_view_model.dart';
 import 'package:dyphic/model/page_state.dart';
 import 'package:dyphic/common/app_strings.dart';
-import 'package:dyphic/ui/calender/calendar_view_model.dart';
-import 'package:dyphic/ui/widget/app_calender.dart';
 
 class CalenderPage extends StatelessWidget {
   @override

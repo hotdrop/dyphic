@@ -39,6 +39,7 @@ class SettingsPage extends StatelessWidget {
         _rowAppVersion(context),
         _rowThemeModeSwitch(context),
         DividerThemeColor.create(),
+        // TODO ログイン機能を追加する
       ],
     );
   }

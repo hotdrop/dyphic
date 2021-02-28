@@ -1,5 +1,7 @@
 import 'package:dyphic/common/app_logger.dart';
+import 'package:dyphic/common/app_strings.dart';
 import 'package:dyphic/ui/calender/record/record_page.dart';
+import 'package:dyphic/ui/widget/app_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:table_calendar/table_calendar.dart';
@@ -102,7 +104,7 @@ class _AppCalendarState extends State<AppCalendar> {
     if (event.typeInjection()) {
       markers.add(Positioned(bottom: -1, child: Icon(Icons.colorize, size: 20.0, color: Colors.red)));
     }
-    if (event.haveRecord) {
+    if (event.haveRecord()) {
       markers.add(Positioned(right: -2, bottom: -2, child: Icon(Icons.check_circle, size: 20.0, color: Colors.green)));
     }
 
@@ -114,38 +116,83 @@ class _AppCalendarState extends State<AppCalendar> {
   ///
   Widget _buildDetailContents(BuildContext context) {
     final appSettings = Provider.of<AppSettings>(context);
-    // TODO レイアウトちゃんと考える
-    return SingleChildScrollView(
-      child: Container(
-        width: double.infinity,
-        margin: const EdgeInsets.all(16.0),
-        decoration: BoxDecoration(
-          border: Border.all(width: 0.8, color: appSettings.isDarkMode ? Colors.white : Colors.black),
-          borderRadius: BorderRadius.circular(12.0),
-        ),
+    return Container(
+      width: double.infinity,
+      height: 200,
+      margin: const EdgeInsets.all(8.0),
+      decoration: BoxDecoration(
+        border: Border.all(width: 0.8, color: appSettings.isDarkMode ? Colors.white : Colors.black),
+        borderRadius: BorderRadius.circular(12.0),
+      ),
+      child: SingleChildScrollView(
         child: Padding(
           padding: EdgeInsets.all(8.0),
           child: Column(
             children: [
-              Text(_selectedItem.haveRecord ? _selectedItem.name : '未登録です！登録しましょう！'),
-              OutlineButton(
-                child: Text('編集画面へ'),
-                onPressed: () async {
-                  final selectDate = _selectedItem.date;
-                  bool isUpdate = await Navigator.of(context).push<bool>(
-                        MaterialPageRoute(builder: (_) => RecordPage(selectDate)),
-                      ) ??
-                      false;
-                  // TODO このボタンイベントは呼び元に委ねた方がいいか
-                  if (isUpdate) {
-                    AppLogger.d('記録情報が更新されました。');
-                  }
-                },
-              ),
+              _labelEventInfo(),
+              DividerThemeColor.createWithPadding(),
+              _labelRecordInfo(),
+              DividerThemeColor.createWithPadding(),
+              _editButton(),
             ],
           ),
         ),
       ),
+    );
+  }
+
+  Widget _labelEventInfo() {
+    return Center(
+      child: Text(_selectedItem.name ?? AppStrings.calenderNoEvent),
+    );
+  }
+
+  Widget _labelRecordInfo() {
+    final widgets = <Widget>[];
+    if (_selectedItem.haveRecord()) {
+      widgets.add(_labelConditions());
+      widgets.add(_labelMedicines());
+      widgets.add(_labelMemo());
+    } else {
+      widgets.add(Text(AppStrings.calenderUnRegisterLabel));
+    }
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: widgets,
+    );
+  }
+
+  Widget _labelConditions() {
+    return Text('体調: ${_selectedItem.toStringConditions()}');
+  }
+
+  Widget _labelMedicines() {
+    return Text('飲んだ薬: ${_selectedItem.toStringMedicines()}');
+  }
+
+  Widget _labelMemo() {
+    return Text(
+      'メモ: ${_selectedItem.getMemo()}',
+      maxLines: 2,
+      overflow: TextOverflow.ellipsis,
+    );
+  }
+
+  Widget _editButton() {
+    return OutlineButton(
+      child: Text(AppStrings.calenderRecordEditButton),
+      onPressed: () async {
+        final selectDate = _selectedItem.date;
+        bool isUpdate = await Navigator.of(context).push<bool>(
+              MaterialPageRoute(builder: (_) => RecordPage(selectDate)),
+            ) ??
+            false;
+        // TODO このボタンイベントは呼び元に委ねた方がいいか
+        if (isUpdate) {
+          AppLogger.d('記録情報が更新されました。');
+          // 更新する
+        }
+      },
     );
   }
 }
