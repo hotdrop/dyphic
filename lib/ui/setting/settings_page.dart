@@ -1,3 +1,4 @@
+import 'package:dyphic/ui/widget/app_dialog.dart';
 import 'package:dyphic/ui/widget/app_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -34,12 +35,16 @@ class SettingsPage extends StatelessWidget {
   }
 
   Widget _loadSuccessView(BuildContext context) {
+    final loggedIn = context.select<SettingsViewModel, bool>((vm) => vm.loggedIn);
     return ListView(
       children: [
         _rowAppVersion(context),
         _rowThemeModeSwitch(context),
         DividerThemeColor.create(),
-        // TODO ログイン機能を追加する
+        _rowAccountInfo(context),
+        DividerThemeColor.create(),
+        if (loggedIn) _logoutButton(context),
+        if (!loggedIn) _loginButton(context),
       ],
     );
   }
@@ -61,6 +66,53 @@ class SettingsPage extends StatelessWidget {
       trailing: Switch(
         onChanged: (isDark) => appSettings.changeTheme(isDark),
         value: appSettings.isDarkMode,
+      ),
+    );
+  }
+
+  Widget _rowAccountInfo(BuildContext context) {
+    final viewModel = Provider.of<SettingsViewModel>(context);
+    return ListTile(
+      leading: const Icon(Icons.account_circle, size: 40.0),
+      title: Text(viewModel.getLoginEmail()),
+      subtitle: Text(viewModel.getLoginUserName()),
+    );
+  }
+
+  Widget _loginButton(BuildContext context) {
+    final viewModel = Provider.of<SettingsViewModel>(context);
+    return Padding(
+      padding: const EdgeInsets.all(32.0),
+      child: RaisedButton(
+        padding: const EdgeInsets.only(top: 4.0, bottom: 4.0),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.0)),
+        child: const Text(AppStrings.settingsLoginWithGoogle, style: TextStyle(color: Colors.white)),
+        onPressed: () {
+          viewModel.loginWithGoogle();
+        },
+      ),
+    );
+  }
+
+  Widget _logoutButton(BuildContext context) {
+    final viewModel = Provider.of<SettingsViewModel>(context);
+    return Padding(
+      padding: const EdgeInsets.all(32.0),
+      child: OutlineButton(
+        padding: const EdgeInsets.only(top: 4.0, bottom: 4.0),
+        color: Theme.of(context).accentColor,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.0)),
+        child: const Text(AppStrings.settingsLogoutTitle),
+        onPressed: () async {
+          final dialog = AppDialog.createInfo(
+            title: AppStrings.settingsLogoutTitle,
+            description: AppStrings.settingsLogoutDialogMessage,
+            successMessage: AppStrings.settingsLogoutSuccessMessage,
+            errorMessage: AppStrings.settingsEditDialogError,
+            onOkPress: viewModel.logout,
+          );
+          await dialog.show(context);
+        },
       ),
     );
   }

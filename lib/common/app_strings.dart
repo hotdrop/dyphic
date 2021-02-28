@@ -56,6 +56,13 @@ class AppStrings {
   static const String settingsPageTitle = '設定';
   static const String settingsAppVersionLabel = 'アプリバージョン';
   static const String settingsChangeAppThemeLabel = 'テーマ切り替え';
+  static const String settingsNotLoginNameLabel = 'ー';
+  static const String settingsNotLoginEmailLabel = '未ログイン';
+  static const String settingsLoginWithGoogle = 'Googleアカウントでログイン';
+  static const String settingsLogoutTitle = 'Googleアカウントからログアウト';
+  static const String settingsLogoutDialogMessage = 'ログアウトしてもよろしいですか？';
+  static const String settingsLogoutSuccessMessage = 'ログアウトが完了しました。';
+  static const String settingsEditDialogError = 'ログアウト処理に失敗しました。';
 
   static const String textFieldRequiredEmptyError = '※必須項目';
 

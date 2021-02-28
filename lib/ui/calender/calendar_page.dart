@@ -1,3 +1,4 @@
+import 'package:dyphic/common/app_logger.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -34,6 +35,16 @@ class CalenderPage extends StatelessWidget {
 
   Widget _loadSuccessView(BuildContext context) {
     final viewModel = context.read<CalendarViewModel>();
-    return AppCalendar(events: viewModel.calendarEvents);
+    return AppCalendar(
+      events: viewModel.calendarEvents,
+      onReturnEditPage: (isUpdate) {
+        // TODO
+        if (isUpdate) {
+          AppLogger.d('記録情報が更新されました。');
+        } else {
+          AppLogger.d('更新されませんでした。');
+        }
+      },
+    );
   }
 }

@@ -10,9 +10,10 @@ import 'package:dyphic/model/app_settings.dart';
 import 'package:dyphic/model/calendar_event.dart';
 
 class AppCalendar extends StatefulWidget {
-  const AppCalendar({Key key, this.events}) : super(key: key);
+  const AppCalendar({Key key, this.events, this.onReturnEditPage}) : super(key: key);
 
   final List<CalendarEvent> events;
+  final void Function(bool isUpdate) onReturnEditPage;
 
   @override
   _AppCalendarState createState() => _AppCalendarState();
@@ -187,11 +188,7 @@ class _AppCalendarState extends State<AppCalendar> {
               MaterialPageRoute(builder: (_) => RecordPage(selectDate)),
             ) ??
             false;
-        // TODO このボタンイベントは呼び元に委ねた方がいいか
-        if (isUpdate) {
-          AppLogger.d('記録情報が更新されました。');
-          // 更新する
-        }
+        widget.onReturnEditPage(isUpdate);
       },
     );
   }
