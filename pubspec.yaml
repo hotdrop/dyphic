@@ -37,6 +37,14 @@ dependencies:
   logger: ^0.9.4
   intl: ^0.16.1
 
+  # Firebase
+  google_sign_in: ^4.5.5
+  firebase_core: ^0.5.1
+  firebase_auth: ^0.18.2
+  cloud_firestore: ^0.14.2
+  firebase_storage: ^4.0.1
+  firebase_crashlytics: ^0.2.2
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
