@@ -1,4 +1,6 @@
 import 'package:dyphic/common/app_colors.dart';
+import 'package:dyphic/common/app_strings.dart';
+import 'package:dyphic/ui/widget/app_dialog.dart';
 import 'package:flutter/material.dart';
 
 enum MealType { morning, lunch, dinner }
@@ -7,12 +9,12 @@ class MealCard extends StatelessWidget {
   const MealCard({
     @required this.type,
     @required this.detail,
-    @required this.onTap,
+    @required this.onEditValue,
   });
 
   final MealType type;
   final String detail;
-  final Function onTap;
+  final Function(String) onEditValue;
 
   @override
   Widget build(BuildContext context) {
@@ -32,7 +34,19 @@ class MealCard extends StatelessWidget {
               ],
             ),
           ),
-          onTap: () => onTap(),
+          onTap: () async {
+            String dialogTitle = _dialogTitle();
+            final inputValue = await showDialog<String>(
+              context: context,
+              builder: (context) {
+                return TextEditDialog(
+                  title: dialogTitle,
+                  initValue: detail,
+                );
+              },
+            );
+            onEditValue(inputValue);
+          },
         ),
       ),
     );
@@ -99,5 +113,19 @@ class MealCard extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  String _dialogTitle() {
+    switch (type) {
+      case MealType.morning:
+        return AppStrings.recordMorningDialogTitle;
+        break;
+      case MealType.lunch:
+        return AppStrings.recordLunchDialogTitle;
+        break;
+      default:
+        return AppStrings.recordDinnerDialogTitle;
+        break;
+    }
   }
 }

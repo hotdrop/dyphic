@@ -1,23 +1,25 @@
 import 'package:dyphic/common/app_colors.dart';
 import 'package:dyphic/common/app_strings.dart';
+import 'package:dyphic/ui/widget/app_dialog.dart';
 import 'package:flutter/material.dart';
 
 class AppTemperature extends StatelessWidget {
-  const AppTemperature._(this.temperature, this.isMorning, this.onTap);
+  const AppTemperature._(this.temperature, this.isMorning, this.onEditValue, this.dialogTitle);
 
-  factory AppTemperature.morning({@required double temperature, @required Function onTap}) {
+  factory AppTemperature.morning({@required double temperature, @required Function(double) onEditValue}) {
     final t = temperature != null ? temperature : 0.0;
-    return AppTemperature._(t, true, onTap);
+    return AppTemperature._(t, true, onEditValue, AppStrings.recordTemperatureMorning);
   }
 
-  factory AppTemperature.night({@required double temperature, @required Function onTap}) {
+  factory AppTemperature.night({@required double temperature, @required Function(double) onEditValue}) {
     final t = temperature != null ? temperature : 0.0;
-    return AppTemperature._(t, false, onTap);
+    return AppTemperature._(t, false, onEditValue, AppStrings.recordTemperatureNight);
   }
 
+  final String dialogTitle;
   final double temperature;
   final bool isMorning;
-  final Function onTap;
+  final Function(double) onEditValue;
 
   @override
   Widget build(BuildContext context) {
@@ -42,7 +44,18 @@ class AppTemperature extends StatelessWidget {
           _verticalLine(),
         ],
       ),
-      onTap: () => onTap(),
+      onTap: () async {
+        final inputValue = await showDialog<double>(
+          context: context,
+          builder: (context) {
+            return TemperatureEditDialog(
+              title: dialogTitle,
+              initValue: temperature,
+            );
+          },
+        );
+        onEditValue(inputValue);
+      },
     );
   }
 

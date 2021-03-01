@@ -101,7 +101,7 @@ class AppSimpleDialog {
           content: Text(message),
           actions: <Widget>[
             FlatButton(
-              child: const Text(AppStrings.simpleDialogOkLabel),
+              child: const Text(AppStrings.dialogOkLabel),
               onPressed: () {
                 Navigator.pop(context);
               },
@@ -110,5 +110,124 @@ class AppSimpleDialog {
         );
       },
     );
+  }
+}
+
+///
+/// 文字列入力フィールド付きのダイアログ
+///
+class TextEditDialog extends StatefulWidget {
+  const TextEditDialog({
+    @required this.title,
+    @required this.initValue,
+  });
+
+  final String title;
+  final String initValue;
+
+  @override
+  _TextEditDialogState createState() => _TextEditDialogState();
+}
+
+class _TextEditDialogState extends State<TextEditDialog> {
+  final _controller = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    _controller.text = widget.initValue.toString();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: Text(widget.title),
+      content: TextFormField(
+        autofocus: true,
+        controller: _controller,
+      ),
+      actions: <Widget>[
+        FlatButton(
+          child: Text(AppStrings.dialogCancelLabel),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
+        FlatButton(
+          child: Text(AppStrings.dialogOkLabel),
+          onPressed: () {
+            Navigator.pop<String>(context, _controller.text);
+          },
+        ),
+      ],
+    );
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _controller.dispose();
+  }
+}
+
+///
+/// 体温入力フィールド付きのダイアログ
+///
+class TemperatureEditDialog extends StatefulWidget {
+  const TemperatureEditDialog({
+    @required this.title,
+    @required this.initValue,
+  });
+
+  final String title;
+  final double initValue;
+
+  @override
+  _TemperatureEditDialogState createState() => _TemperatureEditDialogState();
+}
+
+class _TemperatureEditDialogState extends State<TemperatureEditDialog> {
+  final _controller = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    _controller.text = widget.initValue.toString();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: Text(widget.title),
+      content: TextFormField(
+        keyboardType: TextInputType.number,
+        autofocus: true,
+        controller: _controller,
+        decoration: InputDecoration(
+          hintText: AppStrings.recordTemperatureTextHint,
+        ),
+      ),
+      actions: <Widget>[
+        FlatButton(
+          child: Text(AppStrings.dialogCancelLabel),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
+        FlatButton(
+          child: Text(AppStrings.dialogOkLabel),
+          onPressed: () {
+            final inputValue = double.parse(_controller.text);
+            Navigator.pop<double>(context, inputValue);
+          },
+        ),
+      ],
+    );
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _controller.dispose();
   }
 }

@@ -84,15 +84,21 @@ class RecordPage extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: <Widget>[
           AppTemperature.morning(
-              temperature: viewModel.inputRecord.morningTemperature,
-              onTap: () {
-                // TODO 入力ダイアログを出して値を更新する
-              }),
+            temperature: viewModel.morningTemperature,
+            onEditValue: (double newValue) {
+              if (newValue != null) {
+                viewModel.inputMorningTemperature(newValue);
+              }
+            },
+          ),
           AppTemperature.night(
-              temperature: viewModel.inputRecord.nightTemperature,
-              onTap: () {
-                // TODO 入力ダイアログを出して値を更新する
-              }),
+            temperature: viewModel.nightTemperature,
+            onEditValue: (double newValue) {
+              if (newValue != null) {
+                viewModel.inputNightTemperature(newValue);
+              }
+            },
+          ),
         ],
       ),
     );
@@ -108,7 +114,7 @@ class RecordPage extends StatelessWidget {
         ),
         AppChips(
           names: viewModel.allConditionNames,
-          selectedNames: viewModel.inputRecord.selectConditionNames,
+          selectedNames: viewModel.selectConditionNames,
           selectedColor: AppColors.condition,
           onChange: (selectedNamesSet) {
             viewModel.changeSelectedCondition(selectedNamesSet.toList());
@@ -117,7 +123,7 @@ class RecordPage extends StatelessWidget {
         SizedBox(height: 8),
         AppTextField.multiLine(
           limitLine: 3,
-          initValue: viewModel.inputRecord.conditionMemo,
+          initValue: viewModel.conditionMemo,
           hintText: AppStrings.recordConditionMemoHint,
           onChanged: (String inputVal) {
             viewModel.inputConditionMemo(inputVal);
@@ -137,7 +143,7 @@ class RecordPage extends StatelessWidget {
         ),
         AppChips(
           names: viewModel.allMedicineNames,
-          selectedNames: viewModel.inputRecord.selectMedicineNames,
+          selectedNames: viewModel.selectMedicineNames,
           selectedColor: AppColors.medicine,
           onChange: (selectedNamesSet) {
             viewModel.changeSelectedMedicine(selectedNamesSet.toList());
@@ -163,25 +169,31 @@ class RecordPage extends StatelessWidget {
             children: [
               MealCard(
                 type: MealType.morning,
-                detail: viewModel.inputRecord.breakfast,
-                onTap: () {
-                  // TODO 入力ダイアログを出して値を更新する
+                detail: viewModel.breakfast,
+                onEditValue: (String newVal) {
+                  if (newVal != null) {
+                    viewModel.inputBreakfast(newVal);
+                  }
                 },
               ),
               SizedBox(width: 8),
               MealCard(
                 type: MealType.lunch,
-                detail: viewModel.inputRecord.lunch,
-                onTap: () {
-                  // TODO 入力ダイアログを出して値を更新する
+                detail: viewModel.lunch,
+                onEditValue: (String newVal) {
+                  if (newVal != null) {
+                    viewModel.inputLunch(newVal);
+                  }
                 },
               ),
               SizedBox(width: 8),
               MealCard(
                 type: MealType.dinner,
-                detail: viewModel.inputRecord.dinner,
-                onTap: () {
-                  // TODO 入力ダイアログを出して値を更新する
+                detail: viewModel.dinner,
+                onEditValue: (String newVal) {
+                  if (newVal != null) {
+                    viewModel.inputDinner(newVal);
+                  }
                 },
               ),
             ],
@@ -202,7 +214,7 @@ class RecordPage extends StatelessWidget {
         SizedBox(height: 8),
         AppTextField.multiLine(
           limitLine: 10,
-          initValue: viewModel.inputRecord.memo,
+          initValue: viewModel.memo,
           onChanged: (String inputVal) {
             viewModel.inputMemo(inputVal);
           },

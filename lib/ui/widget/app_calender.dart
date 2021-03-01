@@ -1,13 +1,13 @@
-import 'package:dyphic/common/app_logger.dart';
-import 'package:dyphic/common/app_strings.dart';
-import 'package:dyphic/ui/calender/record/record_page.dart';
-import 'package:dyphic/ui/widget/app_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:table_calendar/table_calendar.dart';
 
+import 'package:dyphic/ui/calender/record/record_page.dart';
+import 'package:dyphic/ui/widget/app_widget.dart';
+
 import 'package:dyphic/model/app_settings.dart';
 import 'package:dyphic/model/calendar_event.dart';
+import 'package:dyphic/common/app_strings.dart';
 
 class AppCalendar extends StatefulWidget {
   const AppCalendar({Key key, this.events, this.onReturnEditPage}) : super(key: key);
@@ -119,7 +119,7 @@ class _AppCalendarState extends State<AppCalendar> {
     final appSettings = Provider.of<AppSettings>(context);
     return Container(
       width: double.infinity,
-      height: 200,
+      height: 150,
       margin: const EdgeInsets.all(8.0),
       decoration: BoxDecoration(
         border: Border.all(width: 0.8, color: appSettings.isDarkMode ? Colors.white : Colors.black),
@@ -134,6 +134,7 @@ class _AppCalendarState extends State<AppCalendar> {
               DividerThemeColor.createWithPadding(),
               _labelRecordInfo(),
               DividerThemeColor.createWithPadding(),
+              // TODO これタップで編集でいるようにしたほうがいいか
               _editButton(),
             ],
           ),

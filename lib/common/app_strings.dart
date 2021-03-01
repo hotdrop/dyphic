@@ -8,6 +8,7 @@ class AppStrings {
 
   static const String recordTemperatureMorning = '朝の体温';
   static const String recordTemperatureNight = '夜の体温';
+  static const String recordTemperatureTextHint = '入力例: 36.5';
   static const String recordTemperatureUnit = '度';
   static const String recordTemperatureNonSet = '未登録';
   static const String recordConditionTitle = '今日の体調';
@@ -19,6 +20,9 @@ class AppStrings {
   static const String recordSaveDialogDetail = 'この内容で保存します。よろしいですか？';
   static const String recordSaveDialogSuccess = '保存しました。';
   static const String recordSaveDialogError = 'エラーが発生しました。';
+  static const String recordMorningDialogTitle = '朝食';
+  static const String recordLunchDialogTitle = '昼食';
+  static const String recordDinnerDialogTitle = '夕食';
 
   static const String medicinePageTitle = 'お薬';
   static const String medicinePageOralName = '内服薬';
@@ -66,7 +70,8 @@ class AppStrings {
 
   static const String textFieldRequiredEmptyError = '※必須項目';
 
-  static const String simpleDialogOkLabel = 'OK';
+  static const String dialogOkLabel = 'OK';
+  static const String dialogCancelLabel = 'キャンセル';
   static const String dialogTitleSuccess = '成功';
   static const String dialogTitleError = 'エラー';
 }
