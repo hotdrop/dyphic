@@ -14,15 +14,11 @@ class EventDataSource {
   final DBProvider _dbProvider;
 
   Future<List<Event>> findAll() async {
-    // TODO 準備できたら有効にする
-    // final db = await _dbProvider.database;
-    // final results = await db.query(EventEntity.tableName);
-    // final List<EventEntity> entities = results.isNotEmpty ? results.map((it) => EventEntity.fromMap(it)).toList() : [];
-    // return entities.map((e) => e.toEvent()).toList();
-    return [
-      Event(date: DateTime(2021, 2, 11), type: EventType.hospital, name: 'この日は病院です'),
-      Event(date: DateTime(2021, 2, 25), type: EventType.injection, name: 'この日は注射です。'),
-    ];
+    final db = await _dbProvider.database;
+    final results = await db.query(EventEntity.tableName);
+    final List<EventEntity> entities = results.isNotEmpty ? results.map((it) => EventEntity.fromMap(it)).toList() : [];
+
+    return entities.map((e) => e.toEvent()).toList();
   }
 
   Future<void> update(List<Event> events) async {

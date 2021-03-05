@@ -1,5 +1,6 @@
 import 'package:dyphic/common/app_logger.dart';
 import 'package:dyphic/model/calendar_event.dart';
+import 'package:dyphic/repository/json/event_json.dart';
 import 'package:dyphic/service/app_firebase.dart';
 
 class EventApi {
@@ -13,13 +14,19 @@ class EventApi {
   final AppFirebase _appFirebase;
 
   Future<List<Event>> findByLatest(DateTime prevSaveEventDate) async {
-    // TODO storageのjson取得
-    //  Firebase storageのjsonの更新日付を取得する。取得できなかったりログインしていなければ終了
-    //  appSettingsで保持している日付 < 更新日付
-    //    String json = await _service.readEventJson();
-    //    return EventJson.parse(json)
-    //  それ以外 []
-    AppLogger.d('Storageからイベント情報を取得しました。イベント数: 0');
-    return [];
+    if (!_appFirebase.isLogIn) {
+      AppLogger.d('ログインしていないのでイベント取得は行いません。');
+      return [];
+    }
+
+    final isUpdate = await _appFirebase.isUpdateEventJson(prevSaveEventDate);
+    AppLogger.d('イベント情報更新が必要か？ $isUpdate');
+
+    if (!isUpdate) {
+      return [];
+    }
+
+    String json = await _appFirebase.readEventJson();
+    return EventJson.parse(json);
   }
 }

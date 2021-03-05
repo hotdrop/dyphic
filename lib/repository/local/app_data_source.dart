@@ -13,6 +13,7 @@ class AppDataSource {
 
   static AppDataSource _instance = AppDataSource._();
   static const _darkModeKey = 'DARK_MODE';
+  static const _previousEventGetDate = 'PREVIOUS_EVENT_GET_DATA';
 
   static SharedPreferences _prefs;
 
@@ -40,8 +41,20 @@ class AppDataSource {
   }
 
   Future<DateTime> getPrevSaveEventDate() async {
-    // TODO 前回イベント情報を保存した日付を取得する
-    final previousEventGetDate = DateTime.now();
-    AppLogger.i('前回イベント情報を保存した日付を取得しました。\n  取得した日付: $previousEventGetDate');
+    if (_prefs.containsKey(_previousEventGetDate)) {
+      final dateStr = _prefs.getString(_previousEventGetDate);
+      AppLogger.i('前回イベント情報を保存した日付を取得しました。\n  取得した日付: $dateStr');
+      return DateTime.parse(dateStr);
+    }
+    return null;
+  }
+
+  Future<void> saveSaveGetEventDate() async {
+    final nowDate = DateTime.now();
+
+    final monthStr = nowDate.month.toString().padLeft(2, '0');
+    final dayStr = nowDate.day.toString().padLeft(2, '0');
+    final dateStr = '${nowDate.year}-$monthStr-$dayStr';
+    await _prefs.setString(_previousEventGetDate, dateStr);
   }
 }

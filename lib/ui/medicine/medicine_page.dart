@@ -37,6 +37,22 @@ class MedicinePage extends StatelessWidget {
 
   Widget _loadSuccessView(BuildContext context) {
     final viewModel = Provider.of<MedicineViewModel>(context);
+    if (viewModel.isLogin) {
+      return _rootViewAllowRegister(context);
+    } else {
+      return _rootViewDeniedRegister(context);
+    }
+  }
+
+  Widget _rootViewDeniedRegister(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(centerTitle: true, title: Text(AppStrings.medicinePageTitle)),
+      body: _contentsView(context),
+    );
+  }
+
+  Widget _rootViewAllowRegister(BuildContext context) {
+    final viewModel = Provider.of<MedicineViewModel>(context);
     return Scaffold(
       appBar: AppBar(centerTitle: true, title: Text(AppStrings.medicinePageTitle)),
       body: _contentsView(context),
@@ -57,22 +73,28 @@ class MedicinePage extends StatelessWidget {
   Widget _contentsView(BuildContext context) {
     final viewModel = Provider.of<MedicineViewModel>(context);
     final medicine = viewModel.medicines;
-    return GridView.count(
-      crossAxisCount: 2,
-      childAspectRatio: 3 / 4,
-      children: List.generate(
-        medicine.length,
-        (index) => MedicineCardView(
-          medicine: medicine[index],
-          onTapEvent: () async {
-            bool isUpdate = await Navigator.of(context).push<bool>(MaterialPageRoute(builder: (_) => MedicineEditPage(medicine[index]))) ?? false;
-            AppLogger.i('戻り値: $isUpdate');
-            if (isUpdate) {
-              await viewModel.reload();
-            }
-          },
+    if (medicine.isEmpty) {
+      return Center(
+        child: Text(AppStrings.medicinePageNothingItemLabel),
+      );
+    } else {
+      return GridView.count(
+        crossAxisCount: 2,
+        childAspectRatio: 3 / 4,
+        children: List.generate(
+          medicine.length,
+          (index) => MedicineCardView(
+            medicine: medicine[index],
+            onTapEvent: () async {
+              bool isUpdate = await Navigator.of(context).push<bool>(MaterialPageRoute(builder: (_) => MedicineEditPage(medicine[index]))) ?? false;
+              AppLogger.i('戻り値: $isUpdate');
+              if (isUpdate) {
+                await viewModel.reload();
+              }
+            },
+          ),
         ),
-      ),
-    );
+      );
+    }
   }
 }

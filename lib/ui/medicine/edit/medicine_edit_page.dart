@@ -1,3 +1,7 @@
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:image_picker/image_picker.dart';
+
 import 'package:dyphic/common/app_logger.dart';
 import 'package:dyphic/common/app_strings.dart';
 import 'package:dyphic/model/medicine.dart';
@@ -7,9 +11,6 @@ import 'package:dyphic/ui/widget/app_dialog.dart';
 import 'package:dyphic/ui/widget/app_image.dart';
 import 'package:dyphic/ui/widget/app_radio.dart';
 import 'package:dyphic/ui/widget/app_text_field.dart';
-import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:provider/provider.dart';
 
 class MedicineEditPage extends StatelessWidget {
   const MedicineEditPage(this._medicine);
@@ -109,7 +110,6 @@ class MedicineEditPage extends StatelessWidget {
       children: [
         Padding(
           padding: const EdgeInsets.only(top: 16.0, bottom: 8.0),
-          // TODO AppImageはネットワークの画像も考慮しないとダメ
           child: AppImage(path: viewModel.imageFilePath),
         ),
         Text(AppStrings.medicineImageOverviewLabel),
@@ -121,7 +121,7 @@ class MedicineEditPage extends StatelessWidget {
                 label: const Text(AppStrings.medicineStartCameraLabel),
                 onPressed: () async {
                   final imagePicker = ImagePicker();
-                  var image = await imagePicker.getImage(source: ImageSource.camera);
+                  var image = await imagePicker.getImage(source: ImageSource.camera, imageQuality: 10);
                   AppLogger.d('カメラ撮影しました。 path=${image.path}');
                   if (image != null) {
                     viewModel.inputImagePath(image.path);

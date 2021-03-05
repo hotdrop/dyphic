@@ -31,7 +31,7 @@ class MedicineCardView extends StatelessWidget {
 
   Widget _imageView(String imagePath) {
     return SizedBox(
-      height: 120.0,
+      height: 100.0,
       child: Stack(
         children: [
           Positioned.fill(
@@ -52,18 +52,15 @@ class MedicineCardView extends StatelessWidget {
 
   Widget _titleView(BuildContext context, String title) {
     return Padding(
-      padding: EdgeInsets.only(left: 8.0, top: 8.0),
-      child: Text(
-        title,
-        style: Theme.of(context).textTheme.subtitle2,
-      ),
+      padding: const EdgeInsets.only(left: 8.0, top: 8.0),
+      child: Text(title),
     );
   }
 
   Widget _oralTypeView(BuildContext context, bool isOral) {
     final oralStr = medicine.isOral ? AppStrings.medicinePageOralName : AppStrings.medicinePageNotOralName;
     return Padding(
-      padding: EdgeInsets.only(left: 8.0),
+      padding: const EdgeInsets.only(left: 8.0),
       child: Text(
         oralStr,
         style: Theme.of(context).textTheme.caption,

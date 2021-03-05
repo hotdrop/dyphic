@@ -19,6 +19,10 @@ class Medicine {
   final String imagePath;
   final int order;
 
+  Medicine copy({String imageUrl}) {
+    return Medicine(name: name, isOral: isOral, order: order, memo: memo, imagePath: imageUrl);
+  }
+
   @override
   String toString() {
     return '''

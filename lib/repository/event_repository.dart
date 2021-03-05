@@ -20,9 +20,12 @@ class EventRepository {
   Future<List<Event>> findAll() async {
     final prevSaveEventDate = await _prefs.getPrevSaveEventDate();
     final latestEvents = await _eventApi.findByLatest(prevSaveEventDate);
+
     if (latestEvents.isNotEmpty) {
       await _eventDb.update(latestEvents);
+      await _prefs.saveSaveGetEventDate();
     }
+
     return await _eventDb.findAll();
   }
 }

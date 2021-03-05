@@ -4,7 +4,6 @@ class AppStrings {
   static const String calenderPageTitle = 'カレンダー';
   static const String calenderNoEvent = '予定なし';
   static const String calenderUnRegisterLabel = 'この日の記録は未登録です。\n[記録情報へ]ボタンをタップして記録しましょう。';
-  static const String calenderRecordEditButton = '記録情報へ';
 
   static const String recordTemperatureMorning = '朝の体温';
   static const String recordTemperatureNight = '夜の体温';
@@ -25,6 +24,7 @@ class AppStrings {
   static const String recordDinnerDialogTitle = '夕食';
 
   static const String medicinePageTitle = 'お薬';
+  static const String medicinePageNothingItemLabel = 'お薬が登録されていません。\nログインしてお薬を登録しましょう。';
   static const String medicinePageOralName = '内服薬';
   static const String medicinePageNotOralName = '頓服薬';
   static const String medicineEditPageTitle = 'お薬情報';

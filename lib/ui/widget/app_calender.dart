@@ -60,7 +60,7 @@ class _AppCalendarState extends State<AppCalendar> {
       children: [
         _buildCalendar(),
         const SizedBox(height: 8.0),
-        _buildDetailContents(context),
+        _cardDailyRecord(context),
       ],
     );
   }
@@ -115,7 +115,7 @@ class _AppCalendarState extends State<AppCalendar> {
   ///
   /// タップした日付の記録情報をカレンダーの下に表示する
   ///
-  Widget _buildDetailContents(BuildContext context) {
+  Widget _cardDailyRecord(BuildContext context) {
     final appSettings = Provider.of<AppSettings>(context);
     return Container(
       width: double.infinity,
@@ -125,27 +125,37 @@ class _AppCalendarState extends State<AppCalendar> {
         border: Border.all(width: 0.8, color: appSettings.isDarkMode ? Colors.white : Colors.black),
         borderRadius: BorderRadius.circular(12.0),
       ),
-      child: SingleChildScrollView(
-        child: Padding(
-          padding: EdgeInsets.all(8.0),
-          child: Column(
-            children: [
-              _labelEventInfo(),
-              DividerThemeColor.createWithPadding(),
-              _labelRecordInfo(),
-              DividerThemeColor.createWithPadding(),
-              // TODO これタップで編集でいるようにしたほうがいいか
-              _editButton(),
-            ],
+      child: _detailDailyRecord(),
+    );
+  }
+
+  Widget _detailDailyRecord() {
+    return InkWell(
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: EdgeInsets.all(8.0),
+            child: Column(
+              children: [
+                _labelEventInfo(),
+                DividerThemeColor.create(),
+                _labelRecordInfo(),
+              ],
+            ),
           ),
         ),
-      ),
-    );
+        onTap: () async {
+          final selectDate = _selectedItem.date;
+          bool isUpdate = await Navigator.of(context).push<bool>(
+                MaterialPageRoute(builder: (_) => RecordPage(selectDate)),
+              ) ??
+              false;
+          widget.onReturnEditPage(isUpdate);
+        });
   }
 
   Widget _labelEventInfo() {
     return Center(
-      child: Text(_selectedItem.name ?? AppStrings.calenderNoEvent),
+      child: _detailText(_selectedItem.name ?? AppStrings.calenderNoEvent),
     );
   }
 
@@ -156,20 +166,21 @@ class _AppCalendarState extends State<AppCalendar> {
       widgets.add(_labelMedicines());
       widgets.add(_labelMemo());
     } else {
-      widgets.add(Text(AppStrings.calenderUnRegisterLabel));
+      widgets.add(_detailText(AppStrings.calenderUnRegisterLabel));
     }
     return Column(
+      mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: widgets,
     );
   }
 
   Widget _labelConditions() {
-    return Text('体調: ${_selectedItem.toStringConditions()}');
+    return _detailText('体調: ${_selectedItem.toStringConditions()}');
   }
 
   Widget _labelMedicines() {
-    return Text('飲んだ薬: ${_selectedItem.toStringMedicines()}');
+    return _detailText('飲んだ薬: ${_selectedItem.toStringMedicines()}');
   }
 
   Widget _labelMemo() {
@@ -177,20 +188,11 @@ class _AppCalendarState extends State<AppCalendar> {
       'メモ: ${_selectedItem.getMemo()}',
       maxLines: 2,
       overflow: TextOverflow.ellipsis,
+      style: TextStyle(fontSize: 10),
     );
   }
 
-  Widget _editButton() {
-    return OutlineButton(
-      child: Text(AppStrings.calenderRecordEditButton),
-      onPressed: () async {
-        final selectDate = _selectedItem.date;
-        bool isUpdate = await Navigator.of(context).push<bool>(
-              MaterialPageRoute(builder: (_) => RecordPage(selectDate)),
-            ) ??
-            false;
-        widget.onReturnEditPage(isUpdate);
-      },
-    );
+  Widget _detailText(String text) {
+    return Text(text, style: TextStyle(fontSize: 10));
   }
 }

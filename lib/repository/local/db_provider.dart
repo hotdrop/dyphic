@@ -1,5 +1,4 @@
 import 'package:sqflite/sqflite.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart';
 
 import 'package:dyphic/repository/local/entity/event_entity.dart';
@@ -19,19 +18,14 @@ class DBProvider {
   }
 
   Future<Database> _initDB() async {
-    final docDir = await getApplicationDocumentsDirectory();
-    final path = join(docDir.path, 'dyphic.db');
+    final databasePath = await getDatabasesPath();
+    final path = join(databasePath, 'dyphic.db');
     return await openDatabase(
       path,
+      version: 1,
       onCreate: (db, version) async {
-        final batch = db.batch();
-        _createTable(batch);
-        await batch.commit();
+        await db.execute(EventEntity.createTableSql);
       },
     );
-  }
-
-  void _createTable(Batch batch) {
-    batch.execute(EventEntity.createTableSql);
   }
 }

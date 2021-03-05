@@ -18,7 +18,7 @@ class MedicineEditViewModel extends NotifierViewModel {
   Medicine _originalMedicine;
 
   _InputItem _inputItem;
-  String get imageFilePath => _inputItem.imagePath;
+  String get imageFilePath => _inputItem.localImagePath;
   bool get canSave => _inputItem.isCompletedRequiredFields();
 
   void _init() {
@@ -35,7 +35,8 @@ class MedicineEditViewModel extends NotifierViewModel {
   }
 
   void inputImagePath(String path) {
-    _inputItem.imagePath = path;
+    _inputItem.localImagePath = path;
+    notifyListeners();
   }
 
   void inputMemo(String memo) {
@@ -47,7 +48,7 @@ class MedicineEditViewModel extends NotifierViewModel {
       name: _inputItem.name,
       isOral: _inputItem.isOral,
       memo: _inputItem.memo,
-      imagePath: _inputItem.imagePath,
+      imagePath: _inputItem.localImagePath,
       order: _inputItem.order,
     );
 
@@ -65,7 +66,7 @@ class MedicineEditViewModel extends NotifierViewModel {
 /// 入力保持用のクラス
 ///
 class _InputItem {
-  _InputItem._(this.name, this.isOral, this.memo, this.imagePath, this.order);
+  _InputItem._(this.name, this.isOral, this.memo, this.localImagePath, this.order);
 
   factory _InputItem.create(Medicine item) {
     return _InputItem._(item.name, item.isOral, item.memo, item.imagePath, item.order);
@@ -74,7 +75,7 @@ class _InputItem {
   String name;
   bool isOral;
   String memo;
-  String imagePath;
+  String localImagePath;
   int order;
 
   bool isCompletedRequiredFields() {

@@ -1,6 +1,5 @@
 import 'package:dyphic/model/medicine.dart';
 import 'package:dyphic/repository/remote/medicine_api.dart';
-import 'package:dyphic/service/app_firebase.dart';
 
 class MedicineRepository {
   const MedicineRepository._(this._medicineApi);
