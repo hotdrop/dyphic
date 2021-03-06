@@ -121,7 +121,7 @@ class MedicineEditPage extends StatelessWidget {
       children: [
         Padding(
           padding: const EdgeInsets.only(top: 8.0, bottom: 8.0),
-          child: AppImage(path: viewModel.imageFilePath),
+          child: AppImage.large(path: viewModel.imageFilePath),
         ),
         Text(AppStrings.medicineImageOverviewLabel, style: Theme.of(context).textTheme.caption),
         Row(

@@ -1,3 +1,4 @@
+import 'package:dyphic/ui/widget/app_image.dart';
 import 'package:flutter/material.dart';
 import 'package:expansion_tile_card/expansion_tile_card.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -36,16 +37,7 @@ class MedicineCardView extends StatelessWidget {
   }
 
   Widget _imageView() {
-    return CachedNetworkImage(
-      imageUrl: medicine.imagePath,
-      width: 50.0,
-      height: 50.0,
-      placeholder: (context, url) => CircularProgressIndicator(),
-      errorWidget: (context, url, dynamic error) => Image.asset(
-        'res/images/medicine_default.png',
-        fit: BoxFit.cover,
-      ),
-    );
+    return AppImage.icon(path: medicine.imagePath);
   }
 
   Widget _memoView(BuildContext context) {
