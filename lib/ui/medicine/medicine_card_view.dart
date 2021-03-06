@@ -1,83 +1,64 @@
-import 'package:dyphic/ui/widget/app_text.dart';
 import 'package:flutter/material.dart';
+import 'package:expansion_tile_card/expansion_tile_card.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
+import 'package:dyphic/ui/widget/app_divider.dart';
+import 'package:dyphic/ui/widget/app_text.dart';
 import 'package:dyphic/model/medicine.dart';
 
 class MedicineCardView extends StatelessWidget {
-  MedicineCardView({@required this.medicine, @required this.onTapEvent});
+  MedicineCardView({@required this.medicine, @required this.isEditPermission, @required this.onTapEvent});
 
   final Medicine medicine;
+  final bool isEditPermission;
   final Function onTapEvent;
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      child: InkWell(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _imageView(),
-            _titleView(context),
-            _oralTypeView(context),
-            _colorDivider(context),
-            _memoView(context),
-          ],
-        ),
-        onTap: () => onTapEvent(),
-      ),
-    );
-  }
-
-  Widget _imageView() {
-    return SizedBox(
-      height: 100.0,
-      child: Stack(
+    return Padding(
+      padding: const EdgeInsets.all(4.0),
+      child: ExpansionTileCard(
+        leading: _imageView(),
+        title: Text(medicine.name),
+        subtitle: AppText.normal(text: medicine.overview),
         children: [
-          Positioned.fill(
-            child: CachedNetworkImage(
-              imageUrl: medicine.imagePath,
-              fit: BoxFit.fill,
-              placeholder: (context, url) => CircularProgressIndicator(),
-              errorWidget: (context, url, dynamic error) => Image.asset(
-                'res/images/medicine_default.png',
-                fit: BoxFit.cover,
-              ),
-            ),
+          DividerThemeColor.create(),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              Expanded(child: _memoView(context)),
+              if (isEditPermission) _editButton(),
+            ],
           ),
         ],
       ),
     );
   }
 
-  Widget _titleView(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(left: 8.0, top: 8.0),
-      child: Text(medicine.name),
-    );
-  }
-
-  Widget _oralTypeView(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(left: 8.0),
-      child: Text(
-        medicine.toTypeString(),
-        style: Theme.of(context).textTheme.caption,
+  Widget _imageView() {
+    return CachedNetworkImage(
+      imageUrl: medicine.imagePath,
+      width: 50.0,
+      height: 50.0,
+      placeholder: (context, url) => CircularProgressIndicator(),
+      errorWidget: (context, url, dynamic error) => Image.asset(
+        'res/images/medicine_default.png',
+        fit: BoxFit.cover,
       ),
     );
   }
 
   Widget _memoView(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.only(left: 8.0),
+      padding: EdgeInsets.only(left: 8.0, right: 8.0, bottom: 8.0),
       child: AppText.multiLine(text: medicine.memo, maxLines: 3),
     );
   }
 
-  Widget _colorDivider(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.only(left: 8.0, right: 8.0),
-      child: Divider(color: Theme.of(context).accentColor),
+  Widget _editButton() {
+    return TextButton(
+      child: Icon(Icons.edit),
+      onPressed: () => onTapEvent(),
     );
   }
 }

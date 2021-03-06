@@ -32,10 +32,10 @@ class AppStrings {
   static const String medicinePageTypeIntravenousName = '点滴';
   static const String medicineEditPageTitle = 'お薬情報';
   static const String medicineNameLabel = 'お薬名';
+  static const String medicineOverviewLabel = '一言メモ';
   static const String medicineOralLabel = '内服薬';
   static const String medicineNotOralLabel = '頓服薬';
-  static const String medicineMemoLabel = 'メモ';
-  static const String medicineMemoAttentionLabel = 'お薬一覧にはメモの最初の3行(30文字程度)が表示されますので、その範囲で概要をまとめると便利です。';
+  static const String medicineMemoLabel = '詳細メモ';
   static const String medicineImageOverviewLabel = 'カメラボタンでお薬の写真を撮って保存することができます。';
   static const String medicineStartCameraLabel = 'カメラを起動する';
   static const String medicineSaveButton = 'この内容で保存する';

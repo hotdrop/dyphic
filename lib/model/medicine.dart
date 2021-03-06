@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 class Medicine {
   const Medicine({
     @required this.name,
+    @required this.overview,
     @required this.type,
     this.memo,
     this.imagePath = '',
@@ -11,17 +12,18 @@ class Medicine {
   });
 
   factory Medicine.createEmpty(int order) {
-    return Medicine(name: '', type: null, memo: '', imagePath: '', order: order);
+    return Medicine(name: '', overview: '', type: null, memo: '', imagePath: '', order: order);
   }
 
   final String name;
+  final String overview;
   final MedicineType type;
   final String memo;
   final String imagePath;
   final int order;
 
   Medicine copy({String imageUrl}) {
-    return Medicine(name: name, type: type, order: order, memo: memo, imagePath: imageUrl);
+    return Medicine(name: name, overview: overview, type: type, order: order, memo: memo, imagePath: imageUrl);
   }
 
   String toTypeString() {
@@ -45,6 +47,7 @@ class Medicine {
   String toString() {
     return '''
     name: $name
+    overview: $overview
     type: ${toTypeString()}
     memo: $memo
     imagePath: $imagePath

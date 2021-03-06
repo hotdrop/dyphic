@@ -44,16 +44,18 @@ class MedicineEditPage extends StatelessWidget {
 
   Widget _loadSuccessView(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(left: 32.0, right: 32.0, top: 16.0),
+      padding: const EdgeInsets.all(16.0),
       child: ListView(
         children: [
           const SizedBox(height: 8.0),
-          _editNameView(context),
+          _editFieldName(context),
           const SizedBox(height: 8.0),
-          _switchOralView(context),
+          _editFieldOverview(context),
+          const SizedBox(height: 8.0),
+          _selectType(context),
           _selectImageView(context),
           const SizedBox(height: 8.0),
-          _editMemoView(context),
+          _editFieldMemo(context),
           const SizedBox(height: 8.0),
           _saveButton(context),
         ],
@@ -61,7 +63,7 @@ class MedicineEditPage extends StatelessWidget {
     );
   }
 
-  Widget _editNameView(BuildContext context) {
+  Widget _editFieldName(BuildContext context) {
     final viewModel = Provider.of<MedicineEditViewModel>(context);
     return AppTextField.singleLine(
       label: AppStrings.medicineNameLabel,
@@ -73,7 +75,19 @@ class MedicineEditPage extends StatelessWidget {
     );
   }
 
-  Widget _switchOralView(BuildContext context) {
+  Widget _editFieldOverview(BuildContext context) {
+    final viewModel = Provider.of<MedicineEditViewModel>(context);
+    return AppTextField.singleLine(
+      label: AppStrings.medicineOverviewLabel,
+      isRequired: true,
+      initValue: _medicine.overview,
+      onChanged: (v) {
+        viewModel.inputOverview(v);
+      },
+    );
+  }
+
+  Widget _selectType(BuildContext context) {
     final viewModel = Provider.of<MedicineEditViewModel>(context);
     return MedicineTypeRadio(
         initSelectedType: _medicine.type,
@@ -82,16 +96,13 @@ class MedicineEditPage extends StatelessWidget {
         });
   }
 
-  Widget _editMemoView(BuildContext context) {
+  Widget _editFieldMemo(BuildContext context) {
     final viewModel = Provider.of<MedicineEditViewModel>(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(AppStrings.medicineMemoLabel),
-        SizedBox(
-          height: 8.0,
-        ),
-        Text(AppStrings.medicineMemoAttentionLabel, style: Theme.of(context).textTheme.caption),
+        SizedBox(height: 4.0),
         AppTextField.multiLine(
           initValue: _medicine.memo,
           onChanged: (inputVal) {
@@ -109,24 +120,25 @@ class MedicineEditPage extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Padding(
-          padding: const EdgeInsets.only(top: 16.0, bottom: 8.0),
+          padding: const EdgeInsets.only(top: 8.0, bottom: 8.0),
           child: AppImage(path: viewModel.imageFilePath),
         ),
-        Text(AppStrings.medicineImageOverviewLabel),
+        Text(AppStrings.medicineImageOverviewLabel, style: Theme.of(context).textTheme.caption),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
             OutlineButton.icon(
-                icon: const Icon(Icons.camera_alt),
-                label: const Text(AppStrings.medicineStartCameraLabel),
-                onPressed: () async {
-                  final imagePicker = ImagePicker();
-                  var image = await imagePicker.getImage(source: ImageSource.camera, imageQuality: 10);
-                  AppLogger.d('カメラ撮影しました。 path=${image.path}');
-                  if (image != null) {
-                    viewModel.inputImagePath(image.path);
-                  }
-                }),
+              icon: const Icon(Icons.camera_alt),
+              label: const Text(AppStrings.medicineStartCameraLabel),
+              onPressed: () async {
+                final imagePicker = ImagePicker();
+                var image = await imagePicker.getImage(source: ImageSource.camera, imageQuality: 10);
+                AppLogger.d('カメラ撮影しました。 path=${image.path}');
+                if (image != null) {
+                  viewModel.inputImagePath(image.path);
+                }
+              },
+            ),
           ],
         ),
       ],

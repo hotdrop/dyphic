@@ -72,28 +72,29 @@ class MedicinePage extends StatelessWidget {
 
   Widget _contentsView(BuildContext context) {
     final viewModel = Provider.of<MedicineViewModel>(context);
-    final medicine = viewModel.medicines;
-    if (medicine.isEmpty) {
+    final medicines = viewModel.medicines;
+    if (medicines.isEmpty) {
       return Center(
         child: Text(AppStrings.medicinePageNothingItemLabel),
       );
     } else {
-      return GridView.count(
-        crossAxisCount: 2,
-        childAspectRatio: 3 / 4,
-        children: List.generate(
-          medicine.length,
-          (index) => MedicineCardView(
-            medicine: medicine[index],
-            onTapEvent: () async {
-              bool isUpdate = await Navigator.of(context).push<bool>(MaterialPageRoute(builder: (_) => MedicineEditPage(medicine[index]))) ?? false;
-              AppLogger.i('戻り値: $isUpdate');
-              if (isUpdate) {
-                await viewModel.reload();
-              }
-            },
-          ),
-        ),
+      return ListView.builder(
+        itemBuilder: (BuildContext context, int index) {
+          if (index < medicines.length) {
+            return MedicineCardView(
+              medicine: medicines[index],
+              isEditPermission: viewModel.isLogin,
+              onTapEvent: () async {
+                bool isUpdate = await Navigator.of(context).push<bool>(MaterialPageRoute(builder: (_) => MedicineEditPage(medicines[index]))) ?? false;
+                AppLogger.i('戻り値: $isUpdate');
+                if (isUpdate) {
+                  await viewModel.reload();
+                }
+              },
+            );
+          }
+          return null;
+        },
       );
     }
   }
