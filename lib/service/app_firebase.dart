@@ -1,7 +1,8 @@
 import 'package:dyphic/service/mixin_app_auth.dart';
+import 'package:dyphic/service/mixin_firestore.dart';
 import 'package:dyphic/service/mixin_storage.dart';
 
-class AppFirebase with AppAuthMixin, AppStorageMixin {
+class AppFirebase with AppAuthMixin, AppStorageMixin, AppFirestoreMixin {
   AppFirebase._();
 
   ///

@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:dyphic/common/app_logger.dart';
 import 'package:dyphic/common/app_strings.dart';
 import 'package:dyphic/model/condition.dart';
@@ -65,14 +67,23 @@ class ConditionViewModel extends NotifierViewModel {
 
   Future<bool> onSave() async {
     AppLogger.d('${_controller.text} を保存します。');
-
-    final c = _selectedCondition.copyWith(newName: _controller.text);
+    final newId = _createNewId();
+    final c = _selectedCondition.copyWith(newId: newId, newName: _controller.text);
     try {
       await _repository.save(c);
       return true;
     } catch (e, s) {
       await AppLogger.e('体調情報の保存に失敗しました。', e, s);
       return false;
+    }
+  }
+
+  int _createNewId() {
+    int newId;
+    if (conditions.isNotEmpty) {
+      return conditions.map((e) => e.id).reduce(max) + 1;
+    } else {
+      return 1;
     }
   }
 

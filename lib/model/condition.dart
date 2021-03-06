@@ -12,12 +12,18 @@ class Condition {
 
   bool get exist => id != nonId;
 
-  Condition copyWith({String newName}) {
-    return Condition(id, newName);
+  Condition copyWith({int newId, String newName}) {
+    return Condition(newId, newName);
   }
 
   @override
   String toString() {
     return ' id: $id \n name: $name';
+  }
+
+  Map<String, dynamic> toMap() {
+    return <String, dynamic>{
+      'name': name,
+    };
   }
 }
