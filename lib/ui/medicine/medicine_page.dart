@@ -59,8 +59,9 @@ class MedicinePage extends StatelessWidget {
       body: _contentsView(context, isEditable: true),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
-          int lastOrder = viewModel.getLastOrder();
-          bool isUpdate = await Navigator.of(context).push<bool>(MaterialPageRoute(builder: (_) => MedicineEditPage(Medicine.createEmpty(lastOrder)))) ?? false;
+          int newId = viewModel.createNewId();
+          int newOrder = viewModel.createNewOrder();
+          bool isUpdate = await Navigator.of(context).push<bool>(MaterialPageRoute(builder: (_) => MedicineEditPage(Medicine.createEmpty(newId, newOrder)))) ?? false;
           AppLogger.i('戻り値: $isUpdate');
           if (isUpdate) {
             await viewModel.reload();

@@ -48,12 +48,13 @@ class MedicineEditViewModel extends NotifierViewModel {
 
   Future<bool> save() async {
     final medicine = Medicine(
+      id: _originalMedicine.id,
       name: _inputItem.name,
       overview: _inputItem.overview,
       type: _inputItem.type,
       memo: _inputItem.memo,
       imagePath: _inputItem.localImagePath,
-      order: _inputItem.order,
+      order: _originalMedicine.order,
     );
 
     try {
@@ -70,10 +71,10 @@ class MedicineEditViewModel extends NotifierViewModel {
 /// 入力保持用のクラス
 ///
 class _InputItem {
-  _InputItem._(this.name, this.overview, this.type, this.memo, this.localImagePath, this.order);
+  _InputItem._(this.name, this.overview, this.type, this.memo, this.localImagePath);
 
   factory _InputItem.create(Medicine item) {
-    return _InputItem._(item.name, item.overview, item.type, item.memo, item.imagePath, item.order);
+    return _InputItem._(item.name, item.overview, item.type, item.memo, item.imagePath);
   }
 
   String name;
@@ -81,7 +82,6 @@ class _InputItem {
   MedicineType type;
   String memo;
   String localImagePath;
-  int order;
 
   bool isCompletedRequiredFields() {
     return name != null && name.isNotEmpty;

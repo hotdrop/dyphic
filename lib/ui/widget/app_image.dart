@@ -11,7 +11,7 @@ class AppImage extends StatelessWidget {
   }
 
   factory AppImage.large({@required String path}) {
-    return AppImage._(path, 200.0, 200.0);
+    return AppImage._(path, 150.0, 150.0);
   }
 
   final String _path;
@@ -40,6 +40,8 @@ class AppImage extends StatelessWidget {
   Widget _loadImageFromNetwork() {
     return CachedNetworkImage(
       imageUrl: _path,
+      width: _width,
+      height: _height,
       placeholder: (context, url) => SizedBox(
         width: _width,
         height: _height,

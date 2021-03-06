@@ -18,7 +18,7 @@ class MedicineCardView extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.all(4.0),
       child: ExpansionTileCard(
-        leading: _imageView(),
+        leading: AppImage.icon(path: medicine.imagePath),
         title: Text(medicine.name),
         subtitle: AppText.normal(text: medicine.overview),
         children: [
@@ -33,10 +33,6 @@ class MedicineCardView extends StatelessWidget {
         ],
       ),
     );
-  }
-
-  Widget _imageView() {
-    return AppImage.icon(path: medicine.imagePath);
   }
 
   Widget _memoView(BuildContext context) {
