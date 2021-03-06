@@ -29,6 +29,7 @@ class AppStrings {
   static const String medicinePageNothingItemLabel = 'お薬が登録されていません。\nログインしてお薬を登録しましょう。';
   static const String medicinePageOralName = '内服薬';
   static const String medicinePageNotOralName = '頓服薬';
+  static const String medicinePageTypeIntravenousName = '点滴';
   static const String medicineEditPageTitle = 'お薬情報';
   static const String medicineNameLabel = 'お薬名';
   static const String medicineOralLabel = '内服薬';

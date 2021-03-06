@@ -2,7 +2,6 @@ import 'package:dyphic/ui/widget/app_text.dart';
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
-import 'package:dyphic/common/app_strings.dart';
 import 'package:dyphic/model/medicine.dart';
 
 class MedicineCardView extends StatelessWidget {
@@ -18,11 +17,11 @@ class MedicineCardView extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _imageView(medicine.imagePath),
-            _titleView(context, medicine.name),
-            _oralTypeView(context, medicine.isOral),
+            _imageView(),
+            _titleView(context),
+            _oralTypeView(context),
             _colorDivider(context),
-            _memoView(context, medicine.memo),
+            _memoView(context),
           ],
         ),
         onTap: () => onTapEvent(),
@@ -30,14 +29,14 @@ class MedicineCardView extends StatelessWidget {
     );
   }
 
-  Widget _imageView(String imagePath) {
+  Widget _imageView() {
     return SizedBox(
       height: 100.0,
       child: Stack(
         children: [
           Positioned.fill(
             child: CachedNetworkImage(
-              imageUrl: imagePath,
+              imageUrl: medicine.imagePath,
               fit: BoxFit.fill,
               placeholder: (context, url) => CircularProgressIndicator(),
               errorWidget: (context, url, dynamic error) => Image.asset(
@@ -51,28 +50,27 @@ class MedicineCardView extends StatelessWidget {
     );
   }
 
-  Widget _titleView(BuildContext context, String title) {
+  Widget _titleView(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(left: 8.0, top: 8.0),
-      child: Text(title),
+      child: Text(medicine.name),
     );
   }
 
-  Widget _oralTypeView(BuildContext context, bool isOral) {
-    final oralStr = medicine.isOral ? AppStrings.medicinePageOralName : AppStrings.medicinePageNotOralName;
+  Widget _oralTypeView(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(left: 8.0),
       child: Text(
-        oralStr,
+        medicine.toTypeString(),
         style: Theme.of(context).textTheme.caption,
       ),
     );
   }
 
-  Widget _memoView(BuildContext context, String memo) {
+  Widget _memoView(BuildContext context) {
     return Padding(
       padding: EdgeInsets.only(left: 8.0),
-      child: AppText.multiLine(text: memo, maxLines: 3),
+      child: AppText.multiLine(text: medicine.memo, maxLines: 3),
     );
   }
 

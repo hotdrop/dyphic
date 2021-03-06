@@ -1,17 +1,18 @@
 import 'package:dyphic/common/app_strings.dart';
+import 'package:dyphic/model/medicine.dart';
 import 'package:flutter/material.dart';
 
-class AppRadio extends StatefulWidget {
-  AppRadio({@required this.initSelectedOral, @required this.onChange});
+class MedicineTypeRadio extends StatefulWidget {
+  MedicineTypeRadio({@required this.initSelectedType, @required this.onChange});
 
-  final bool initSelectedOral;
-  final Function(bool) onChange;
+  final MedicineType initSelectedType;
+  final Function(MedicineType) onChange;
 
   @override
-  _AppRadioState createState() => _AppRadioState();
+  _MedicineTypeRadioState createState() => _MedicineTypeRadioState();
 }
 
-class _AppRadioState extends State<AppRadio> {
+class _MedicineTypeRadioState extends State<MedicineTypeRadio> {
   int radioOral = 1;
   int radioNotOral = 2;
   int selectedRadioValue;
@@ -19,7 +20,14 @@ class _AppRadioState extends State<AppRadio> {
   @override
   void initState() {
     super.initState();
-    selectedRadioValue = widget.initSelectedOral ? radioOral : radioNotOral;
+    switch (widget.initSelectedType) {
+      case MedicineType.oral:
+        selectedRadioValue = radioOral;
+        break;
+      default:
+        selectedRadioValue = radioNotOral;
+        break;
+    }
   }
 
   @override
@@ -30,7 +38,7 @@ class _AppRadioState extends State<AppRadio> {
           value: radioOral,
           groupValue: selectedRadioValue,
           onChanged: (int v) {
-            widget.onChange(true);
+            widget.onChange(MedicineType.oral);
             setState(() {
               selectedRadioValue = radioOral;
             });
@@ -41,7 +49,7 @@ class _AppRadioState extends State<AppRadio> {
             value: radioNotOral,
             groupValue: selectedRadioValue,
             onChanged: (int v) {
-              widget.onChange(false);
+              widget.onChange(MedicineType.notOral);
               setState(() {
                 selectedRadioValue = radioNotOral;
               });

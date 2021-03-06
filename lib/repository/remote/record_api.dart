@@ -41,8 +41,8 @@ class RecordApi {
     final nowDate = DateTime.now();
     if (date.isBefore(nowDate)) {
       final getMedicines = [
-        Medicine(name: 'テスト薬その2', isOral: false, order: 4),
-        Medicine(name: '酸化マグネシウム', isOral: false, order: 3),
+        Medicine(name: 'テスト薬その2', type: MedicineType.oral, order: 4),
+        Medicine(name: '酸化マグネシウム', type: MedicineType.notOral, order: 3),
       ];
       return Record(
         date: DateTime(2021, 2, 20),

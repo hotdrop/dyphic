@@ -9,7 +9,7 @@ import 'package:dyphic/model/page_state.dart';
 import 'package:dyphic/ui/medicine/edit/medicine_edit_view_model.dart';
 import 'package:dyphic/ui/widget/app_dialog.dart';
 import 'package:dyphic/ui/widget/app_image.dart';
-import 'package:dyphic/ui/widget/app_radio.dart';
+import 'package:dyphic/ui/medicine/edit/medicine_type_radio.dart';
 import 'package:dyphic/ui/widget/app_text_field.dart';
 
 class MedicineEditPage extends StatelessWidget {
@@ -75,8 +75,8 @@ class MedicineEditPage extends StatelessWidget {
 
   Widget _switchOralView(BuildContext context) {
     final viewModel = Provider.of<MedicineEditViewModel>(context);
-    return AppRadio(
-        initSelectedOral: _medicine.isOral,
+    return MedicineTypeRadio(
+        initSelectedType: _medicine.type,
         onChange: (v) {
           viewModel.inputOral(v);
         });

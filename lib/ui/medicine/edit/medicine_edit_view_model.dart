@@ -29,8 +29,8 @@ class MedicineEditViewModel extends NotifierViewModel {
     _inputItem.name = name;
   }
 
-  void inputOral(bool isOral) {
-    _inputItem.isOral = isOral;
+  void inputOral(MedicineType type) {
+    _inputItem.type = type;
   }
 
   void inputImagePath(String path) {
@@ -45,7 +45,7 @@ class MedicineEditViewModel extends NotifierViewModel {
   Future<bool> save() async {
     final medicine = Medicine(
       name: _inputItem.name,
-      isOral: _inputItem.isOral,
+      type: _inputItem.type,
       memo: _inputItem.memo,
       imagePath: _inputItem.localImagePath,
       order: _inputItem.order,
@@ -65,14 +65,14 @@ class MedicineEditViewModel extends NotifierViewModel {
 /// 入力保持用のクラス
 ///
 class _InputItem {
-  _InputItem._(this.name, this.isOral, this.memo, this.localImagePath, this.order);
+  _InputItem._(this.name, this.type, this.memo, this.localImagePath, this.order);
 
   factory _InputItem.create(Medicine item) {
-    return _InputItem._(item.name, item.isOral, item.memo, item.imagePath, item.order);
+    return _InputItem._(item.name, item.type, item.memo, item.imagePath, item.order);
   }
 
   String name;
-  bool isOral;
+  MedicineType type;
   String memo;
   String localImagePath;
   int order;
