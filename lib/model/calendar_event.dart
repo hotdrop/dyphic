@@ -1,5 +1,3 @@
-import 'package:dyphic/common/app_strings.dart';
-import 'package:dyphic/model/medicine.dart';
 import 'package:flutter/material.dart';
 
 class CalendarEvent {
