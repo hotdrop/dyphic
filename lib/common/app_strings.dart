@@ -48,6 +48,7 @@ class AppStrings {
   static const String conditionPageTitle = '体調管理';
   static const String conditionOverview = 'この画面では体調に関する症状を登録・編集できます。';
   static const String conditionDetail = '「頭痛」や「腹痛」など大まかな症状を登録し、細かい症状は日々の記録画面にある体調メモに書いていくことをオススメします。';
+  static const String conditionClearSelectedLabel = '選択をクリアする';
   static const String conditionInputLabel = '症状名';
   static const String conditionInputDuplicateMessage = 'この症状名は既に登録されています。';
   static const String conditionNewButton = '新しく登録する';
@@ -66,6 +67,7 @@ class AppStrings {
   static const String settingsNotLoginNameLabel = 'ー';
   static const String settingsNotLoginEmailLabel = '未ログイン';
   static const String settingsLoginWithGoogle = 'Googleアカウントでログイン';
+  static const String settingsLoginInfo = '※ログインするとカレンダー登録やお薬情報などの登録/編集が可能となります。\nまた、一部データの取得もログインしないとできません。';
   static const String settingsLogoutTitle = 'Googleアカウントからログアウト';
   static const String settingsLogoutDialogMessage = 'ログアウトしてもよろしいですか？';
   static const String settingsLogoutSuccessMessage = 'ログアウトが完了しました。';

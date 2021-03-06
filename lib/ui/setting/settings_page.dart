@@ -1,5 +1,6 @@
 import 'package:dyphic/ui/widget/app_dialog.dart';
 import 'package:dyphic/ui/widget/app_divider.dart';
+import 'package:dyphic/ui/widget/app_text.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -43,6 +44,7 @@ class SettingsPage extends StatelessWidget {
         DividerThemeColor.create(),
         _rowAccountInfo(context),
         DividerThemeColor.create(),
+        _loginDescriptionLabel(),
         if (loggedIn) _logoutButton(context),
         if (!loggedIn) _loginButton(context),
       ],
@@ -76,6 +78,13 @@ class SettingsPage extends StatelessWidget {
       leading: const Icon(Icons.account_circle, size: 40.0),
       title: Text(viewModel.getLoginEmail()),
       subtitle: Text(viewModel.getLoginUserName()),
+    );
+  }
+
+  Widget _loginDescriptionLabel() {
+    return Padding(
+      padding: const EdgeInsets.only(left: 16.0, right: 16.0, top: 8.0),
+      child: AppText.normal(text: AppStrings.settingsLoginInfo),
     );
   }
 

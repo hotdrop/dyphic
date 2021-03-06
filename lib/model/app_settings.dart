@@ -24,6 +24,7 @@ class AppSettings extends ChangeNotifier {
 
   final AppSettingsRepository _repository;
 
+  bool get isLogin => _repository.isLogIn();
   bool get isDarkMode => _repository.isDarkMode();
 
   Future<void> changeTheme(bool isDark) async {

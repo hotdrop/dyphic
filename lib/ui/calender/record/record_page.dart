@@ -1,5 +1,6 @@
 import 'package:dyphic/common/app_colors.dart';
 import 'package:dyphic/common/app_strings.dart';
+import 'package:dyphic/model/app_settings.dart';
 import 'package:dyphic/model/record.dart';
 import 'package:dyphic/ui/widget/app_chips.dart';
 import 'package:dyphic/ui/widget/app_dialog.dart';
@@ -46,6 +47,25 @@ class RecordPage extends StatelessWidget {
   }
 
   Widget _loadSuccessView(BuildContext context) {
+    final appSettings = Provider.of<AppSettings>(context);
+    if (appSettings.isLogin) {
+      return _rootViewAllowEdit(context);
+    } else {
+      return _rootViewDeniedEdit(context);
+    }
+  }
+
+  Widget _rootViewDeniedEdit(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        centerTitle: true,
+        title: Text(Record.formatDate(_date)),
+      ),
+      body: _contentsView(context),
+    );
+  }
+
+  Widget _rootViewAllowEdit(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,

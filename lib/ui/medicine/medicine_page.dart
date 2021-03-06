@@ -1,4 +1,5 @@
 import 'package:dyphic/common/app_logger.dart';
+import 'package:dyphic/model/app_settings.dart';
 import 'package:dyphic/model/medicine.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -36,26 +37,26 @@ class MedicinePage extends StatelessWidget {
   }
 
   Widget _loadSuccessView(BuildContext context) {
-    final viewModel = Provider.of<MedicineViewModel>(context);
-    if (viewModel.isLogin) {
-      return _rootViewAllowRegister(context);
+    final appSettings = Provider.of<AppSettings>(context);
+    if (appSettings.isLogin) {
+      return _rootViewAllowEdit(context);
     } else {
-      return _rootViewDeniedRegister(context);
+      return _rootViewDeniedEdit(context);
     }
   }
 
-  Widget _rootViewDeniedRegister(BuildContext context) {
+  Widget _rootViewDeniedEdit(BuildContext context) {
     return Scaffold(
       appBar: AppBar(centerTitle: true, title: Text(AppStrings.medicinePageTitle)),
-      body: _contentsView(context),
+      body: _contentsView(context, isEditable: false),
     );
   }
 
-  Widget _rootViewAllowRegister(BuildContext context) {
+  Widget _rootViewAllowEdit(BuildContext context) {
     final viewModel = Provider.of<MedicineViewModel>(context);
     return Scaffold(
       appBar: AppBar(centerTitle: true, title: Text(AppStrings.medicinePageTitle)),
-      body: _contentsView(context),
+      body: _contentsView(context, isEditable: true),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
           int lastOrder = viewModel.getLastOrder();
@@ -70,7 +71,7 @@ class MedicinePage extends StatelessWidget {
     );
   }
 
-  Widget _contentsView(BuildContext context) {
+  Widget _contentsView(BuildContext context, {@required bool isEditable}) {
     final viewModel = Provider.of<MedicineViewModel>(context);
     final medicines = viewModel.medicines;
     if (medicines.isEmpty) {
@@ -83,7 +84,7 @@ class MedicinePage extends StatelessWidget {
           if (index < medicines.length) {
             return MedicineCardView(
               medicine: medicines[index],
-              isEditPermission: viewModel.isLogin,
+              isEditable: isEditable,
               onTapEvent: () async {
                 bool isUpdate = await Navigator.of(context).push<bool>(MaterialPageRoute(builder: (_) => MedicineEditPage(medicines[index]))) ?? false;
                 AppLogger.i('戻り値: $isUpdate');

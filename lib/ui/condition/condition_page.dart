@@ -1,3 +1,4 @@
+import 'package:dyphic/model/app_settings.dart';
 import 'package:dyphic/ui/widget/app_dialog.dart';
 import 'package:dyphic/ui/widget/app_divider.dart';
 import 'package:flutter/material.dart';
@@ -69,7 +70,7 @@ class ConditionPage extends StatelessWidget {
         Padding(
           padding: EdgeInsets.only(right: 16),
           child: OutlineButton(
-            child: Text('選択をクリアする'),
+            child: Text(AppStrings.conditionClearSelectedLabel),
             onPressed: () {
               viewModel.clear();
             },
@@ -101,13 +102,14 @@ class ConditionPage extends StatelessWidget {
   }
 
   Widget _inputArea(BuildContext context) {
+    final appSettings = Provider.of<AppSettings>(context);
     return Padding(
       padding: EdgeInsets.only(left: 36, right: 36, top: 16),
       child: Column(
         children: [
           _textFieldOnInputArea(context),
           SizedBox(height: 16),
-          _saveButtonOnInputArea(context),
+          if (appSettings.isLogin) _saveButtonOnInputArea(context),
         ],
       ),
     );

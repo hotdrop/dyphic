@@ -7,26 +7,21 @@ import 'package:dyphic/repository/medicine_repository.dart';
 import 'package:dyphic/ui/notifier_view_model.dart';
 
 class MedicineViewModel extends NotifierViewModel {
-  MedicineViewModel._(this._repository, this._accountRepository) {
+  MedicineViewModel._(this._repository) {
     _init();
   }
 
   factory MedicineViewModel.create() {
-    return MedicineViewModel._(MedicineRepository.create(), AccountRepository.create());
+    return MedicineViewModel._(MedicineRepository.create());
   }
 
   final MedicineRepository _repository;
-  final AccountRepository _accountRepository;
 
   List<Medicine> _medicines;
   List<Medicine> get medicines => _medicines;
 
-  bool _isLogin;
-  bool get isLogin => _isLogin;
-
   Future<void> _init() async {
     _medicines = await _repository.findAll();
-    _isLogin = _accountRepository.isLogIn;
     loadSuccess();
   }
 

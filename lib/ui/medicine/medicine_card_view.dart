@@ -7,10 +7,10 @@ import 'package:dyphic/ui/widget/app_text.dart';
 import 'package:dyphic/model/medicine.dart';
 
 class MedicineCardView extends StatelessWidget {
-  MedicineCardView({@required this.medicine, @required this.isEditPermission, @required this.onTapEvent});
+  MedicineCardView({@required this.medicine, @required this.isEditable, @required this.onTapEvent});
 
   final Medicine medicine;
-  final bool isEditPermission;
+  final bool isEditable;
   final Function onTapEvent;
 
   @override
@@ -27,7 +27,7 @@ class MedicineCardView extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
               Expanded(child: _memoView(context)),
-              if (isEditPermission) _editButton(),
+              if (isEditable) _editButton(),
             ],
           ),
         ],
