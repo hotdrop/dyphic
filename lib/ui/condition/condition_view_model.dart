@@ -10,9 +10,8 @@ class ConditionViewModel extends NotifierViewModel {
     _init();
   }
 
-  factory ConditionViewModel.create({ConditionRepository argRepo}) {
-    final repo = argRepo ?? ConditionRepository.create();
-    return ConditionViewModel._(repo);
+  factory ConditionViewModel.create() {
+    return ConditionViewModel._(ConditionRepository.create());
   }
 
   final ConditionRepository _repository;

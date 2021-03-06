@@ -1,5 +1,5 @@
 import 'package:dyphic/ui/widget/app_dialog.dart';
-import 'package:dyphic/ui/widget/app_widget.dart';
+import 'package:dyphic/ui/widget/app_divider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 

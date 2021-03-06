@@ -10,9 +10,8 @@ class SettingsViewModel extends NotifierViewModel {
     _init();
   }
 
-  factory SettingsViewModel.create({AccountRepository argRepo}) {
-    final repo = argRepo ?? AccountRepository.create();
-    return SettingsViewModel._(repo);
+  factory SettingsViewModel.create() {
+    return SettingsViewModel._(AccountRepository.create());
   }
 
   final AccountRepository _repository;

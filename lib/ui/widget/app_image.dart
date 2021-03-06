@@ -13,15 +13,23 @@ class AppImage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (path.isEmpty) {
-      return Image.asset('res/images/medicine_default.png', height: _height, width: _width);
+      return _loadImageDefault();
     } else if (path.contains('http')) {
-      _loadNetworkImage();
+      return _loadImageFromNetwork();
     } else {
-      return Image.file(File(path), height: _height, width: _width);
+      return _loadImageFromLocalStorage();
     }
   }
 
-  Widget _loadNetworkImage() {
+  Widget _loadImageDefault() {
+    return Image.asset('res/images/medicine_default.png', height: _height, width: _width);
+  }
+
+  Widget _loadImageFromLocalStorage() {
+    return Image.file(File(path), height: _height, width: _width);
+  }
+
+  Widget _loadImageFromNetwork() {
     return CachedNetworkImage(
       imageUrl: path,
       placeholder: (context, url) => SizedBox(

@@ -5,9 +5,9 @@ class AppDataSource {
   const AppDataSource._();
 
   ///
-  /// 使用する場合は必ずinitを呼んでください。
+  /// このクラスを使用する場合はアプリ起動時に必ず1回initを呼ぶ
   ///
-  factory AppDataSource.create() {
+  factory AppDataSource.getInstance() {
     return _instance;
   }
 

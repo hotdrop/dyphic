@@ -8,9 +8,8 @@ class MedicineEditViewModel extends NotifierViewModel {
     _init();
   }
 
-  factory MedicineEditViewModel.create(Medicine medicine, {MedicineRepository argRepo}) {
-    final repo = argRepo ?? MedicineRepository.create();
-    return MedicineEditViewModel._(medicine, repo);
+  factory MedicineEditViewModel.create(Medicine medicine) {
+    return MedicineEditViewModel._(medicine, MedicineRepository.create());
   }
 
   final MedicineRepository _repository;

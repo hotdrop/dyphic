@@ -3,9 +3,8 @@ import 'package:dyphic/service/app_firebase.dart';
 class AccountRepository {
   const AccountRepository._(this._appFirebase);
 
-  factory AccountRepository.create({AppFirebase argFirebase}) {
-    final firebase = argFirebase ?? AppFirebase.getInstance();
-    return AccountRepository._(firebase);
+  factory AccountRepository.create() {
+    return AccountRepository._(AppFirebase.getInstance());
   }
 
   final AppFirebase _appFirebase;

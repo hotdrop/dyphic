@@ -13,16 +13,13 @@ class RecordViewModel extends NotifierViewModel {
     _init();
   }
 
-  factory RecordViewModel.create(
-    DateTime date, {
-    RecordRepository argRecordRepo,
-    MedicineRepository argMedicineRepo,
-    ConditionRepository argConditionRepo,
-  }) {
-    final recordRepo = argRecordRepo ?? RecordRepository.create();
-    final medicineRepo = argMedicineRepo ?? MedicineRepository.create();
-    final conditionRepo = argConditionRepo ?? ConditionRepository.create();
-    return RecordViewModel._(date, recordRepo, medicineRepo, conditionRepo);
+  factory RecordViewModel.create(DateTime date) {
+    return RecordViewModel._(
+      date,
+      RecordRepository.create(),
+      MedicineRepository.create(),
+      ConditionRepository.create(),
+    );
   }
 
   final DateTime _date;

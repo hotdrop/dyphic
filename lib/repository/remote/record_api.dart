@@ -8,9 +8,8 @@ import 'package:dyphic/service/app_firebase.dart';
 class RecordApi {
   const RecordApi._(this._appFirebase);
 
-  factory RecordApi.create({AppFirebase argFirebase}) {
-    final firebase = argFirebase ?? AppFirebase.getInstance();
-    return RecordApi._(firebase);
+  factory RecordApi.create() {
+    return RecordApi._(AppFirebase.getInstance());
   }
 
   final AppFirebase _appFirebase;

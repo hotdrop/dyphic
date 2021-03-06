@@ -6,9 +6,8 @@ import 'package:dyphic/service/app_firebase.dart';
 class EventApi {
   const EventApi._(this._appFirebase);
 
-  factory EventApi.create({AppFirebase argFirebase}) {
-    final firebase = argFirebase ?? AppFirebase.getInstance();
-    return EventApi._(firebase);
+  factory EventApi.create() {
+    return EventApi._(AppFirebase.getInstance());
   }
 
   final AppFirebase _appFirebase;

@@ -5,9 +5,8 @@ import 'package:dyphic/service/app_firebase.dart';
 class ConditionApi {
   const ConditionApi._(this._appFirebase);
 
-  factory ConditionApi.create({AppFirebase argFirebase}) {
-    final firebase = argFirebase ?? AppFirebase.getInstance();
-    return ConditionApi._(firebase);
+  factory ConditionApi.create() {
+    return ConditionApi._(AppFirebase.getInstance());
   }
 
   final AppFirebase _appFirebase;

@@ -1,26 +1,24 @@
 import 'package:dyphic/ui/widget/app_text.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 import 'package:dyphic/ui/calender/record/record_page.dart';
-import 'package:dyphic/ui/widget/app_widget.dart';
+import 'package:dyphic/ui/widget/app_divider.dart';
 
-import 'package:dyphic/model/app_settings.dart';
 import 'package:dyphic/model/calendar_event.dart';
 import 'package:dyphic/common/app_strings.dart';
 
-class AppCalendar extends StatefulWidget {
-  const AppCalendar({Key key, this.events, this.onReturnEditPage}) : super(key: key);
+class DyphicCalendar extends StatefulWidget {
+  const DyphicCalendar({Key key, this.events, this.onReturnEditPage}) : super(key: key);
 
   final List<CalendarEvent> events;
   final void Function(bool isUpdate) onReturnEditPage;
 
   @override
-  _AppCalendarState createState() => _AppCalendarState();
+  _DyphicCalendarState createState() => _DyphicCalendarState();
 }
 
-class _AppCalendarState extends State<AppCalendar> {
+class _DyphicCalendarState extends State<DyphicCalendar> {
   CalendarController _calendarController;
   Map<DateTime, List<CalendarEvent>> _events;
   CalendarEvent _selectedItem;

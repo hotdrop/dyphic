@@ -2,7 +2,7 @@ import 'package:dyphic/common/app_logger.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import 'package:dyphic/ui/widget/app_calender.dart';
+import 'package:dyphic/ui/calender/dyphic_calender.dart';
 import 'package:dyphic/ui/calender/calendar_view_model.dart';
 import 'package:dyphic/model/page_state.dart';
 import 'package:dyphic/common/app_strings.dart';
@@ -35,7 +35,7 @@ class CalenderPage extends StatelessWidget {
 
   Widget _loadSuccessView(BuildContext context) {
     final viewModel = context.read<CalendarViewModel>();
-    return AppCalendar(
+    return DyphicCalendar(
       events: viewModel.calendarEvents,
       onReturnEditPage: (isUpdate) {
         // TODO 記録情報が更新されたらカレンダーをリロードする。いちいち全部リロードは効率悪いので対象データだけにしたい。

@@ -6,11 +6,8 @@ import 'package:dyphic/repository/remote/event_api.dart';
 class EventRepository {
   const EventRepository._(this._eventApi, this._eventDb, this._prefs);
 
-  factory EventRepository.create({EventApi argApi, EventDataSource argDb, AppDataSource argPrefs}) {
-    final api = argApi ?? EventApi.create();
-    final db = argDb ?? EventDataSource.create();
-    final prefs = argPrefs ?? AppDataSource.create();
-    return EventRepository._(api, db, prefs);
+  factory EventRepository.create() {
+    return EventRepository._(EventApi.create(), EventDataSource.create(), AppDataSource.getInstance());
   }
 
   final EventApi _eventApi;

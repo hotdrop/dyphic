@@ -1,35 +1,21 @@
 import 'package:dyphic/repository/local/app_data_source.dart';
-import 'package:dyphic/service/app_firebase.dart';
 
-///
-/// アプリの設定に関する情報は全てここから取得する
-///
 class AppSettingsRepository {
-  const AppSettingsRepository._();
+  const AppSettingsRepository._(this._prefs);
 
-  static Future<AppSettingsRepository> create({AppDataSource argAppDs, AppFirebase argFirebase}) async {
-    final instance = AppSettingsRepository._();
-    await instance._init(argAppDs, argFirebase);
-    return instance;
+  factory AppSettingsRepository.create() {
+    return AppSettingsRepository._(AppDataSource.getInstance());
   }
 
-  static AppDataSource _appDataSource;
+  final AppDataSource _prefs;
 
-  Future<void> _init(AppDataSource appDataSource, AppFirebase appFirebase) async {
-    _appDataSource = appDataSource ?? AppDataSource.create();
-    await _appDataSource.init();
-
-    final _firebase = appFirebase ?? AppFirebase.getInstance();
-    await _firebase.load();
-  }
-
-  bool isDarkMode() => _appDataSource == null ? false : _appDataSource.isDarkMode();
+  bool isDarkMode() => _prefs == null ? false : _prefs.isDarkMode();
 
   Future<void> changeDarkMode() async {
-    await _appDataSource.saveDarkMode();
+    await _prefs.saveDarkMode();
   }
 
   Future<void> changeLightMode() async {
-    await _appDataSource.saveLightMode();
+    await _prefs.saveLightMode();
   }
 }

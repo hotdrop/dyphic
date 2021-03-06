@@ -4,6 +4,10 @@ import 'package:progress_dialog/progress_dialog.dart';
 
 import 'package:dyphic/common/app_strings.dart';
 
+///
+/// 処理用のダイアログ
+/// 確認のダイアログを表示したあと、OKだったらプログレスダイアログを表示して処理が完了したら成功/失敗ダイアログを表示する
+///
 class AppDialog {
   const AppDialog._(
     this._type,

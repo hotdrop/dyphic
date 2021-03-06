@@ -8,10 +8,8 @@ class CalendarViewModel extends NotifierViewModel {
     _init();
   }
 
-  factory CalendarViewModel.create({RecordRepository argRecordRepo, EventRepository argEventRepo}) {
-    final recordRepository = argRecordRepo ?? RecordRepository.create();
-    final eventRepository = argEventRepo ?? EventRepository.create();
-    return CalendarViewModel._(recordRepository, eventRepository);
+  factory CalendarViewModel.create() {
+    return CalendarViewModel._(RecordRepository.create(), EventRepository.create());
   }
 
   final RecordRepository _recordRepository;

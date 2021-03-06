@@ -4,9 +4,8 @@ import 'package:dyphic/repository/remote/condition_api.dart';
 class ConditionRepository {
   const ConditionRepository._(this._conditionApi);
 
-  factory ConditionRepository.create({ConditionApi argApi}) {
-    final api = argApi ?? ConditionApi.create();
-    return ConditionRepository._(api);
+  factory ConditionRepository.create() {
+    return ConditionRepository._(ConditionApi.create());
   }
 
   final ConditionApi _conditionApi;
