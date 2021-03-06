@@ -34,3 +34,5 @@ class Medicine {
     ''';
   }
 }
+
+// isOralはダメでここにMedicineタイプのenum作る

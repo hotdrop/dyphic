@@ -3,7 +3,9 @@ class AppStrings {
 
   static const String calenderPageTitle = 'カレンダー';
   static const String calenderNoEvent = '予定なし';
-  static const String calenderUnRegisterLabel = 'この日の記録は未登録です。\n[記録情報へ]ボタンをタップして記録しましょう。';
+  static const String calenderUnRegisterLabel = 'この日の記録は未登録です。\nここをタップして記録しましょう。';
+  static const String calenderDetailConditionLabel = '【体調】';
+  static const String calenderDetailMedicineLabel = '【飲んだ薬】';
 
   static const String recordTemperatureMorning = '朝の体温';
   static const String recordTemperatureNight = '夜の体温';

@@ -1,3 +1,4 @@
+import 'package:dyphic/ui/widget/app_text.dart';
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
@@ -71,12 +72,7 @@ class MedicineCardView extends StatelessWidget {
   Widget _memoView(BuildContext context, String memo) {
     return Padding(
       padding: EdgeInsets.only(left: 8.0),
-      child: Text(
-        memo,
-        maxLines: 3,
-        overflow: TextOverflow.ellipsis,
-        style: Theme.of(context).textTheme.caption,
-      ),
+      child: AppText.multiLine(text: memo, maxLines: 3),
     );
   }
 

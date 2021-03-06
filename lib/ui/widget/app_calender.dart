@@ -1,3 +1,4 @@
+import 'package:dyphic/ui/widget/app_text.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:table_calendar/table_calendar.dart';
@@ -59,7 +60,6 @@ class _AppCalendarState extends State<AppCalendar> {
       mainAxisSize: MainAxisSize.max,
       children: [
         _buildCalendar(),
-        const SizedBox(height: 8.0),
         _cardDailyRecord(context),
       ],
     );
@@ -116,46 +116,44 @@ class _AppCalendarState extends State<AppCalendar> {
   /// タップした日付の記録情報をカレンダーの下に表示する
   ///
   Widget _cardDailyRecord(BuildContext context) {
-    final appSettings = Provider.of<AppSettings>(context);
-    return Container(
-      width: double.infinity,
-      height: 150,
-      margin: const EdgeInsets.all(8.0),
-      decoration: BoxDecoration(
-        border: Border.all(width: 0.8, color: appSettings.isDarkMode ? Colors.white : Colors.black),
-        borderRadius: BorderRadius.circular(12.0),
+    return Expanded(
+      child: Card(
+        margin: const EdgeInsets.only(left: 16.0, right: 16.0, bottom: 8.0),
+        elevation: 4.0,
+        child: InkWell(
+          child: _detailDailyRecord(),
+          onTap: () async {
+            final selectDate = _selectedItem.date;
+            bool isUpdate = await Navigator.of(context).push<bool>(
+                  MaterialPageRoute(builder: (_) => RecordPage(selectDate)),
+                ) ??
+                false;
+            widget.onReturnEditPage(isUpdate);
+          },
+        ),
       ),
-      child: _detailDailyRecord(),
     );
   }
 
   Widget _detailDailyRecord() {
-    return InkWell(
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: EdgeInsets.all(8.0),
-            child: Column(
-              children: [
-                _labelEventInfo(),
-                DividerThemeColor.create(),
-                _labelRecordInfo(),
-              ],
-            ),
-          ),
+    return SingleChildScrollView(
+      child: Padding(
+        padding: EdgeInsets.all(8.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _labelEventInfo(),
+            DividerThemeColor.create(),
+            _labelRecordInfo(),
+          ],
         ),
-        onTap: () async {
-          final selectDate = _selectedItem.date;
-          bool isUpdate = await Navigator.of(context).push<bool>(
-                MaterialPageRoute(builder: (_) => RecordPage(selectDate)),
-              ) ??
-              false;
-          widget.onReturnEditPage(isUpdate);
-        });
+      ),
+    );
   }
 
   Widget _labelEventInfo() {
     return Center(
-      child: _detailText(_selectedItem.name ?? AppStrings.calenderNoEvent),
+      child: AppText.normal(text: _selectedItem.name ?? AppStrings.calenderNoEvent),
     );
   }
 
@@ -166,33 +164,29 @@ class _AppCalendarState extends State<AppCalendar> {
       widgets.add(_labelMedicines());
       widgets.add(_labelMemo());
     } else {
-      widgets.add(_detailText(AppStrings.calenderUnRegisterLabel));
+      widgets.add(AppText.normal(text: AppStrings.calenderUnRegisterLabel));
     }
     return Column(
-      mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: widgets,
     );
   }
 
   Widget _labelConditions() {
-    return _detailText('体調: ${_selectedItem.toStringConditions()}');
+    return AppText.normal(text: '${AppStrings.calenderDetailConditionLabel} ${_selectedItem.toStringConditions()}');
   }
 
   Widget _labelMedicines() {
-    return _detailText('飲んだ薬: ${_selectedItem.toStringMedicines()}');
+    return AppText.normal(text: '${AppStrings.calenderDetailMedicineLabel} ${_selectedItem.toStringMedicines()}');
   }
 
   Widget _labelMemo() {
-    return Text(
-      'メモ: ${_selectedItem.getMemo()}',
-      maxLines: 2,
-      overflow: TextOverflow.ellipsis,
-      style: TextStyle(fontSize: 10),
+    return Padding(
+      padding: const EdgeInsets.only(top: 8.0),
+      child: AppText.multiLine(
+        text: '${_selectedItem.getMemo()}',
+        maxLines: 5,
+      ),
     );
-  }
-
-  Widget _detailText(String text) {
-    return Text(text, style: TextStyle(fontSize: 10));
   }
 }
