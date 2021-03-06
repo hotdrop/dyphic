@@ -79,7 +79,6 @@ class ConditionViewModel extends NotifierViewModel {
   }
 
   int _createNewId() {
-    int newId;
     if (conditions.isNotEmpty) {
       return conditions.map((e) => e.id).reduce(max) + 1;
     } else {
