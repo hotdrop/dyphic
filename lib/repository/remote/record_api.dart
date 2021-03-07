@@ -1,7 +1,4 @@
 import 'package:dyphic/common/app_logger.dart';
-import 'package:dyphic/model/calendar_event.dart';
-import 'package:dyphic/model/condition.dart';
-import 'package:dyphic/model/medicine.dart';
 import 'package:dyphic/model/record.dart';
 import 'package:dyphic/service/app_firebase.dart';
 
@@ -14,55 +11,28 @@ class RecordApi {
 
   final AppFirebase _appFirebase;
 
-  Future<List<EventRecord>> findEventRecords() async {
-    // TODO Firestoreから必要なデータのみ取得する。接続できない場合は空を返す
-    final eventRecords = [
-      EventRecord(
-        date: DateTime(2021, 2, 10),
-        conditions: ['腹痛', '胃痛', '筋肉痛'],
-        medicines: ['ビオフェルミン', 'キャベジン'],
-        memo: null,
-      ),
-      EventRecord(
-        date: DateTime(2021, 2, 11),
-        conditions: ['腹痛', '腰痛', '頭痛', '混乱'],
-        medicines: ['ビオフェルミン', 'キャベジンS', '少し古い鼻炎の薬'],
-        memo: 'アイウエオアイウエオアイウエオアイウエオアイウエオアイウエオアイウエオアイウエオアイウエオアイウエオアイウエオアイウエオアイウエオアイウエオアイウエオアイウエオアイウエオアイウエオアイウエオアイウエオ',
-      ),
-    ];
-    AppLogger.d('記録情報が登録された日付を全て取得しました。登録数: ${eventRecords.length}');
-    return eventRecords;
+  Future<List<RecordOverview>> findEventRecords() async {
+    final records = await _appFirebase.readRecords();
+    AppLogger.d('記録情報が登録された日付を全て取得しました。登録数: ${records.length}');
+
+    final overviewRecords = records
+        .map((r) => RecordOverview(
+              date: r.date,
+              conditionNames: r.conditionNames,
+              conditionMemo: r.conditionMemo,
+            ))
+        .toList();
+
+    return overviewRecords;
   }
 
-  Future<Record> find(DateTime date) async {
-    AppLogger.d('${Record.makeRecordId(date)} の記録情報を取得します。本当はここでFirestoreへ情報をとりに行きます。');
-
-    // TODO Firestoreから該当IDの記録情報を取得
-    final nowDate = DateTime.now();
-    if (date.isBefore(nowDate)) {
-      final getMedicines = [
-        Medicine(name: 'テスト薬その2', type: MedicineType.oral, order: 4),
-        Medicine(name: '酸化マグネシウム', type: MedicineType.notOral, order: 3),
-      ];
-      return Record(
-        date: DateTime(2021, 2, 20),
-        morningTemperature: 36.5,
-        nightTemperature: 36.7,
-        medicines: getMedicines,
-        conditions: [Condition(1, '頭痛'), Condition(3, '倦怠感'), Condition(4, '便秘')],
-        conditionMemo: '便秘は7日目・・',
-        breakfast: 'パン',
-        lunch: 'うどん',
-        dinner: '鍋',
-        memo: 'アイウエオ',
-      );
-    } else {
-      return null;
-    }
+  Future<Record> find(int id) async {
+    AppLogger.d('$id の記録情報を取得します。');
+    return await _appFirebase.readRecord(id);
   }
 
   Future<void> save(Record record) async {
-    // TODO Firestoreへ保存
-    AppLogger.d('${record.date} の記録情報を保存します。\n${record.toString()}');
+    AppLogger.d('${record.id} の記録情報を保存します。\n${record.toString()}');
+    await _appFirebase.writeRecord(record);
   }
 }

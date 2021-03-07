@@ -1,16 +1,16 @@
+import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
+
 import 'package:dyphic/common/app_colors.dart';
 import 'package:dyphic/common/app_strings.dart';
 import 'package:dyphic/model/app_settings.dart';
-import 'package:dyphic/model/record.dart';
+import 'package:dyphic/model/page_state.dart';
 import 'package:dyphic/ui/widget/app_chips.dart';
 import 'package:dyphic/ui/widget/app_dialog.dart';
 import 'package:dyphic/ui/widget/app_meal_card.dart';
 import 'package:dyphic/ui/widget/app_temperature.dart';
 import 'package:dyphic/ui/widget/app_text_field.dart';
-import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-
-import 'package:dyphic/model/page_state.dart';
 import 'package:dyphic/ui/calender/record/record_view_model.dart';
 
 class RecordPage extends StatelessWidget {
@@ -20,25 +20,26 @@ class RecordPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final headerTitle = DateFormat('yyyy年MM月dd日').format(_date);
     return ChangeNotifierProvider<RecordViewModel>(
       create: (_) => RecordViewModel.create(_date),
       builder: (context, _) {
         final pageState = context.select<RecordViewModel, PageLoadingState>((vm) => vm.pageState);
         if (pageState.isLoadSuccess) {
-          return _loadSuccessView(context);
+          return _loadSuccessView(context, headerTitle);
         } else {
-          return _nowLoadingView();
+          return _nowLoadingView(headerTitle);
         }
       },
-      child: _nowLoadingView(),
+      child: _nowLoadingView(headerTitle),
     );
   }
 
-  Widget _nowLoadingView() {
+  Widget _nowLoadingView(String headerTitle) {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        title: Text(Record.formatDate(_date)),
+        title: Text(headerTitle),
       ),
       body: Center(
         child: CircularProgressIndicator(),
@@ -46,30 +47,30 @@ class RecordPage extends StatelessWidget {
     );
   }
 
-  Widget _loadSuccessView(BuildContext context) {
+  Widget _loadSuccessView(BuildContext context, String headerTitle) {
     final appSettings = Provider.of<AppSettings>(context);
     if (appSettings.isLogin) {
-      return _rootViewAllowEdit(context);
+      return _rootViewAllowEdit(context, headerTitle);
     } else {
-      return _rootViewDeniedEdit(context);
+      return _rootViewDeniedEdit(context, headerTitle);
     }
   }
 
-  Widget _rootViewDeniedEdit(BuildContext context) {
+  Widget _rootViewDeniedEdit(BuildContext context, String headerTitle) {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        title: Text(Record.formatDate(_date)),
+        title: Text(headerTitle),
       ),
       body: _contentsView(context),
     );
   }
 
-  Widget _rootViewAllowEdit(BuildContext context) {
+  Widget _rootViewAllowEdit(BuildContext context, String headerTitle) {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        title: Text(Record.formatDate(_date)),
+        title: Text(headerTitle),
       ),
       body: _contentsView(context),
       floatingActionButton: _saveFloatingActionButton(context),

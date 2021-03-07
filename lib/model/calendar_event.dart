@@ -1,3 +1,4 @@
+import 'package:dyphic/model/record.dart';
 import 'package:flutter/material.dart';
 
 class CalendarEvent {
@@ -8,11 +9,11 @@ class CalendarEvent {
     @required this.eventRecord,
   });
 
-  factory CalendarEvent.create(Event event, EventRecord record) {
+  factory CalendarEvent.create(Event event, RecordOverview record) {
     return CalendarEvent(date: event.date, type: event.type, name: event.name, eventRecord: record);
   }
 
-  factory CalendarEvent.createOnlyRecord(EventRecord record) {
+  factory CalendarEvent.createOnlyRecord(RecordOverview record) {
     return CalendarEvent(date: record.date, type: EventType.none, name: null, eventRecord: record);
   }
 
@@ -27,7 +28,7 @@ class CalendarEvent {
   final DateTime date;
   final EventType type;
   final String name;
-  final EventRecord eventRecord;
+  final RecordOverview eventRecord;
 
   bool typeMedical() => type == EventType.hospital;
   bool typeInjection() => type == EventType.injection;
@@ -38,24 +39,17 @@ class CalendarEvent {
   }
 
   String toStringConditions() {
-    if (eventRecord.conditions == null) {
+    if (eventRecord.conditionNames == null) {
       return '';
     }
-    return eventRecord.conditions.join(" ");
+    return eventRecord.conditionNames.join(" ");
   }
 
-  String toStringMedicines() {
-    if (eventRecord.medicines == null) {
+  String getConditionMemo() {
+    if (eventRecord.conditionMemo == null) {
       return '';
     }
-    return eventRecord.medicines.join(" ");
-  }
-
-  String getMemo() {
-    if (eventRecord.memo == null) {
-      return '';
-    }
-    return eventRecord.memo;
+    return eventRecord.conditionMemo;
   }
 }
 
@@ -84,21 +78,4 @@ class Event {
       return EventType.none;
     }
   }
-}
-
-///
-/// データ取得時以外は使わない
-///
-class EventRecord {
-  EventRecord({
-    @required this.date,
-    @required this.conditions,
-    @required this.medicines,
-    @required this.memo,
-  });
-
-  final DateTime date;
-  final List<String> conditions;
-  final List<String> medicines;
-  final String memo;
 }

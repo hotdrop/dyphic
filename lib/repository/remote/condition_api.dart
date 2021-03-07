@@ -12,15 +12,6 @@ class ConditionApi {
   final AppFirebase _appFirebase;
 
   Future<List<Condition>> findAll() async {
-    // TODO Firestoreから取得する
-    // final conditions = [
-    //   Condition(1, '頭痛'),
-    //   Condition(2, '腹痛'),
-    //   Condition(3, '倦怠感'),
-    //   Condition(4, '便秘'),
-    //   Condition(5, '筋肉痛'),
-    // ];
-
     final conditions = await _appFirebase.readConditions();
     AppLogger.d('お薬情報を全て取得しました。データ数: ${conditions.length}');
 

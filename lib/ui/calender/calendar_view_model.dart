@@ -1,3 +1,4 @@
+import 'package:dyphic/model/record.dart';
 import 'package:dyphic/ui/notifier_view_model.dart';
 import 'package:dyphic/model/calendar_event.dart';
 import 'package:dyphic/repository/event_repository.dart';
@@ -25,7 +26,7 @@ class CalendarViewModel extends NotifierViewModel {
     loadSuccess();
   }
 
-  List<CalendarEvent> _merge(List<Event> events, List<EventRecord> eventRecords) {
+  List<CalendarEvent> _merge(List<Event> events, List<RecordOverview> eventRecords) {
     final eventMap = Map.fromIterables(events.map((e) => e.date), events.map((e) => e));
     final addedEventMap = <DateTime, bool>{};
     List<CalendarEvent> results = [];

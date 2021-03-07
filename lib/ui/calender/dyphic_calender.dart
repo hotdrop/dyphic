@@ -159,7 +159,6 @@ class _DyphicCalendarState extends State<DyphicCalendar> {
     final widgets = <Widget>[];
     if (_selectedItem.haveRecord()) {
       widgets.add(_labelConditions());
-      widgets.add(_labelMedicines());
       widgets.add(_labelMemo());
     } else {
       widgets.add(AppText.normal(text: AppStrings.calenderUnRegisterLabel));
@@ -174,15 +173,11 @@ class _DyphicCalendarState extends State<DyphicCalendar> {
     return AppText.normal(text: '${AppStrings.calenderDetailConditionLabel} ${_selectedItem.toStringConditions()}');
   }
 
-  Widget _labelMedicines() {
-    return AppText.normal(text: '${AppStrings.calenderDetailMedicineLabel} ${_selectedItem.toStringMedicines()}');
-  }
-
   Widget _labelMemo() {
     return Padding(
       padding: const EdgeInsets.only(top: 8.0),
       child: AppText.multiLine(
-        text: '${_selectedItem.getMemo()}',
+        text: '${_selectedItem.getConditionMemo()}',
         maxLines: 5,
       ),
     );

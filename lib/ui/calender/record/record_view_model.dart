@@ -129,9 +129,7 @@ class InputRecord {
     @required this.date,
     this.morningTemperature = 0,
     this.nightTemperature = 0,
-    this.medicines,
     this.selectMedicineNames,
-    this.conditions,
     this.selectConditionNames,
     this.conditionMemo = '',
     this.breakfast = '',
@@ -143,9 +141,7 @@ class InputRecord {
   factory InputRecord.empty(DateTime date) {
     return InputRecord._(
       date: date,
-      medicines: [],
       selectMedicineNames: [],
-      conditions: [],
       selectConditionNames: [],
     );
   }
@@ -155,10 +151,8 @@ class InputRecord {
       date: record.date,
       morningTemperature: record.morningTemperature,
       nightTemperature: record.nightTemperature,
-      medicines: record.medicines,
-      selectMedicineNames: record.medicines.map((e) => e.name).toList(),
-      conditions: record.conditions,
-      selectConditionNames: record.conditions.map((e) => e.name).toList(),
+      selectMedicineNames: record.medicineNames,
+      selectConditionNames: record.conditionNames,
       conditionMemo: record.conditionMemo,
       breakfast: record.breakfast,
       lunch: record.lunch,
@@ -170,9 +164,7 @@ class InputRecord {
   DateTime date;
   double morningTemperature;
   double nightTemperature;
-  List<Medicine> medicines;
   List<String> selectMedicineNames;
-  List<Condition> conditions;
   List<String> selectConditionNames;
   String conditionMemo;
   String breakfast;
@@ -181,15 +173,12 @@ class InputRecord {
   String memo;
 
   Record toRecord(List<Medicine> allMedicine, List<Condition> allCondition) {
-    final selectMedicines = allMedicine.where((m) => selectMedicineNames.contains(m.name)).toList();
-    final selectConditions = allCondition.where((c) => selectConditionNames.contains(c.name)).toList();
-
-    return Record(
+    return Record.createByDate(
       date: date,
       morningTemperature: morningTemperature,
       nightTemperature: nightTemperature,
-      medicines: selectMedicines,
-      conditions: selectConditions,
+      medicineNames: selectMedicineNames,
+      conditionNames: selectConditionNames,
       conditionMemo: conditionMemo,
       breakfast: breakfast,
       lunch: lunch,

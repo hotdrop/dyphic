@@ -5,7 +5,6 @@ class AppStrings {
   static const String calenderNoEvent = '予定なし';
   static const String calenderUnRegisterLabel = 'この日の記録は未登録です。\nここをタップして記録しましょう。';
   static const String calenderDetailConditionLabel = '【体調】';
-  static const String calenderDetailMedicineLabel = '【飲んだ薬】';
 
   static const String recordTemperatureMorning = '朝の体温';
   static const String recordTemperatureNight = '夜の体温';
@@ -57,7 +56,7 @@ class AppStrings {
   static const String conditionNewDialogSuccess = '登録が完了しました';
   static const String conditionEditButton = '症状名を修正する';
   static const String conditionEditDialogTitle = '症状名修正';
-  static const String conditionEditDialogDetail = '既存の症状名を修正します。これまで記録時に選択してきた症状名も全て更新されるので注意してください。修正しますか？';
+  static const String conditionEditDialogDetail = '既存の症状名を修正します。これまで記録時に選択してきた症状名は更新されないので必要に応じて新たに再選択してください。修正しますか？';
   static const String conditionEditDialogSuccess = '修正が完了しました';
   static const String conditionEditDialogError = 'エラーが発生しました。';
 
@@ -67,7 +66,7 @@ class AppStrings {
   static const String settingsNotLoginNameLabel = 'ー';
   static const String settingsNotLoginEmailLabel = '未ログイン';
   static const String settingsLoginWithGoogle = 'Googleアカウントでログイン';
-  static const String settingsLoginInfo = '※ログインするとカレンダー登録やお薬情報などの登録/編集が可能となります。\nまた、一部データの取得もログインしないとできません。';
+  static const String settingsLoginInfo = '※ログインするとカレンダー登録やお薬情報などの登録/編集が可能になります。';
   static const String settingsLogoutTitle = 'Googleアカウントからログアウト';
   static const String settingsLogoutDialogMessage = 'ログアウトしてもよろしいですか？';
   static const String settingsLogoutSuccessMessage = 'ログアウトが完了しました。';
