@@ -1,6 +1,7 @@
 import 'package:dyphic/model/app_settings.dart';
 import 'package:dyphic/ui/widget/app_dialog.dart';
 import 'package:dyphic/ui/widget/app_divider.dart';
+import 'package:dyphic/ui/widget/app_outline_button.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -69,8 +70,8 @@ class ConditionPage extends StatelessWidget {
       children: [
         Padding(
           padding: EdgeInsets.only(right: 16),
-          child: OutlineButton(
-            child: Text(AppStrings.conditionClearSelectedLabel),
+          child: AppOutlineButton(
+            label: AppStrings.conditionClearSelectedLabel,
             onPressed: () {
               viewModel.clear();
             },
@@ -92,6 +93,7 @@ class ConditionPage extends StatelessWidget {
             .map((c) => ChoiceChip(
                   label: Text(c.name),
                   selected: viewModel.selectedCondition.name == c.name,
+                  selectedColor: Theme.of(context).primaryColor,
                   onSelected: (bool isSelected) {
                     viewModel.selectCondition(c);
                   },

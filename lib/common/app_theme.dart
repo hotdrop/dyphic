@@ -12,15 +12,22 @@ class AppTheme {
       buttonColor: Colors.pink[300],
       textTheme: ButtonTextTheme.accent,
     ),
+    floatingActionButtonTheme: FloatingActionButtonThemeData(
+      backgroundColor: Colors.pink[200],
+    ),
   );
 
   static final ThemeData dark = ThemeData.dark().copyWith(
+    primaryColor: Colors.pink[200],
     accentColor: Colors.pink[300],
     scaffoldBackgroundColor: Color(0xFF232323),
     applyElevationOverlayColor: true,
     buttonTheme: ButtonThemeData(
       buttonColor: Colors.pink[300],
       textTheme: ButtonTextTheme.accent,
+    ),
+    floatingActionButtonTheme: FloatingActionButtonThemeData(
+      backgroundColor: Colors.pink[200],
     ),
   );
 }

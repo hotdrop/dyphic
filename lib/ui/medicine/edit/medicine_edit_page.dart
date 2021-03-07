@@ -1,3 +1,4 @@
+import 'package:dyphic/ui/widget/app_outline_button.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:image_picker/image_picker.dart';
@@ -127,9 +128,9 @@ class MedicineEditPage extends StatelessWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-            OutlineButton.icon(
+            AppOutlineButton(
+              label: AppStrings.medicineStartCameraLabel,
               icon: const Icon(Icons.camera_alt),
-              label: const Text(AppStrings.medicineStartCameraLabel),
               onPressed: () async {
                 final imagePicker = ImagePicker();
                 var image = await imagePicker.getImage(source: ImageSource.camera, imageQuality: 10);

@@ -1,5 +1,6 @@
 import 'package:dyphic/ui/widget/app_dialog.dart';
 import 'package:dyphic/ui/widget/app_divider.dart';
+import 'package:dyphic/ui/widget/app_outline_button.dart';
 import 'package:dyphic/ui/widget/app_text.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -66,6 +67,7 @@ class SettingsPage extends StatelessWidget {
       leading: Icon(appSettings.isDarkMode ? Icons.brightness_7 : Icons.brightness_4),
       title: const Text(AppStrings.settingsChangeAppThemeLabel),
       trailing: Switch(
+        activeColor: Theme.of(context).primaryColor,
         onChanged: (isDark) => appSettings.changeTheme(isDark),
         value: appSettings.isDarkMode,
       ),
@@ -107,11 +109,9 @@ class SettingsPage extends StatelessWidget {
     final viewModel = Provider.of<SettingsViewModel>(context);
     return Padding(
       padding: const EdgeInsets.all(32.0),
-      child: OutlineButton(
-        padding: const EdgeInsets.only(top: 4.0, bottom: 4.0),
-        color: Theme.of(context).accentColor,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.0)),
-        child: const Text(AppStrings.settingsLogoutTitle),
+      child: AppOutlineButton(
+        label: AppStrings.settingsLogoutTitle,
+        isCircular: true,
         onPressed: () async {
           final dialog = AppDialog.createInfo(
             title: AppStrings.settingsLogoutTitle,

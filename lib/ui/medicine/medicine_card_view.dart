@@ -27,7 +27,7 @@ class MedicineCardView extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
               Expanded(child: _memoView(context)),
-              if (isEditable) _editButton(),
+              if (isEditable) _editButton(context),
             ],
           ),
         ],
@@ -42,9 +42,9 @@ class MedicineCardView extends StatelessWidget {
     );
   }
 
-  Widget _editButton() {
+  Widget _editButton(BuildContext context) {
     return TextButton(
-      child: Icon(Icons.edit),
+      child: Icon(Icons.edit, color: Theme.of(context).accentColor),
       onPressed: () => onTapEvent(),
     );
   }

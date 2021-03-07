@@ -19,8 +19,12 @@ class MedicineApi {
   }
 
   Future<void> save(Medicine medicine) async {
-    final saveUrl = await _appFirebase.saveImage(medicine.imagePath);
-    final newMedicine = medicine.copy(imageUrl: saveUrl);
+    Medicine newMedicine = medicine;
+    if (medicine.imagePath.isNotEmpty) {
+      final saveUrl = await _appFirebase.saveImage(medicine.imagePath);
+      newMedicine = medicine.copy(imageUrl: saveUrl);
+    }
+
     AppLogger.d('お薬情報を保存します。\n${newMedicine.toString()}');
     await _appFirebase.writeMedicine(newMedicine);
   }
