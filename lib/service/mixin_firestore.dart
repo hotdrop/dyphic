@@ -71,7 +71,7 @@ mixin AppFirestoreMixin {
       final dataMap = snapshot.data();
       return Record.createById(
         id: id,
-        medicineNames: _splitNames(dataMap['medicineNames'] as String),
+        medicineNames: _splitNames(dataMap['medicines'] as String),
         breakfast: dataMap['breakfast'] as String,
         lunch: dataMap['lunch'] as String,
         dinner: dataMap['dinner'] as String,

@@ -1,3 +1,5 @@
+import 'package:dyphic/service/app_crashlytics.dart';
+import 'package:flutter/foundation.dart';
 import 'package:logger/logger.dart';
 
 class AppLogger {
@@ -18,10 +20,10 @@ class AppLogger {
   }
 
   static Future<void> e(String message, dynamic exception, StackTrace stackTrace) async {
-    // if (kDebugMode) {
-    _logger.e(message, exception);
-    // } else {
-    //   await RSCrashlytics.getInstance().record(message, exception, stackTrace);
-    // }
+    if (kDebugMode) {
+      _logger.e(message, exception);
+    } else {
+      await AppCrashlytics.getInstance().record(message, exception, stackTrace);
+    }
   }
 }
