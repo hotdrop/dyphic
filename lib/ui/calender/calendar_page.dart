@@ -1,4 +1,3 @@
-import 'package:dyphic/common/app_logger.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -37,12 +36,9 @@ class CalenderPage extends StatelessWidget {
     final viewModel = context.read<CalendarViewModel>();
     return DyphicCalendar(
       events: viewModel.calendarEvents,
-      onReturnEditPage: (isUpdate) {
-        // TODO 記録情報が更新されたらカレンダーをリロードする。いちいち全部リロードは効率悪いので対象データだけにしたい。
+      onReturnEditPage: (isUpdate, targetId) {
         if (isUpdate) {
-          AppLogger.d('記録情報が更新されました。');
-        } else {
-          AppLogger.d('更新されませんでした。');
+          viewModel.refresh(targetId);
         }
       },
     );

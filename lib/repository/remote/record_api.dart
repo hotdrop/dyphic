@@ -14,15 +14,7 @@ class RecordApi {
   Future<List<RecordOverview>> findEventRecords() async {
     final records = await _appFirebase.readRecords();
     AppLogger.d('記録情報が登録された日付を全て取得しました。登録数: ${records.length}');
-
-    final overviewRecords = records
-        .map((r) => RecordOverview(
-              date: r.date,
-              conditionNames: r.conditionNames,
-              conditionMemo: r.conditionMemo,
-            ))
-        .toList();
-
+    final overviewRecords = records.map((r) => RecordOverview.fromRecord(r)).toList();
     return overviewRecords;
   }
 

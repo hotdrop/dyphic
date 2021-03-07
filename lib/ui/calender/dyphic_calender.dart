@@ -1,3 +1,4 @@
+import 'package:dyphic/model/record.dart';
 import 'package:dyphic/ui/widget/app_text.dart';
 import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
@@ -12,7 +13,7 @@ class DyphicCalendar extends StatefulWidget {
   const DyphicCalendar({Key key, this.events, this.onReturnEditPage}) : super(key: key);
 
   final List<CalendarEvent> events;
-  final void Function(bool isUpdate) onReturnEditPage;
+  final void Function(bool isUpdate, int id) onReturnEditPage;
 
   @override
   _DyphicCalendarState createState() => _DyphicCalendarState();
@@ -54,6 +55,8 @@ class _DyphicCalendarState extends State<DyphicCalendar> {
 
   @override
   Widget build(BuildContext context) {
+    // TODO 記録情報を登録して戻ってくるとレンダリングが一瞬おかしくなる。
+    //     The overflowing RenderFlex has an orientation of Axis.vertical.
     return Column(
       mainAxisSize: MainAxisSize.max,
       children: [
@@ -126,7 +129,8 @@ class _DyphicCalendarState extends State<DyphicCalendar> {
                   MaterialPageRoute(builder: (_) => RecordPage(selectDate)),
                 ) ??
                 false;
-            widget.onReturnEditPage(isUpdate);
+            int id = Record.makeRecordId(selectDate);
+            widget.onReturnEditPage(isUpdate, id);
           },
         ),
       ),

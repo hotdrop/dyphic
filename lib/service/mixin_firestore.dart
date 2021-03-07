@@ -16,7 +16,11 @@ mixin AppFirestoreMixin {
 
   Future<Record> readRecord(int id) async {
     final snapshot = await FirebaseFirestore.instance.collection(_recordRootName).doc(id.toString()).get();
-    return _fromMapToRecord(id, snapshot.data());
+    if (snapshot.exists) {
+      return _fromMapToRecord(id, snapshot.data());
+    } else {
+      return null;
+    }
   }
 
   Future<void> writeRecord(Record record) async {
@@ -24,8 +28,8 @@ mixin AppFirestoreMixin {
   }
 
   Record _fromSnapshotByRecord(DocumentSnapshot doc) {
-    final medicineNameStr = doc.get('medicineNameStr') as String;
-    final conditionNameStr = doc.get('conditionNames') as String;
+    final medicineNameStr = doc.get('medicines') as String;
+    final conditionNameStr = doc.get('conditions') as String;
     return Record.createById(
       id: int.parse(doc.id),
       morningTemperature: doc.get('morningTemperature') as double,
@@ -41,20 +45,29 @@ mixin AppFirestoreMixin {
   }
 
   Record _fromMapToRecord(int id, Map<String, dynamic> map) {
-    final medicineNameStr = map['medicineNames'] as String;
-    final conditionNameStr = map['conditionNames'] as String;
     return Record.createById(
       id: id,
       morningTemperature: map['morningTemperature'] as double,
       nightTemperature: map['nightTemperature'] as double,
-      medicineNames: medicineNameStr.split(Record.nameSeparator),
-      conditionNames: conditionNameStr.split(Record.nameSeparator),
+      medicineNames: _splitNames(map['medicineNames'] as String),
+      conditionNames: _splitNames(map['conditionNames'] as String),
       conditionMemo: map['conditionMemo'] as String,
       breakfast: map['breakfast'] as String,
       lunch: map['lunch'] as String,
       dinner: map['dinner'] as String,
       memo: map['memo'] as String,
     );
+  }
+
+  List<String> _splitNames(String nStr) {
+    if (nStr == null) {
+      return [];
+    }
+    if (nStr.contains(Record.nameSeparator)) {
+      return nStr.split(Record.nameSeparator);
+    } else {
+      return [nStr];
+    }
   }
 
   ///

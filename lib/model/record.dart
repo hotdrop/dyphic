@@ -6,11 +6,19 @@ import 'package:intl/intl.dart';
 /// こちらは全取得するのでなるべく小さくする
 ///
 class RecordOverview {
-  RecordOverview({
+  RecordOverview._({
     @required this.date,
     @required this.conditionNames,
     @required this.conditionMemo,
   });
+
+  factory RecordOverview.fromRecord(Record record) {
+    return RecordOverview._(
+      date: record.date,
+      conditionNames: record.conditionNames,
+      conditionMemo: record.conditionMemo,
+    );
+  }
 
   final DateTime date;
   final List<String> conditionNames;

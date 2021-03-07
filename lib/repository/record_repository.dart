@@ -19,6 +19,10 @@ class RecordRepository {
     return await _recordApi.find(id);
   }
 
+  Future<Record> findById(int id) async {
+    return await _recordApi.find(id);
+  }
+
   Future<void> save(Record record) async {
     await _recordApi.save(record);
   }

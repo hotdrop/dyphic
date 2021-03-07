@@ -7,13 +7,11 @@ class AppTemperature extends StatelessWidget {
   const AppTemperature._(this.temperature, this.isMorning, this.onEditValue, this.dialogTitle);
 
   factory AppTemperature.morning({@required double temperature, @required Function(double) onEditValue}) {
-    final t = temperature != null ? temperature : 0.0;
-    return AppTemperature._(t, true, onEditValue, AppStrings.recordTemperatureMorning);
+    return AppTemperature._(temperature, true, onEditValue, AppStrings.recordTemperatureMorning);
   }
 
   factory AppTemperature.night({@required double temperature, @required Function(double) onEditValue}) {
-    final t = temperature != null ? temperature : 0.0;
-    return AppTemperature._(t, false, onEditValue, AppStrings.recordTemperatureNight);
+    return AppTemperature._(temperature, false, onEditValue, AppStrings.recordTemperatureNight);
   }
 
   final String dialogTitle;
@@ -50,7 +48,7 @@ class AppTemperature extends StatelessWidget {
           builder: (context) {
             return TemperatureEditDialog(
               title: dialogTitle,
-              initValue: temperature,
+              initValue: (temperature > 0) ? temperature : 36.5,
             );
           },
         );

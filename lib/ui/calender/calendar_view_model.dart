@@ -16,39 +16,53 @@ class CalendarViewModel extends NotifierViewModel {
   final RecordRepository _recordRepository;
   final EventRepository _eventRepository;
 
-  List<CalendarEvent> _events;
-  List<CalendarEvent> get calendarEvents => _events;
+  Map<DateTime, CalendarEvent> _events;
+  List<CalendarEvent> get calendarEvents => _events.values.toList();
 
   Future<void> _init() async {
     final events = await _eventRepository.findAll();
-    final recordIds = await _recordRepository.findEventRecords();
-    _events = _merge(events, recordIds);
+    final overviewRecords = await _recordRepository.findEventRecords();
+    _events = _merge(events, overviewRecords);
     loadSuccess();
   }
 
-  List<CalendarEvent> _merge(List<Event> events, List<RecordOverview> eventRecords) {
-    final eventMap = Map.fromIterables(events.map((e) => e.date), events.map((e) => e));
-    final addedEventMap = <DateTime, bool>{};
-    List<CalendarEvent> results = [];
+  Map<DateTime, CalendarEvent> _merge(List<Event> events, List<RecordOverview> overviewRecords) {
+    Map<DateTime, Event> eventMap = Map.fromIterables(events.map((e) => e.date), events.map((e) => e));
+    Map<DateTime, CalendarEvent> results = {};
 
     // レコードをベースにイベントをマージする
-    eventRecords.forEach((record) {
+    overviewRecords.forEach((record) {
       if (eventMap.containsKey(record.date)) {
         final event = eventMap[record.date];
-        addedEventMap[record.date] = true;
-        results.add(CalendarEvent.create(event, record));
+        results[record.date] = CalendarEvent.create(event, record);
       } else {
-        results.add(CalendarEvent.createOnlyRecord(record));
+        results[record.date] = CalendarEvent.createOnlyRecord(record);
       }
     });
 
     // レコードに入っていないイベントをマージする
     events.forEach((event) {
-      if (!addedEventMap.containsKey(event.date)) {
-        results.add(CalendarEvent.createOnlyEvent(event));
+      if (!results.containsKey(event.date)) {
+        results[event.date] = (CalendarEvent.createOnlyEvent(event));
       }
     });
 
     return results;
+  }
+
+  Future<void> refresh(int updateId) async {
+    nowLoading();
+    final record = await _recordRepository.findById(updateId);
+
+    final recordOverview = RecordOverview.fromRecord(record);
+    if (_events.containsKey(recordOverview.date)) {
+      final existEventWithNewRecord = _events[recordOverview.date].updateRecord(recordOverview);
+      _events[recordOverview.date] = existEventWithNewRecord;
+    } else {
+      final newEvent = CalendarEvent.createOnlyRecord(recordOverview);
+      _events[recordOverview.date] = newEvent;
+    }
+
+    loadSuccess();
   }
 }
