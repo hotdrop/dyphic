@@ -1,4 +1,3 @@
-import 'package:dyphic/model/calendar_event.dart';
 import 'package:dyphic/model/record.dart';
 import 'package:dyphic/repository/remote/record_api.dart';
 

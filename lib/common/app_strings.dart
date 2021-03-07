@@ -66,7 +66,7 @@ class AppStrings {
   static const String settingsNotLoginNameLabel = 'ー';
   static const String settingsNotLoginEmailLabel = '未ログイン';
   static const String settingsLoginWithGoogle = 'Googleアカウントでログイン';
-  static const String settingsLoginInfo = '※ログインするとカレンダー登録やお薬情報などの登録/編集が可能になります。';
+  static const String settingsLoginInfo = '※ログインするとカレンダー登録やお薬情報などの登録/編集が可能になり、イベント情報も表示されるようになります。';
   static const String settingsLogoutTitle = 'Googleアカウントからログアウト';
   static const String settingsLogoutDialogMessage = 'ログアウトしてもよろしいですか？';
   static const String settingsLogoutSuccessMessage = 'ログアウトが完了しました。';
