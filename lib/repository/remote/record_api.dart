@@ -22,8 +22,16 @@ class RecordApi {
     final o = await _appFirebase.findOverviewRecord(id);
     final t = await _appFirebase.findTemperatureRecord(id);
     final d = await _appFirebase.findDetailRecord(id);
-    final record =
-        Record.createById(id: id, recordOverview: o, recordTemperature: t, medicineNames: d.medicineNames, breakfast: d.breakfast, lunch: d.lunch, dinner: d.dinner, memo: d.memo);
+    final record = Record.createById(
+      id: id,
+      recordOverview: o,
+      recordTemperature: t,
+      medicineNames: d?.medicineNames ?? [],
+      breakfast: d?.breakfast ?? '',
+      lunch: d?.lunch ?? '',
+      dinner: d?.dinner ?? '',
+      memo: d?.memo ?? '',
+    );
     return record;
   }
 
