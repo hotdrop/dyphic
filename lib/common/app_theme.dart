@@ -4,19 +4,23 @@ class AppTheme {
   AppTheme._();
 
   static final ThemeData light = ThemeData.light().copyWith(
-    primaryColor: Colors.lightBlue,
-    accentColor: Colors.lightBlue,
-    primaryColorDark: Colors.indigoAccent,
+    primaryColor: Colors.pink[200],
+    accentColor: Colors.pinkAccent,
+    primaryColorDark: Colors.pink[700],
     backgroundColor: Colors.white,
     buttonTheme: ButtonThemeData(
-      buttonColor: Colors.lightBlue,
+      buttonColor: Colors.pink[300],
       textTheme: ButtonTextTheme.accent,
     ),
   );
 
   static final ThemeData dark = ThemeData.dark().copyWith(
-    accentColor: Colors.blueAccent,
+    accentColor: Colors.pink[300],
     scaffoldBackgroundColor: Color(0xFF232323),
     applyElevationOverlayColor: true,
+    buttonTheme: ButtonThemeData(
+      buttonColor: Colors.pink[300],
+      textTheme: ButtonTextTheme.accent,
+    ),
   );
 }
