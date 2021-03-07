@@ -17,7 +17,6 @@ class EventDataSource {
     final db = await _dbProvider.database;
     final results = await db.query(EventEntity.tableName);
     final List<EventEntity> entities = results.isNotEmpty ? results.map((it) => EventEntity.fromMap(it)).toList() : [];
-
     return entities.map((e) => e.toEvent()).toList();
   }
 

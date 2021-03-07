@@ -1,5 +1,6 @@
 import 'package:dyphic/common/app_logger.dart';
 import 'package:dyphic/model/condition.dart';
+import 'package:dyphic/model/dyphic_id.dart';
 import 'package:dyphic/model/medicine.dart';
 import 'package:dyphic/model/record.dart';
 import 'package:dyphic/repository/condition_repository.dart';
@@ -49,7 +50,8 @@ class RecordViewModel extends NotifierViewModel {
   /// コンストラクタでよび、使用元のViewではPageStateでViewModelの利用状態を判断する。
   ///
   Future<void> _init() async {
-    final _record = await _repository.find(_date);
+    final id = DyphicID.makeRecordId(_date);
+    final _record = await _repository.find(id);
     if (_record != null) {
       _inputRecord = InputRecord.create(_record);
     } else {
@@ -173,13 +175,14 @@ class InputRecord {
   String memo;
 
   Record toRecord(List<Medicine> allMedicine, List<Condition> allCondition) {
-    return Record.createByDate(
-      date: date,
-      morningTemperature: morningTemperature,
-      nightTemperature: nightTemperature,
+    final id = DyphicID.makeRecordId(date);
+    final overview = RecordOverview(recordId: id, conditionNames: selectConditionNames, conditionMemo: conditionMemo);
+    final temperature = RecordTemperature(recordId: id, morningTemperature: morningTemperature, nightTemperature: nightTemperature);
+    return Record.createById(
+      id: id,
+      recordOverview: overview,
+      recordTemperature: temperature,
       medicineNames: selectMedicineNames,
-      conditionNames: selectConditionNames,
-      conditionMemo: conditionMemo,
       breakfast: breakfast,
       lunch: lunch,
       dinner: dinner,

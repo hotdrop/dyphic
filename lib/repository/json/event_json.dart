@@ -13,23 +13,22 @@ class EventJson {
 }
 
 class EventObject {
-  const EventObject({this.dateStr, this.name, this.typeIdx});
+  const EventObject({this.dateId, this.name, this.typeIdx});
 
   static EventObject fromJson(Map<String, dynamic> json) {
     if (json == null) return null;
     return EventObject(
-      dateStr: json['date'] as String,
+      dateId: json['date'] as int,
       typeIdx: json['type'] as int,
       name: json['name'] as String,
     );
   }
 
-  final String dateStr;
+  final int dateId;
   final String name;
   final int typeIdx;
 
   Event toEvent() {
-    DateTime date = DateTime.parse(dateStr);
-    return Event(date: date, type: Event.toType(typeIdx), name: name);
+    return Event(id: dateId, type: Event.toType(typeIdx), name: name);
   }
 }

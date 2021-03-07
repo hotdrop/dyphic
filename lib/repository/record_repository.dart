@@ -11,11 +11,10 @@ class RecordRepository {
   final RecordApi _recordApi;
 
   Future<List<RecordOverview>> findEventRecords() async {
-    return await _recordApi.findEventRecords();
+    return await _recordApi.findOverviewRecords();
   }
 
-  Future<Record> find(DateTime date) async {
-    final id = Record.makeRecordId(date);
+  Future<Record> find(int id) async {
     return await _recordApi.find(id);
   }
 

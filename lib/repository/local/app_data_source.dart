@@ -51,7 +51,6 @@ class AppDataSource {
 
   Future<void> saveSaveGetEventDate() async {
     final nowDate = DateTime.now();
-
     final monthStr = nowDate.month.toString().padLeft(2, '0');
     final dayStr = nowDate.day.toString().padLeft(2, '0');
     final dateStr = '${nowDate.year}-$monthStr-$dayStr';

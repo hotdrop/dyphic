@@ -11,20 +11,26 @@ class RecordApi {
 
   final AppFirebase _appFirebase;
 
-  Future<List<RecordOverview>> findEventRecords() async {
-    final records = await _appFirebase.readRecords();
-    AppLogger.d('記録情報が登録された日付を全て取得しました。登録数: ${records.length}');
-    final overviewRecords = records.map((r) => RecordOverview.fromRecord(r)).toList();
+  Future<List<RecordOverview>> findOverviewRecords() async {
+    final overviewRecords = await _appFirebase.findOverviewRecords();
+    AppLogger.d('記録情報概要を全取得しました。登録数: ${overviewRecords.length}');
     return overviewRecords;
   }
 
   Future<Record> find(int id) async {
     AppLogger.d('$id の記録情報を取得します。');
-    return await _appFirebase.readRecord(id);
+    final o = await _appFirebase.findOverviewRecord(id);
+    final t = await _appFirebase.findTemperatureRecord(id);
+    final d = await _appFirebase.findDetailRecord(id);
+    final record =
+        Record.createById(id: id, recordOverview: o, recordTemperature: t, medicineNames: d.medicineNames, breakfast: d.breakfast, lunch: d.lunch, dinner: d.dinner, memo: d.memo);
+    return record;
   }
 
   Future<void> save(Record record) async {
     AppLogger.d('${record.id} の記録情報を保存します。\n${record.toString()}');
-    await _appFirebase.writeRecord(record);
+    await _appFirebase.saveOverviewRecord(record);
+    await _appFirebase.saveTemperatureRecord(record);
+    await _appFirebase.saveDetailRecord(record);
   }
 }

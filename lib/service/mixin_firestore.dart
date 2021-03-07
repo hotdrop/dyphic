@@ -7,56 +7,121 @@ mixin AppFirestoreMixin {
   ///
   /// 記録情報詳細
   ///
-  static final String _recordRootName = 'records';
+  static final String _recordRootCollection = 'dyphic';
+  static final String _recordRootDocument = 'records';
 
-  Future<List<Record>> readRecords() async {
-    final snapshot = await FirebaseFirestore.instance.collection(_recordRootName).get();
-    return snapshot.docs.map((doc) => _fromSnapshotByRecord(doc)).toList();
-  }
+  static final String _recordOverviewCollection = 'overview';
+  static final String _recordTemperatureCollection = 'temperature';
+  static final String _recordDetailCollection = 'detail';
 
-  Future<Record> readRecord(int id) async {
-    final snapshot = await FirebaseFirestore.instance.collection(_recordRootName).doc(id.toString()).get();
+  DocumentReference get _rootDoc => FirebaseFirestore.instance.collection(_recordRootCollection).doc(_recordRootDocument);
+
+  Future<RecordOverview> findOverviewRecord(int id) async {
+    final snapshot = await _rootDoc.collection(_recordOverviewCollection).doc(id.toString()).get();
     if (snapshot.exists) {
-      return _fromMapToRecord(id, snapshot.data());
+      final dataMap = snapshot.data();
+      return RecordOverview(
+        recordId: id,
+        conditionNames: _splitNames(dataMap['conditions'] as String),
+        conditionMemo: dataMap['conditionMemo'] as String,
+      );
     } else {
       return null;
     }
   }
 
-  Future<void> writeRecord(Record record) async {
-    await FirebaseFirestore.instance.collection(_recordRootName).doc(record.id.toString()).set(record.toMap());
+  Future<List<RecordOverview>> findOverviewRecords() async {
+    final snapshot = await _rootDoc.collection(_recordOverviewCollection).get();
+    return snapshot.docs.map((doc) {
+      return RecordOverview(
+        recordId: int.parse(doc.id),
+        conditionNames: _splitNames(doc.get('conditions') as String),
+        conditionMemo: doc.get('conditionMemo') as String,
+      );
+    }).toList();
   }
 
-  Record _fromSnapshotByRecord(DocumentSnapshot doc) {
-    final medicineNameStr = doc.get('medicines') as String;
-    final conditionNameStr = doc.get('conditions') as String;
-    return Record.createById(
-      id: int.parse(doc.id),
-      morningTemperature: doc.get('morningTemperature') as double,
-      nightTemperature: doc.get('nightTemperature') as double,
-      medicineNames: medicineNameStr.split(Record.nameSeparator),
-      conditionNames: conditionNameStr.split(Record.nameSeparator),
-      conditionMemo: doc.get('conditionMemo') as String,
-      breakfast: doc.get('breakfast') as String,
-      lunch: doc.get('lunch') as String,
-      dinner: doc.get('dinner') as String,
-      memo: doc.get('memo') as String,
-    );
+  Future<RecordTemperature> findTemperatureRecord(int id) async {
+    final snapshot = await _rootDoc.collection(_recordTemperatureCollection).doc(id.toString()).get();
+    if (snapshot.exists) {
+      final dataMap = snapshot.data();
+      return RecordTemperature(
+        recordId: id,
+        morningTemperature: dataMap['morningTemperature'] as double,
+        nightTemperature: dataMap['nightTemperature'] as double,
+      );
+    } else {
+      return null;
+    }
   }
 
-  Record _fromMapToRecord(int id, Map<String, dynamic> map) {
-    return Record.createById(
-      id: id,
-      morningTemperature: map['morningTemperature'] as double,
-      nightTemperature: map['nightTemperature'] as double,
-      medicineNames: _splitNames(map['medicineNames'] as String),
-      conditionNames: _splitNames(map['conditionNames'] as String),
-      conditionMemo: map['conditionMemo'] as String,
-      breakfast: map['breakfast'] as String,
-      lunch: map['lunch'] as String,
-      dinner: map['dinner'] as String,
-      memo: map['memo'] as String,
-    );
+  Future<List<RecordTemperature>> findTemperatureRecords() async {
+    final snapshot = await _rootDoc.collection(_recordTemperatureCollection).get();
+    return snapshot.docs.map((doc) {
+      return RecordTemperature(
+        recordId: int.parse(doc.id),
+        morningTemperature: doc.get('morningTemperature') as double,
+        nightTemperature: doc.get('nightTemperature') as double,
+      );
+    }).toList();
+  }
+
+  Future<Record> findDetailRecord(int id) async {
+    final snapshot = await _rootDoc.collection(_recordDetailCollection).doc(id.toString()).get();
+    if (snapshot.exists) {
+      final dataMap = snapshot.data();
+      return Record.createById(
+        id: id,
+        medicineNames: _splitNames(dataMap['medicineNames'] as String),
+        breakfast: dataMap['breakfast'] as String,
+        lunch: dataMap['lunch'] as String,
+        dinner: dataMap['dinner'] as String,
+        memo: dataMap['memo'] as String,
+      );
+    } else {
+      return null;
+    }
+  }
+
+  Future<List<Record>> findDetailRecords() async {
+    final snapshot = await _rootDoc.collection(_recordDetailCollection).get();
+    return snapshot.docs.map((doc) {
+      return Record.createById(
+        id: int.parse(doc.id),
+        medicineNames: _splitNames(doc.get('medicines') as String),
+        breakfast: doc.get('breakfast') as String,
+        lunch: doc.get('lunch') as String,
+        dinner: doc.get('dinner') as String,
+        memo: doc.get('memo') as String,
+      );
+    }).toList();
+  }
+
+  Future<void> saveOverviewRecord(Record record) async {
+    final recordMap = <String, dynamic>{
+      'conditions': record.conditionNames.join(Record.nameSeparator),
+      'conditionMemo': record.conditionMemo,
+    };
+    await _rootDoc.collection(_recordOverviewCollection).doc(record.id.toString()).set(recordMap);
+  }
+
+  Future<void> saveTemperatureRecord(Record record) async {
+    final recordMap = <String, dynamic>{
+      'morningTemperature': record.morningTemperature,
+      'nightTemperature': record.nightTemperature,
+    };
+    await _rootDoc.collection(_recordTemperatureCollection).doc(record.id.toString()).set(recordMap);
+  }
+
+  Future<void> saveDetailRecord(Record record) async {
+    final recordMap = <String, dynamic>{
+      'medicines': record.medicineNames.join(Record.nameSeparator),
+      'breakfast': record.breakfast,
+      'lunch': record.lunch,
+      'dinner': record.dinner,
+      'memo': record.memo,
+    };
+    await _rootDoc.collection(_recordDetailCollection).doc(record.id.toString()).set(recordMap);
   }
 
   List<String> _splitNames(String nStr) {

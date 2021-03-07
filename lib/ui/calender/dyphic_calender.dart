@@ -1,4 +1,4 @@
-import 'package:dyphic/model/record.dart';
+import 'package:dyphic/model/dyphic_id.dart';
 import 'package:dyphic/ui/widget/app_text.dart';
 import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
@@ -129,8 +129,8 @@ class _DyphicCalendarState extends State<DyphicCalendar> {
                   MaterialPageRoute(builder: (_) => RecordPage(selectDate)),
                 ) ??
                 false;
-            int id = Record.makeRecordId(selectDate);
-            widget.onReturnEditPage(isUpdate, id);
+            final recordId = DyphicID.makeRecordId(selectDate);
+            widget.onReturnEditPage(isUpdate, recordId);
           },
         ),
       ),

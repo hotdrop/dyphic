@@ -16,7 +16,7 @@ class CalendarViewModel extends NotifierViewModel {
   final RecordRepository _recordRepository;
   final EventRepository _eventRepository;
 
-  Map<DateTime, CalendarEvent> _events;
+  Map<int, CalendarEvent> _events;
   List<CalendarEvent> get calendarEvents => _events.values.toList();
 
   Future<void> _init() async {
@@ -26,24 +26,24 @@ class CalendarViewModel extends NotifierViewModel {
     loadSuccess();
   }
 
-  Map<DateTime, CalendarEvent> _merge(List<Event> events, List<RecordOverview> overviewRecords) {
-    Map<DateTime, Event> eventMap = Map.fromIterables(events.map((e) => e.date), events.map((e) => e));
-    Map<DateTime, CalendarEvent> results = {};
+  Map<int, CalendarEvent> _merge(List<Event> events, List<RecordOverview> overviewRecords) {
+    Map<int, Event> eventMap = Map.fromIterables(events.map((e) => e.id), events.map((e) => e));
+    Map<int, CalendarEvent> results = {};
 
     // レコードをベースにイベントをマージする
-    overviewRecords.forEach((record) {
-      if (eventMap.containsKey(record.date)) {
-        final event = eventMap[record.date];
-        results[record.date] = CalendarEvent.create(event, record);
+    overviewRecords.forEach((overviewRecord) {
+      if (eventMap.containsKey(overviewRecord.recordId)) {
+        final event = eventMap[overviewRecord.recordId];
+        results[overviewRecord.recordId] = CalendarEvent.create(event, overviewRecord);
       } else {
-        results[record.date] = CalendarEvent.createOnlyRecord(record);
+        results[overviewRecord.recordId] = CalendarEvent.createOnlyRecord(overviewRecord);
       }
     });
 
     // レコードに入っていないイベントをマージする
     events.forEach((event) {
-      if (!results.containsKey(event.date)) {
-        results[event.date] = (CalendarEvent.createOnlyEvent(event));
+      if (!results.containsKey(event.id)) {
+        results[event.id] = (CalendarEvent.createOnlyEvent(event));
       }
     });
 
@@ -53,14 +53,14 @@ class CalendarViewModel extends NotifierViewModel {
   Future<void> refresh(int updateId) async {
     nowLoading();
     final record = await _recordRepository.findById(updateId);
-
     final recordOverview = RecordOverview.fromRecord(record);
-    if (_events.containsKey(recordOverview.date)) {
-      final existEventWithNewRecord = _events[recordOverview.date].updateRecord(recordOverview);
-      _events[recordOverview.date] = existEventWithNewRecord;
+
+    if (_events.containsKey(recordOverview.recordId)) {
+      final existEventWithNewRecord = _events[recordOverview.recordId].updateRecord(recordOverview);
+      _events[recordOverview.recordId] = existEventWithNewRecord;
     } else {
       final newEvent = CalendarEvent.createOnlyRecord(recordOverview);
-      _events[recordOverview.date] = newEvent;
+      _events[recordOverview.recordId] = newEvent;
     }
 
     loadSuccess();
