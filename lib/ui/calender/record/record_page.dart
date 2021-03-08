@@ -257,6 +257,8 @@ class RecordPage extends StatelessWidget {
     return FloatingActionButton(
       child: Icon(Icons.save),
       onPressed: () async {
+        // キーボードが出ている場合は閉じる
+        FocusScope.of(context).unfocus();
         final dialog = AppDialog.createInfo(
           title: AppStrings.recordSaveDialogTitle,
           description: AppStrings.recordSaveDialogDetail,

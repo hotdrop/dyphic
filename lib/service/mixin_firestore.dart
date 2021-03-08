@@ -133,23 +133,23 @@ mixin AppFirestoreMixin {
   }
 
   List<Condition> _convertConditions(List<Condition> allConditions, String idsStr) {
-    final ids = _splitNames(idsStr);
+    final ids = _splitIds(idsStr);
     return allConditions.where((e) => ids.contains(e.id)).toList();
   }
 
   List<Medicine> _convertMedicines(List<Medicine> allMedicines, String idsStr) {
-    final ids = _splitNames(idsStr);
+    final ids = _splitIds(idsStr);
     return allMedicines.where((e) => ids.contains(e.id)).toList();
   }
 
-  List<String> _splitNames(String nStr) {
+  List<int> _splitIds(String nStr) {
     if (nStr == null) {
       return [];
     }
     if (nStr.contains(Record.listSeparator)) {
-      return nStr.split(Record.listSeparator);
+      return nStr.split(Record.listSeparator).map((id) => int.parse(id)).toList();
     } else {
-      return [nStr];
+      return [int.parse(nStr)];
     }
   }
 

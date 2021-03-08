@@ -160,7 +160,8 @@ class _DyphicCalendarState extends State<DyphicCalendar> {
   Widget _labelRecordInfo() {
     final widgets = <Widget>[];
     if (_selectedItem.haveRecord()) {
-      widgets.add(_labelConditions());
+      widgets.add(AppText.normal(AppStrings.calenderDetailConditionLabel));
+      widgets.add(AppText.normal(_selectedItem.toStringConditions()));
       widgets.add(_labelMemo());
     } else {
       widgets.add(AppText.normal(AppStrings.calenderUnRegisterLabel));
@@ -169,10 +170,6 @@ class _DyphicCalendarState extends State<DyphicCalendar> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: widgets,
     );
-  }
-
-  Widget _labelConditions() {
-    return AppText.normal('${AppStrings.calenderDetailConditionLabel} ${_selectedItem.toStringConditions()}');
   }
 
   Widget _labelMemo() {
