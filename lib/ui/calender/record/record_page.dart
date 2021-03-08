@@ -62,7 +62,12 @@ class RecordPage extends StatelessWidget {
         centerTitle: true,
         title: Text(headerTitle),
       ),
-      body: _contentsView(context),
+      body: GestureDetector(
+        onTap: () {
+          FocusScope.of(context).unfocus();
+        },
+        child: _contentsView(context),
+      ),
     );
   }
 
@@ -72,7 +77,12 @@ class RecordPage extends StatelessWidget {
         centerTitle: true,
         title: Text(headerTitle),
       ),
-      body: _contentsView(context),
+      body: GestureDetector(
+        onTap: () {
+          FocusScope.of(context).unfocus();
+        },
+        child: _contentsView(context),
+      ),
       floatingActionButton: _saveFloatingActionButton(context),
     );
   }

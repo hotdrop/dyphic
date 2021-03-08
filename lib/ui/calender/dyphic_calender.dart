@@ -55,8 +55,6 @@ class _DyphicCalendarState extends State<DyphicCalendar> {
 
   @override
   Widget build(BuildContext context) {
-    // TODO 記録情報を登録して戻ってくるとレンダリングが一瞬おかしくなる。
-    //     The overflowing RenderFlex has an orientation of Axis.vertical.
     return Column(
       mainAxisSize: MainAxisSize.max,
       children: [
