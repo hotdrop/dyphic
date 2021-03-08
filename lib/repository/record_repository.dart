@@ -14,11 +14,11 @@ class RecordRepository {
     return await _recordApi.findOverviewRecords();
   }
 
-  Future<Record> find(int id) async {
-    return await _recordApi.find(id);
+  Future<RecordOverview> findOverview(int id) async {
+    return await _recordApi.findOverviewRecord(id);
   }
 
-  Future<Record> findById(int id) async {
+  Future<Record> find(int id) async {
     return await _recordApi.find(id);
   }
 

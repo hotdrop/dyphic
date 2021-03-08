@@ -54,17 +54,6 @@ class Medicine {
     ''';
   }
 
-  Map<String, dynamic> toMap() {
-    return <String, dynamic>{
-      'name': name,
-      'overview': overview,
-      'type': type.index,
-      'imagePath': imagePath,
-      'memo': memo,
-      'order': order,
-    };
-  }
-
   static MedicineType toType(int index) {
     if (index == MedicineType.oral.index) {
       return MedicineType.oral;

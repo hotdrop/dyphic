@@ -10,12 +10,12 @@ class CalendarEvent {
     @required this.recordOverview,
   });
 
-  factory CalendarEvent.create(Event event, RecordOverview record) {
-    return CalendarEvent._(id: event.id, type: event.type, name: event.name, recordOverview: record);
+  factory CalendarEvent.create(Event event, RecordOverview overview) {
+    return CalendarEvent._(id: event.id, type: event.type, name: event.name, recordOverview: overview);
   }
 
-  factory CalendarEvent.createOnlyRecord(RecordOverview record) {
-    return CalendarEvent._(id: record.recordId, type: EventType.none, name: null, recordOverview: record);
+  factory CalendarEvent.createOnlyRecord(RecordOverview overview) {
+    return CalendarEvent._(id: overview.recordId, type: EventType.none, name: null, recordOverview: overview);
   }
 
   factory CalendarEvent.createOnlyEvent(Event event) {
@@ -42,10 +42,7 @@ class CalendarEvent {
   }
 
   String toStringConditions() {
-    if (recordOverview.conditionNames == null) {
-      return '';
-    }
-    return recordOverview.conditionNames.join(" ");
+    return recordOverview.toStringConditionNames();
   }
 
   String getConditionMemo() {

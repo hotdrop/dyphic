@@ -20,7 +20,7 @@ class MedicineCardView extends StatelessWidget {
       child: ExpansionTileCard(
         leading: AppImage.icon(path: medicine.imagePath),
         title: Text(medicine.name),
-        subtitle: AppText.normal(text: medicine.overview),
+        subtitle: AppText.normal(medicine.overview),
         children: [
           DividerThemeColor.create(),
           Row(
@@ -38,7 +38,7 @@ class MedicineCardView extends StatelessWidget {
   Widget _memoView(BuildContext context) {
     return Padding(
       padding: EdgeInsets.only(left: 8.0, right: 8.0, bottom: 8.0),
-      child: AppText.multiLine(text: medicine.memo, maxLines: 3),
+      child: AppText.multiLine(medicine.memo, maxLines: 3),
     );
   }
 

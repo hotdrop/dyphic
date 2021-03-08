@@ -86,7 +86,7 @@ class SettingsPage extends StatelessWidget {
   Widget _loginDescriptionLabel() {
     return Padding(
       padding: const EdgeInsets.only(left: 16.0, right: 16.0, top: 8.0),
-      child: AppText.normal(text: AppStrings.settingsLoginInfo),
+      child: AppText.normal(AppStrings.settingsLoginInfo),
     );
   }
 

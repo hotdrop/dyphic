@@ -31,19 +31,19 @@ class RecordViewModel extends NotifierViewModel {
   InputRecord _inputRecord;
   double get morningTemperature => _inputRecord.morningTemperature;
   double get nightTemperature => _inputRecord.nightTemperature;
-  List<String> get selectConditionNames => _inputRecord.selectConditionNames;
+  Set<int> get selectConditionIds => _inputRecord.selectConditionIds;
   String get conditionMemo => _inputRecord.conditionMemo;
-  List<String> get selectMedicineNames => _inputRecord.selectMedicineNames;
+  Set<int> get selectMedicineIds => _inputRecord.selectMedicineIds;
   String get breakfast => _inputRecord.breakfast;
   String get lunch => _inputRecord.lunch;
   String get dinner => _inputRecord.dinner;
   String get memo => _inputRecord.memo;
 
   List<Medicine> _allMedicines;
-  List<String> get allMedicineNames => _allMedicines.map((e) => e.name).toList();
+  List<Medicine> get allMedicines => _allMedicines;
 
   List<Condition> _allConditions;
-  List<String> get allConditionNames => _allConditions.map((e) => e.name).toList();
+  List<Condition> get allConditions => _allConditions;
 
   ///
   /// 初期処理
@@ -74,9 +74,9 @@ class RecordViewModel extends NotifierViewModel {
     notifyListeners();
   }
 
-  void changeSelectedCondition(List<String> selectedNamed) {
-    AppLogger.d('選択している症状は ${selectedNamed.toString()} 個です');
-    _inputRecord.selectConditionNames = selectedNamed;
+  void changeSelectedCondition(Set<int> selectedIds) {
+    AppLogger.d('選択している症状は $selectedIds 個です');
+    _inputRecord.selectConditionIds = selectedIds;
     notifyListeners();
   }
 
@@ -85,9 +85,9 @@ class RecordViewModel extends NotifierViewModel {
     notifyListeners();
   }
 
-  void changeSelectedMedicine(List<String> selectedNamed) {
-    AppLogger.d('選択しているお薬は ${selectedNamed.toString()} です');
-    _inputRecord.selectMedicineNames = selectedNamed;
+  void changeSelectedMedicine(Set<int> selectedIds) {
+    AppLogger.d('選択しているお薬は $selectedIds です');
+    _inputRecord.selectMedicineIds = selectedIds;
     notifyListeners();
   }
 
@@ -129,22 +129,29 @@ class RecordViewModel extends NotifierViewModel {
 class InputRecord {
   InputRecord._({
     @required this.date,
-    this.morningTemperature = 0,
-    this.nightTemperature = 0,
-    this.selectMedicineNames,
-    this.selectConditionNames,
-    this.conditionMemo = '',
-    this.breakfast = '',
-    this.lunch = '',
-    this.dinner = '',
-    this.memo = '',
+    this.morningTemperature,
+    this.nightTemperature,
+    this.selectMedicineIds,
+    this.selectConditionIds,
+    this.conditionMemo,
+    this.breakfast,
+    this.lunch,
+    this.dinner,
+    this.memo,
   });
 
   factory InputRecord.empty(DateTime date) {
     return InputRecord._(
       date: date,
-      selectMedicineNames: [],
-      selectConditionNames: [],
+      morningTemperature: 0,
+      nightTemperature: 0,
+      selectMedicineIds: {},
+      selectConditionIds: {},
+      conditionMemo: '',
+      breakfast: '',
+      lunch: '',
+      dinner: '',
+      memo: '',
     );
   }
 
@@ -153,8 +160,8 @@ class InputRecord {
       date: record.date,
       morningTemperature: record.morningTemperature,
       nightTemperature: record.nightTemperature,
-      selectMedicineNames: record.medicineNames,
-      selectConditionNames: record.conditionNames,
+      selectMedicineIds: record.medicines.map((e) => e.id).toSet(),
+      selectConditionIds: record.conditions.map((e) => e.id).toSet(),
       conditionMemo: record.conditionMemo,
       breakfast: record.breakfast,
       lunch: record.lunch,
@@ -166,8 +173,8 @@ class InputRecord {
   DateTime date;
   double morningTemperature;
   double nightTemperature;
-  List<String> selectMedicineNames;
-  List<String> selectConditionNames;
+  Set<int> selectMedicineIds;
+  Set<int> selectConditionIds;
   String conditionMemo;
   String breakfast;
   String lunch;
@@ -176,17 +183,13 @@ class InputRecord {
 
   Record toRecord(List<Medicine> allMedicine, List<Condition> allCondition) {
     final id = DyphicID.makeRecordId(date);
-    final overview = RecordOverview(recordId: id, conditionNames: selectConditionNames, conditionMemo: conditionMemo);
-    final temperature = RecordTemperature(recordId: id, morningTemperature: morningTemperature, nightTemperature: nightTemperature);
-    return Record.createById(
+    final selectConditions = allCondition.where((e) => selectConditionIds.contains(e.id)).toList();
+    final selectMedicines = allMedicine.where((e) => selectMedicineIds.contains(e.id)).toList();
+    return Record.create(
       id: id,
-      recordOverview: overview,
-      recordTemperature: temperature,
-      medicineNames: selectMedicineNames,
-      breakfast: breakfast,
-      lunch: lunch,
-      dinner: dinner,
-      memo: memo,
+      recordOverview: RecordOverview(recordId: id, conditions: selectConditions, conditionMemo: conditionMemo),
+      recordTemperature: RecordTemperature(recordId: id, morningTemperature: morningTemperature, nightTemperature: nightTemperature),
+      recordDetail: RecordDetail(recordId: id, medicines: selectMedicines, breakfast: breakfast, lunch: lunch, dinner: dinner, memo: memo),
     );
   }
 }

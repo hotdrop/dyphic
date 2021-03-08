@@ -3,11 +3,11 @@ import 'package:flutter/material.dart';
 class AppText extends StatelessWidget {
   const AppText._(this.text, this.size, this.maxLines);
 
-  factory AppText.normal({@required String text}) {
+  factory AppText.normal(String text) {
     return AppText._(text, 12.0, 1);
   }
 
-  factory AppText.multiLine({@required String text, @required int maxLines}) {
+  factory AppText.multiLine(String text, {@required int maxLines}) {
     return AppText._(text, 12.0, maxLines);
   }
 

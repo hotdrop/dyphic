@@ -52,8 +52,7 @@ class CalendarViewModel extends NotifierViewModel {
 
   Future<void> refresh(int updateId) async {
     nowLoading();
-    final record = await _recordRepository.findById(updateId);
-    final recordOverview = RecordOverview.fromRecord(record);
+    final recordOverview = await _recordRepository.findOverview(updateId);
 
     if (_events.containsKey(recordOverview.recordId)) {
       final existEventWithNewRecord = _events[recordOverview.recordId].updateRecord(recordOverview);

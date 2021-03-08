@@ -12,7 +12,7 @@ class MedicineApi {
   final AppFirebase _appFirebase;
 
   Future<List<Medicine>> findAll() async {
-    final medicines = await _appFirebase.readMedicines();
+    final medicines = await _appFirebase.findMedicines();
     medicines.sort((a, b) => a.order - b.order);
     AppLogger.d('お薬情報を取得しました。データ数: ${medicines.length}');
     return medicines;
@@ -26,6 +26,6 @@ class MedicineApi {
     }
 
     AppLogger.d('お薬情報を保存します。\n${newMedicine.toString()}');
-    await _appFirebase.writeMedicine(newMedicine);
+    await _appFirebase.saveMedicine(newMedicine);
   }
 }

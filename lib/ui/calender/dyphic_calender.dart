@@ -155,7 +155,7 @@ class _DyphicCalendarState extends State<DyphicCalendar> {
 
   Widget _labelEventInfo() {
     return Center(
-      child: AppText.normal(text: _selectedItem.name ?? AppStrings.calenderNoEvent),
+      child: AppText.normal(_selectedItem.name ?? AppStrings.calenderNoEvent),
     );
   }
 
@@ -165,7 +165,7 @@ class _DyphicCalendarState extends State<DyphicCalendar> {
       widgets.add(_labelConditions());
       widgets.add(_labelMemo());
     } else {
-      widgets.add(AppText.normal(text: AppStrings.calenderUnRegisterLabel));
+      widgets.add(AppText.normal(AppStrings.calenderUnRegisterLabel));
     }
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -174,14 +174,14 @@ class _DyphicCalendarState extends State<DyphicCalendar> {
   }
 
   Widget _labelConditions() {
-    return AppText.normal(text: '${AppStrings.calenderDetailConditionLabel} ${_selectedItem.toStringConditions()}');
+    return AppText.normal('${AppStrings.calenderDetailConditionLabel} ${_selectedItem.toStringConditions()}');
   }
 
   Widget _labelMemo() {
     return Padding(
       padding: const EdgeInsets.only(top: 8.0),
       child: AppText.multiLine(
-        text: '${_selectedItem.getConditionMemo()}',
+        '${_selectedItem.getConditionMemo()}',
         maxLines: 5,
       ),
     );

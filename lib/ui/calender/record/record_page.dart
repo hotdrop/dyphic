@@ -133,12 +133,11 @@ class RecordPage extends StatelessWidget {
           title: AppStrings.recordConditionTitle,
           icon: Icon(Icons.sentiment_satisfied_rounded, color: AppColors.condition),
         ),
-        AppChips(
-          names: viewModel.allConditionNames,
-          selectedNames: viewModel.selectConditionNames,
-          selectedColor: AppColors.condition,
-          onChange: (selectedNamesSet) {
-            viewModel.changeSelectedCondition(selectedNamesSet.toList());
+        ConditionSelectChips(
+          selectIds: viewModel.selectConditionIds,
+          allConditions: viewModel.allConditions,
+          onChange: (Set<int> ids) {
+            viewModel.changeSelectedCondition(ids);
           },
         ),
         SizedBox(height: 8),
@@ -162,12 +161,11 @@ class RecordPage extends StatelessWidget {
           title: AppStrings.recordMedicalTitle,
           icon: Icon(Icons.medical_services, color: AppColors.medicine),
         ),
-        AppChips(
-          names: viewModel.allMedicineNames,
-          selectedNames: viewModel.selectMedicineNames,
-          selectedColor: AppColors.medicine,
-          onChange: (selectedNamesSet) {
-            viewModel.changeSelectedMedicine(selectedNamesSet.toList());
+        MedicineSelectChips(
+          selectIds: viewModel.selectMedicineIds,
+          allMedicines: viewModel.allMedicines,
+          onChange: (Set<int> ids) {
+            viewModel.changeSelectedMedicine(ids);
           },
         ),
       ],

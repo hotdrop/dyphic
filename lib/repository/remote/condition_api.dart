@@ -12,14 +12,14 @@ class ConditionApi {
   final AppFirebase _appFirebase;
 
   Future<List<Condition>> findAll() async {
-    final conditions = await _appFirebase.readConditions();
+    final conditions = await _appFirebase.findConditions();
     AppLogger.d('お薬情報を全て取得しました。データ数: ${conditions.length}');
 
     return conditions;
   }
 
   Future<void> save(Condition condition) async {
-    await _appFirebase.writeCondition(condition);
+    await _appFirebase.saveCondition(condition);
     AppLogger.d('体調情報を保存します。\n${condition.toString()}');
   }
 }

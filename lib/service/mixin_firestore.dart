@@ -12,17 +12,20 @@ mixin AppFirestoreMixin {
   DocumentReference get _recordRootDoc => FirebaseFirestore.instance.collection(_recordRootCollection).doc(_recordRootDocument);
 
   static final String _recordOverviewCollection = 'overview';
-  static final String _recordTemperatureCollection = 'temperature';
-  static final String _recordDetailCollection = 'detail';
+  static final String _recordConditionIDsField = 'conditionIDs';
+  static final String _recordConditionMemoField = 'conditionMemo';
 
   Future<RecordOverview> findOverviewRecord(int id) async {
     final snapshot = await _recordRootDoc.collection(_recordOverviewCollection).doc(id.toString()).get();
     if (snapshot.exists) {
+      final allConditions = await findConditions();
       final dataMap = snapshot.data();
+      final conditionIds = dataMap[_recordConditionIDsField] as String;
+      final conditions = _convertConditions(allConditions, conditionIds);
       return RecordOverview(
         recordId: id,
-        conditionNames: _splitNames(dataMap['conditions'] as String),
-        conditionMemo: dataMap['conditionMemo'] as String,
+        conditions: conditions,
+        conditionMemo: dataMap[_recordConditionMemoField] as String,
       );
     } else {
       return null;
@@ -31,14 +34,30 @@ mixin AppFirestoreMixin {
 
   Future<List<RecordOverview>> findOverviewRecords() async {
     final snapshot = await _recordRootDoc.collection(_recordOverviewCollection).get();
+    final allConditions = await findConditions();
     return snapshot.docs.map((doc) {
+      final conditionIds = doc.get(_recordConditionIDsField) as String;
+      final conditions = _convertConditions(allConditions, conditionIds);
       return RecordOverview(
         recordId: int.parse(doc.id),
-        conditionNames: _splitNames(doc.get('conditions') as String),
-        conditionMemo: doc.get('conditionMemo') as String,
+        conditions: conditions,
+        conditionMemo: doc.get(_recordConditionMemoField) as String,
       );
     }).toList();
   }
+
+  Future<void> saveOverviewRecord(RecordOverview overview) async {
+    final id = overview.recordId.toString();
+    final map = <String, dynamic>{
+      _recordConditionIDsField: overview.toStringConditionIds(),
+      _recordConditionMemoField: overview.conditionMemo,
+    };
+    await _recordRootDoc.collection(_recordOverviewCollection).doc(id).set(map);
+  }
+
+  static final String _recordTemperatureCollection = 'temperature';
+  static final String _recordMorningTemperatureField = 'morningTemperature';
+  static final String _recordNightTemperatureField = 'nightTemperature';
 
   Future<RecordTemperature> findTemperatureRecord(int id) async {
     final snapshot = await _recordRootDoc.collection(_recordTemperatureCollection).doc(id.toString()).get();
@@ -46,8 +65,8 @@ mixin AppFirestoreMixin {
       final dataMap = snapshot.data();
       return RecordTemperature(
         recordId: id,
-        morningTemperature: dataMap['morningTemperature'] as double,
-        nightTemperature: dataMap['nightTemperature'] as double,
+        morningTemperature: dataMap[_recordMorningTemperatureField] as double,
+        nightTemperature: dataMap[_recordNightTemperatureField] as double,
       );
     } else {
       return null;
@@ -59,76 +78,76 @@ mixin AppFirestoreMixin {
     return snapshot.docs.map((doc) {
       return RecordTemperature(
         recordId: int.parse(doc.id),
-        morningTemperature: doc.get('morningTemperature') as double,
-        nightTemperature: doc.get('nightTemperature') as double,
+        morningTemperature: doc.get(_recordMorningTemperatureField) as double,
+        nightTemperature: doc.get(_recordNightTemperatureField) as double,
       );
     }).toList();
   }
 
-  Future<Record> findDetailRecord(int id) async {
+  Future<void> saveTemperatureRecord(RecordTemperature temperature) async {
+    final id = temperature.recordId.toString();
+    final map = <String, dynamic>{
+      _recordMorningTemperatureField: temperature.morningTemperature,
+      _recordNightTemperatureField: temperature.nightTemperature,
+    };
+    await _recordRootDoc.collection(_recordTemperatureCollection).doc(id).set(map);
+  }
+
+  static final String _recordDetailCollection = 'detail';
+  static final String _recordMedicineIDsField = 'medicineIDs';
+  static final String _recordBreakFastField = 'breakfast';
+  static final String _recordLunchField = 'lunch';
+  static final String _recordDinnerField = 'dinner';
+  static final String _recordMemoField = 'memo';
+
+  Future<RecordDetail> findDetailRecord(int id) async {
     final snapshot = await _recordRootDoc.collection(_recordDetailCollection).doc(id.toString()).get();
     if (snapshot.exists) {
+      final allMedicines = await findMedicines();
       final dataMap = snapshot.data();
-      return Record.createById(
-        id: id,
-        medicineNames: _splitNames(dataMap['medicines'] as String),
-        breakfast: dataMap['breakfast'] as String,
-        lunch: dataMap['lunch'] as String,
-        dinner: dataMap['dinner'] as String,
-        memo: dataMap['memo'] as String,
+      final medicineIds = dataMap[_recordMedicineIDsField] as String;
+      final medicines = _convertMedicines(allMedicines, medicineIds);
+      return RecordDetail(
+        recordId: id,
+        medicines: medicines,
+        breakfast: dataMap[_recordBreakFastField] as String,
+        lunch: dataMap[_recordLunchField] as String,
+        dinner: dataMap[_recordDinnerField] as String,
+        memo: dataMap[_recordMemoField] as String,
       );
     } else {
       return null;
     }
   }
 
-  Future<List<Record>> findDetailRecords() async {
-    final snapshot = await _recordRootDoc.collection(_recordDetailCollection).get();
-    return snapshot.docs.map((doc) {
-      return Record.createById(
-        id: int.parse(doc.id),
-        medicineNames: _splitNames(doc.get('medicines') as String),
-        breakfast: doc.get('breakfast') as String,
-        lunch: doc.get('lunch') as String,
-        dinner: doc.get('dinner') as String,
-        memo: doc.get('memo') as String,
-      );
-    }).toList();
+  Future<void> saveDetailRecord(RecordDetail detail) async {
+    final id = detail.recordId.toString();
+    final map = <String, dynamic>{
+      _recordMedicineIDsField: detail.toStringMedicineIds(),
+      _recordBreakFastField: detail.breakfast,
+      _recordLunchField: detail.lunch,
+      _recordDinnerField: detail.dinner,
+      _recordMemoField: detail.memo,
+    };
+    await _recordRootDoc.collection(_recordDetailCollection).doc(id).set(map);
   }
 
-  Future<void> saveOverviewRecord(Record record) async {
-    final recordMap = <String, dynamic>{
-      'conditions': record.conditionNames.join(Record.nameSeparator),
-      'conditionMemo': record.conditionMemo,
-    };
-    await _recordRootDoc.collection(_recordOverviewCollection).doc(record.id.toString()).set(recordMap);
+  List<Condition> _convertConditions(List<Condition> allConditions, String idsStr) {
+    final ids = _splitNames(idsStr);
+    return allConditions.where((e) => ids.contains(e.id)).toList();
   }
 
-  Future<void> saveTemperatureRecord(Record record) async {
-    final recordMap = <String, dynamic>{
-      'morningTemperature': record.morningTemperature,
-      'nightTemperature': record.nightTemperature,
-    };
-    await _recordRootDoc.collection(_recordTemperatureCollection).doc(record.id.toString()).set(recordMap);
-  }
-
-  Future<void> saveDetailRecord(Record record) async {
-    final recordMap = <String, dynamic>{
-      'medicines': record.medicineNames.join(Record.nameSeparator),
-      'breakfast': record.breakfast,
-      'lunch': record.lunch,
-      'dinner': record.dinner,
-      'memo': record.memo,
-    };
-    await _recordRootDoc.collection(_recordDetailCollection).doc(record.id.toString()).set(recordMap);
+  List<Medicine> _convertMedicines(List<Medicine> allMedicines, String idsStr) {
+    final ids = _splitNames(idsStr);
+    return allMedicines.where((e) => ids.contains(e.id)).toList();
   }
 
   List<String> _splitNames(String nStr) {
     if (nStr == null) {
       return [];
     }
-    if (nStr.contains(Record.nameSeparator)) {
-      return nStr.split(Record.nameSeparator);
+    if (nStr.contains(Record.listSeparator)) {
+      return nStr.split(Record.listSeparator);
     } else {
       return [nStr];
     }
@@ -139,25 +158,32 @@ mixin AppFirestoreMixin {
   ///
   static final String _medicineRootName = 'medicines';
 
-  Future<List<Medicine>> readMedicines() async {
+  Future<List<Medicine>> findMedicines() async {
     final snapshot = await FirebaseFirestore.instance.collection(_medicineRootName).get();
-    return snapshot.docs.map((doc) => _fromSnapshotToMedicine(doc)).toList();
+    return snapshot.docs.map((doc) {
+      return Medicine(
+        id: int.parse(doc.id),
+        name: doc.get('name') as String,
+        overview: doc.get('overview') as String,
+        imagePath: doc.get('imagePath') as String,
+        type: Medicine.toType(doc.get('type') as int),
+        memo: (doc.get('memo') as String) ?? '',
+        order: doc.get('order') as int,
+      );
+    }).toList();
   }
 
-  Future<void> writeMedicine(Medicine medicine) async {
-    await FirebaseFirestore.instance.collection(_medicineRootName).doc(medicine.id.toString()).set(medicine.toMap());
-  }
-
-  Medicine _fromSnapshotToMedicine(DocumentSnapshot doc) {
-    return Medicine(
-      id: int.parse(doc.id),
-      name: doc.get('name') as String,
-      overview: doc.get('overview') as String,
-      imagePath: doc.get('imagePath') as String,
-      type: Medicine.toType(doc.get('type') as int),
-      memo: (doc.get('memo') as String) ?? '',
-      order: doc.get('order') as int,
-    );
+  Future<void> saveMedicine(Medicine medicine) async {
+    final id = medicine.id.toString();
+    final map = <String, dynamic>{
+      'name': medicine.name,
+      'overview': medicine.overview,
+      'type': medicine.type.index,
+      'imagePath': medicine.imagePath,
+      'memo': medicine.memo,
+      'order': medicine.order,
+    };
+    await FirebaseFirestore.instance.collection(_medicineRootName).doc(id).set(map);
   }
 
   ///
@@ -165,19 +191,21 @@ mixin AppFirestoreMixin {
   ///
   static final String _conditionRootName = 'conditions';
 
-  Future<List<Condition>> readConditions() async {
+  Future<List<Condition>> findConditions() async {
     final snapshot = await FirebaseFirestore.instance.collection(_conditionRootName).get();
-    return snapshot.docs.map((doc) => _fromSnapshotToCondition(doc)).toList();
+    return snapshot.docs.map((doc) {
+      return Condition(
+        int.parse(doc.id),
+        doc.get('name') as String,
+      );
+    }).toList();
   }
 
-  Future<void> writeCondition(Condition condition) async {
-    await FirebaseFirestore.instance.collection(_conditionRootName).doc(condition.id.toString()).set(condition.toMap());
-  }
-
-  Condition _fromSnapshotToCondition(DocumentSnapshot doc) {
-    return Condition(
-      int.parse(doc.id),
-      doc.get('name') as String,
-    );
+  Future<void> saveCondition(Condition condition) async {
+    final id = condition.id.toString();
+    final map = <String, dynamic>{
+      'name': condition.name,
+    };
+    await FirebaseFirestore.instance.collection(_conditionRootName).doc(id).set(map);
   }
 }

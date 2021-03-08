@@ -20,10 +20,4 @@ class Condition {
   String toString() {
     return ' id: $id \n name: $name';
   }
-
-  Map<String, dynamic> toMap() {
-    return <String, dynamic>{
-      'name': name,
-    };
-  }
 }

@@ -1,40 +1,102 @@
+import 'package:dyphic/model/condition.dart';
 import 'package:dyphic/model/dyphic_id.dart';
+import 'package:dyphic/model/medicine.dart';
 import 'package:flutter/material.dart';
 
 ///
-/// カレンダーで見れる記録情報
-/// このアプリは体調情報がメインなのでこのクラスで保持するのは体調情報のみ
+/// 記録情報を保持する
 ///
-class RecordOverview {
-  RecordOverview({
-    @required this.recordId,
-    @required this.conditionNames,
-    @required this.conditionMemo,
-  });
+class Record {
+  const Record._(
+    this.id,
+    this.date,
+    this.overview,
+    this.temperature,
+    this.detail,
+  );
 
-  factory RecordOverview.fromRecord(Record record) {
-    return RecordOverview(
-      recordId: record.id,
-      conditionNames: record.conditionNames,
-      conditionMemo: record.conditionMemo,
-    );
+  factory Record.create({
+    @required int id,
+    RecordOverview recordOverview,
+    RecordTemperature recordTemperature,
+    RecordDetail recordDetail,
+  }) {
+    return Record._(id, DyphicID.idToDate(id), recordOverview, recordTemperature, recordDetail);
   }
 
-  final int recordId;
-  final List<String> conditionNames;
-  final String conditionMemo;
+  final int id;
+  final DateTime date;
+  final RecordOverview overview;
+  final RecordTemperature temperature;
+  final RecordDetail detail;
 
-  static Map<String, dynamic> toMap(Record record) {
-    return <String, dynamic>{
-      'date': DyphicID.dateToIdString(record.date),
-      'conditions': record.conditionNames.join(Record.nameSeparator),
-      'conditionMemo': record.conditionMemo,
-    };
+  List<Condition> get conditions => overview?.conditions ?? [];
+  String get conditionMemo => overview?.conditionMemo ?? '';
+  double get morningTemperature => temperature?.morningTemperature ?? 0;
+  double get nightTemperature => temperature?.nightTemperature ?? 0;
+  List<Medicine> get medicines => detail?.medicines ?? [];
+  String get breakfast => detail?.breakfast ?? '';
+  String get lunch => detail?.lunch ?? '';
+  String get dinner => detail?.dinner ?? '';
+  String get memo => detail?.memo ?? '';
+
+  static String listSeparator = ',';
+
+  @override
+  String toString() {
+    return '''
+    date: $date
+    ${overview?.toString() ?? 'overview: null'}
+    ${temperature?.toString() ?? 'temperature: null'}
+    ${detail?.toString() ?? 'detail: null'}
+    ''';
   }
 }
 
 ///
-/// 記録情報のうち体温を保持するクラス
+/// 記録情報（概要）
+/// カレンダー表示時に各日付に紐付ける情報で、カレンダーではこのクラスにあるもののみ即閲覧可能
+/// このアプリは体調情報がメインなので、体調情報を保持している
+///
+class RecordOverview {
+  RecordOverview({
+    @required this.recordId,
+    @required this.conditions,
+    @required this.conditionMemo,
+  });
+
+  final int recordId;
+  final List<Condition> conditions;
+  final String conditionMemo;
+
+  String toStringConditionIds() {
+    if (conditions.isEmpty) {
+      return '';
+    } else {
+      return conditions.map((c) => c.id).join(Record.listSeparator);
+    }
+  }
+
+  String toStringConditionNames() {
+    if (conditions.isEmpty) {
+      return '';
+    } else {
+      return conditions.map((c) => c.name).join('${Record.listSeparator} ');
+    }
+  }
+
+  @override
+  String toString() {
+    return '''
+    conditions: ${conditions.map((c) => c.name)}
+    conditionMemo: $conditionMemo
+    ''';
+  }
+}
+
+///
+/// 記録情報（体温）
+/// 体温はグラフにしたいので別で保持している
 ///
 class RecordTemperature {
   const RecordTemperature({
@@ -46,81 +108,53 @@ class RecordTemperature {
   final int recordId;
   final double morningTemperature;
   final double nightTemperature;
+
+  @override
+  String toString() {
+    return '''
+    morningTemperature: $morningTemperature
+    nightTemperature: $nightTemperature
+    ''';
+  }
 }
 
 ///
-/// 記録情報を保持する
+/// 記録情報（詳細）
+/// 体調と体温以外の記録情報
 ///
-class Record {
-  const Record._(
-    this.id,
-    this.date,
-    this.morningTemperature,
-    this.nightTemperature,
-    this.medicineNames,
-    this.conditionNames,
-    this.conditionMemo,
+class RecordDetail {
+  const RecordDetail({
+    @required this.recordId,
+    this.medicines,
     this.breakfast,
     this.lunch,
     this.dinner,
     this.memo,
-  );
+  });
 
-  factory Record.createById({
-    @required int id,
-    RecordOverview recordOverview,
-    RecordTemperature recordTemperature,
-    List<String> medicineNames,
-    String breakfast,
-    String lunch,
-    String dinner,
-    String memo,
-  }) {
-    final morningT = recordTemperature?.morningTemperature ?? 0;
-    final nightT = recordTemperature?.nightTemperature ?? 0;
-    final cNames = recordOverview?.conditionNames ?? [];
-    final cMemo = recordOverview?.conditionMemo ?? '';
-    return Record._(id, DyphicID.idToDate(id), morningT, nightT, medicineNames, cNames, cMemo, breakfast, lunch, dinner, memo);
-  }
-
-  final int id;
-  final DateTime date;
-  final double morningTemperature;
-  final double nightTemperature;
-  final List<String> medicineNames;
-  final List<String> conditionNames;
-  final String conditionMemo;
+  final int recordId;
+  final List<Medicine> medicines;
   final String breakfast;
   final String lunch;
   final String dinner;
   final String memo;
 
-  static String nameSeparator = ',';
+  String toStringMedicineIds() {
+    if (medicines.isEmpty) {
+      return '';
+    } else {
+      return medicines.map((m) => m.id).join(Record.listSeparator);
+    }
+  }
 
   @override
   String toString() {
     return '''
-    date: $date
-    morningTemperature: $morningTemperature
-    nightTemperature: $nightTemperature
-    medicines: $medicineNames
-    conditions: $conditionNames
-    conditionMemo: $conditionMemo
+    medicines: ${medicines.map((m) => m.name)}
     breakfast: $breakfast
     lunch: $lunch
     dinner: $dinner
     memo: $memo
     ''';
-  }
-
-  Map<String, dynamic> toMap() {
-    return <String, dynamic>{
-      'date': DyphicID.dateToIdString(date),
-      'medicines': medicineNames.join(nameSeparator),
-      'breakfast': breakfast,
-      'lunch': lunch,
-      'dinner': dinner,
-      'memo': memo,
-    };
   }
 }

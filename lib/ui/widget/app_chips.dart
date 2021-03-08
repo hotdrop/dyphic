@@ -1,43 +1,49 @@
+import 'package:dyphic/common/app_colors.dart';
+import 'package:dyphic/model/condition.dart';
+import 'package:dyphic/model/medicine.dart';
+import 'package:dyphic/ui/widget/app_image.dart';
+import 'package:dyphic/ui/widget/app_text.dart';
 import 'package:flutter/material.dart';
 
-class AppChips extends StatefulWidget {
-  const AppChips({
-    @required this.names,
-    @required this.selectedNames,
-    @required this.selectedColor,
+///
+/// 体調用の選択chips
+///
+class ConditionSelectChips extends StatefulWidget {
+  const ConditionSelectChips({
+    @required this.selectIds,
+    @required this.allConditions,
     @required this.onChange,
   });
 
-  final List<String> names;
-  final List<String> selectedNames;
-  final void Function(Set<String>) onChange;
-  final Color selectedColor;
+  final Set<int> selectIds;
+  final List<Condition> allConditions;
+  final void Function(Set<int>) onChange;
 
   @override
-  _AppChipsState createState() => _AppChipsState();
+  _ConditionSelectChipsState createState() => _ConditionSelectChipsState();
 }
 
-class _AppChipsState extends State<AppChips> {
-  Set<String> _selectedNames;
+class _ConditionSelectChipsState extends State<ConditionSelectChips> {
+  Set<int> _selectedIds;
 
   @override
   void initState() {
     super.initState();
-    if (widget.selectedNames.isNotEmpty) {
-      _selectedNames = widget.selectedNames.toSet();
+    if (widget.selectIds.isNotEmpty) {
+      _selectedIds = widget.selectIds.toSet();
     } else {
-      _selectedNames = <String>{};
+      _selectedIds = <int>{};
     }
   }
 
-  void updateState(bool isSelect, String name) {
+  void updateState(bool isSelect, int id) {
     setState(() {
       if (isSelect) {
-        _selectedNames.add(name);
+        _selectedIds.add(id);
       } else {
-        _selectedNames.remove(name);
+        _selectedIds.remove(id);
       }
-      widget.onChange(_selectedNames);
+      widget.onChange(_selectedIds);
     });
   }
 
@@ -51,13 +57,88 @@ class _AppChipsState extends State<AppChips> {
   }
 
   List<Widget> _makeChips(BuildContext context) {
-    return widget.names.map((name) {
+    return widget.allConditions.map((condition) {
       return FilterChip(
-        key: ValueKey<String>(name),
-        label: Text(name, style: TextStyle(fontSize: 12.0)),
-        selected: _selectedNames.contains(name) ? true : false,
-        onSelected: (isSelect) => updateState(isSelect, name),
-        selectedColor: widget.selectedColor,
+        key: ValueKey<String>(condition.name),
+        label: AppText.normal(condition.name),
+        selected: _selectedIds.contains(condition.id) ? true : false,
+        onSelected: (isSelect) => updateState(isSelect, condition.id),
+        selectedColor: AppColors.condition,
+      );
+    }).toList();
+  }
+}
+
+///
+/// お薬用の選択chips
+///
+class MedicineSelectChips extends StatefulWidget {
+  const MedicineSelectChips({
+    @required this.selectIds,
+    @required this.allMedicines,
+    @required this.onChange,
+  });
+
+  final Set<int> selectIds;
+  final List<Medicine> allMedicines;
+  final void Function(Set<int>) onChange;
+
+  @override
+  _MedicineSelectChipsState createState() => _MedicineSelectChipsState();
+}
+
+class _MedicineSelectChipsState extends State<MedicineSelectChips> {
+  Set<int> _selectedIds;
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.selectIds.isNotEmpty) {
+      _selectedIds = widget.selectIds;
+    } else {
+      _selectedIds = <int>{};
+    }
+  }
+
+  void updateState(bool isSelect, int id) {
+    setState(() {
+      if (isSelect) {
+        _selectedIds.add(id);
+      } else {
+        _selectedIds.remove(id);
+      }
+      widget.onChange(_selectedIds);
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Wrap(
+      direction: Axis.horizontal,
+      spacing: 8.0,
+      children: _makeChips(context),
+    );
+  }
+
+  List<Widget> _makeChips(BuildContext context) {
+    return widget.allMedicines.map((medicine) {
+      return Tooltip(
+        message: medicine.overview,
+        child: FilterChip(
+          avatar: ClipOval(
+            child: Container(
+              width: 30.0,
+              height: 30.0,
+              child: AppImage.icon(path: medicine.imagePath),
+            ),
+          ),
+          showCheckmark: false,
+          key: ValueKey<String>(medicine.name),
+          label: AppText.normal(medicine.name),
+          selected: _selectedIds.contains(medicine.id) ? true : false,
+          onSelected: (isSelect) => updateState(isSelect, medicine.id),
+          selectedColor: AppColors.medicine,
+        ),
       );
     }).toList();
   }

@@ -56,7 +56,7 @@ class AppStrings {
   static const String conditionNewDialogSuccess = '登録が完了しました';
   static const String conditionEditButton = '症状名を修正する';
   static const String conditionEditDialogTitle = '症状名修正';
-  static const String conditionEditDialogDetail = '既存の症状名を修正します。これまで記録時に選択してきた症状名は更新されないので必要に応じて新たに再選択してください。修正しますか？';
+  static const String conditionEditDialogDetail = '既存の症状名を修正します。\nこれまで記録時に選択してきた症状名も修正されるためご注意ください。修正しますか？';
   static const String conditionEditDialogSuccess = '修正が完了しました';
   static const String conditionEditDialogError = 'エラーが発生しました。';
 
