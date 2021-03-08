@@ -1,3 +1,4 @@
+import 'package:dyphic/common/app_colors.dart';
 import 'package:dyphic/model/app_settings.dart';
 import 'package:dyphic/ui/widget/app_dialog.dart';
 import 'package:dyphic/ui/widget/app_divider.dart';
@@ -14,17 +15,22 @@ class ConditionPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(centerTitle: true, title: const Text(AppStrings.conditionPageTitle)),
-      body: ChangeNotifierProvider<ConditionViewModel>(
-        create: (_) => ConditionViewModel.create(),
-        builder: (context, _) {
-          final pageState = context.select<ConditionViewModel, PageLoadingState>((vm) => vm.pageState);
-          if (pageState.isLoadSuccess) {
-            return _loadSuccessView(context);
-          } else {
-            return _nowLoadingView();
-          }
+      body: GestureDetector(
+        onTap: () {
+          FocusScope.of(context).unfocus();
         },
-        child: _nowLoadingView(),
+        child: ChangeNotifierProvider<ConditionViewModel>(
+          create: (_) => ConditionViewModel.create(),
+          builder: (context, _) {
+            final pageState = context.select<ConditionViewModel, PageLoadingState>((vm) => vm.pageState);
+            if (pageState.isLoadSuccess) {
+              return _loadSuccessView(context);
+            } else {
+              return _nowLoadingView();
+            }
+          },
+          child: _nowLoadingView(),
+        ),
       ),
     );
   }
@@ -93,7 +99,7 @@ class ConditionPage extends StatelessWidget {
             .map((c) => ChoiceChip(
                   label: Text(c.name),
                   selected: viewModel.selectedCondition.name == c.name,
-                  selectedColor: Theme.of(context).primaryColor,
+                  selectedColor: AppColors.condition,
                   onSelected: (bool isSelected) {
                     viewModel.selectCondition(c);
                   },

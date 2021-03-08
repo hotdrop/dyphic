@@ -49,6 +49,7 @@ class _MedicineTypeRadioState extends State<MedicineTypeRadio> {
         Radio(
             value: radioNotOral,
             groupValue: selectedRadioValue,
+            activeColor: Theme.of(context).accentColor,
             onChanged: (int v) {
               widget.onChange(MedicineType.notOral);
               setState(() {

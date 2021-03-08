@@ -22,17 +22,22 @@ class MedicineEditPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(centerTitle: true, title: Text(AppStrings.medicineEditPageTitle)),
-      body: ChangeNotifierProvider<MedicineEditViewModel>(
-        create: (_) => MedicineEditViewModel.create(_medicine),
-        builder: (context, _) {
-          final pageState = context.select<MedicineEditViewModel, PageLoadingState>((vm) => vm.pageState);
-          if (pageState.isLoadSuccess) {
-            return _loadSuccessView(context);
-          } else {
-            return _nowLoadingView();
-          }
+      body: GestureDetector(
+        onTap: () {
+          FocusScope.of(context).unfocus();
         },
-        child: _nowLoadingView(),
+        child: ChangeNotifierProvider<MedicineEditViewModel>(
+          create: (_) => MedicineEditViewModel.create(_medicine),
+          builder: (context, _) {
+            final pageState = context.select<MedicineEditViewModel, PageLoadingState>((vm) => vm.pageState);
+            if (pageState.isLoadSuccess) {
+              return _loadSuccessView(context);
+            } else {
+              return _nowLoadingView();
+            }
+          },
+          child: _nowLoadingView(),
+        ),
       ),
     );
   }
