@@ -143,7 +143,7 @@ mixin AppFirestoreMixin {
   }
 
   List<int> _splitIds(String nStr) {
-    if (nStr == null) {
+    if (nStr == null || nStr.isEmpty) {
       return [];
     }
     if (nStr.contains(Record.listSeparator)) {
