@@ -14,7 +14,7 @@ class MedicineRepository {
     return await _medicineApi.findAll();
   }
 
-  Future<void> save(Medicine medicine) async {
-    return await _medicineApi.save(medicine);
+  Future<void> save(Medicine medicine, bool isUpdateImage) async {
+    return await _medicineApi.save(medicine, isUpdateImage);
   }
 }

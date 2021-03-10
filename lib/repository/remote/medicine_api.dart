@@ -18,9 +18,9 @@ class MedicineApi {
     return medicines;
   }
 
-  Future<void> save(Medicine medicine) async {
+  Future<void> save(Medicine medicine, bool isUpdateImage) async {
     Medicine newMedicine = medicine;
-    if (medicine.imagePath.isNotEmpty) {
+    if (medicine.imagePath.isNotEmpty && isUpdateImage) {
       final saveUrl = await _appFirebase.saveImage(medicine.imagePath);
       newMedicine = medicine.copy(imageUrl: saveUrl);
     }

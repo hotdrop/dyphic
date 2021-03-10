@@ -58,7 +58,8 @@ class MedicineEditViewModel extends NotifierViewModel {
     );
 
     try {
-      await _repository.save(medicine);
+      bool isUpdateImage = (_originalMedicine.imagePath != _inputItem.localImagePath);
+      await _repository.save(medicine, isUpdateImage);
       return true;
     } catch (e, s) {
       await AppLogger.e('お薬情報の保存に失敗しました。', e, s);
