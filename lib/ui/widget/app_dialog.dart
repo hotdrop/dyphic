@@ -149,6 +149,7 @@ class _TextEditDialogState extends State<TextEditDialog> {
       content: TextFormField(
         autofocus: true,
         controller: _controller,
+        maxLines: 3,
       ),
       actions: <Widget>[
         FlatButton(
@@ -161,68 +162,6 @@ class _TextEditDialogState extends State<TextEditDialog> {
           child: Text(AppStrings.dialogOkLabel),
           onPressed: () {
             Navigator.pop<String>(context, _controller.text);
-          },
-        ),
-      ],
-    );
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-    _controller.dispose();
-  }
-}
-
-///
-/// 体温入力フィールド付きのダイアログ
-///
-class TemperatureEditDialog extends StatefulWidget {
-  const TemperatureEditDialog({
-    @required this.title,
-    @required this.initValue,
-  });
-
-  final String title;
-  final double initValue;
-
-  @override
-  _TemperatureEditDialogState createState() => _TemperatureEditDialogState();
-}
-
-class _TemperatureEditDialogState extends State<TemperatureEditDialog> {
-  final _controller = TextEditingController();
-
-  @override
-  void initState() {
-    super.initState();
-    _controller.text = widget.initValue.toString();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return AlertDialog(
-      title: Text(widget.title),
-      content: TextFormField(
-        keyboardType: TextInputType.number,
-        autofocus: true,
-        controller: _controller,
-        decoration: InputDecoration(
-          hintText: AppStrings.recordTemperatureTextHint,
-        ),
-      ),
-      actions: <Widget>[
-        FlatButton(
-          child: Text(AppStrings.dialogCancelLabel),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        ),
-        FlatButton(
-          child: Text(AppStrings.dialogOkLabel),
-          onPressed: () {
-            final inputValue = double.parse(_controller.text);
-            Navigator.pop<double>(context, inputValue);
           },
         ),
       ],

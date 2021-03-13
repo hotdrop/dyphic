@@ -1,6 +1,6 @@
 import 'package:dyphic/common/app_colors.dart';
 import 'package:dyphic/common/app_strings.dart';
-import 'package:dyphic/ui/widget/app_dialog.dart';
+import 'package:dyphic/ui/widget/app_temperature_dialog.dart';
 import 'package:flutter/material.dart';
 
 class AppTemperature extends StatelessWidget {
@@ -46,9 +46,9 @@ class AppTemperature extends StatelessWidget {
         final inputValue = await showDialog<double>(
           context: context,
           builder: (context) {
-            return TemperatureEditDialog(
+            return AppTemperatureEditDialog(
               title: dialogTitle,
-              initValue: (temperature > 0) ? temperature : 36.5,
+              initValue: temperature,
             );
           },
         );
