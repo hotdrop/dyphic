@@ -10,7 +10,7 @@ import 'package:dyphic/model/calendar_event.dart';
 import 'package:dyphic/common/app_strings.dart';
 
 class DyphicCalendar extends StatefulWidget {
-  const DyphicCalendar({Key key, this.events, this.onReturnEditPage}) : super(key: key);
+  const DyphicCalendar({required this.events, required this.onReturnEditPage});
 
   final List<CalendarEvent> events;
   final void Function(bool isUpdate, int id) onReturnEditPage;
@@ -20,36 +20,36 @@ class DyphicCalendar extends StatefulWidget {
 }
 
 class _DyphicCalendarState extends State<DyphicCalendar> {
-  CalendarController _calendarController;
-  Map<DateTime, List<CalendarEvent>> _events;
-  CalendarEvent _selectedItem;
+  final Map<int, CalendarEvent> _events = {};
+
+  final DateTime _focusDate = DateTime.now();
+
+  DateTime? _selectedDate;
+  CalendarEvent _selectedEvent = CalendarEvent.createEmpty(DateTime.now());
 
   @override
   void initState() {
     super.initState();
-    _events = {};
     final nowDate = DateTime.now();
     widget.events.forEach((event) {
-      _events[event.date] = [event];
+      _events[event.id] = event;
       if (CalendarEvent.isSameDay(nowDate, event.date)) {
-        _selectedItem = event;
+        _selectedEvent = event;
       }
     });
-    if (_selectedItem == null) {
-      _selectedItem = CalendarEvent.createEmpty(nowDate);
-    }
-    _calendarController = CalendarController();
+    _selectedDate = _focusDate;
   }
 
-  @override
-  void dispose() {
-    super.dispose();
-    _calendarController.dispose();
+  List<CalendarEvent> _getEventForDay(DateTime date) {
+    final id = DyphicID.makeEventId(date);
+    final event = _events[id];
+    return event != null ? [event] : [];
   }
 
-  void _onDaySelected(DateTime date, {CalendarEvent selectedItem}) {
+  void _onDaySelected(DateTime date, {CalendarEvent? selectedItem}) {
     setState(() {
-      _selectedItem = selectedItem ?? CalendarEvent.createEmpty(date);
+      _selectedDate = date;
+      _selectedEvent = selectedItem ?? CalendarEvent.createEmpty(date);
     });
   }
 
@@ -65,23 +65,35 @@ class _DyphicCalendarState extends State<DyphicCalendar> {
   }
 
   Widget _buildCalendar() {
-    return TableCalendar(
+    return TableCalendar<CalendarEvent>(
+      firstDay: DateTime(2020, 11, 1),
+      lastDay: DateTime(2030, 12, 31),
+      focusedDay: _focusDate,
+      selectedDayPredicate: (date) => isSameDay(_selectedDate, date),
+      rangeSelectionMode: RangeSelectionMode.disabled,
+      headerStyle: HeaderStyle(formatButtonVisible: false),
       locale: 'ja_JP',
-      calendarController: _calendarController,
-      events: _events,
+      calendarFormat: CalendarFormat.month,
+      eventLoader: _getEventForDay,
       calendarStyle: CalendarStyle(
-        selectedColor: Colors.deepOrange.withAlpha(70),
-        todayColor: Colors.lightBlue,
+        selectedDecoration: BoxDecoration(
+          color: Colors.deepOrange.withAlpha(70),
+          shape: BoxShape.circle,
+        ),
+        todayDecoration: BoxDecoration(
+          color: Theme.of(context).accentColor,
+          shape: BoxShape.circle,
+        ),
         outsideDaysVisible: false,
       ),
-      headerStyle: HeaderStyle(formatButtonVisible: false),
-      builders: CalendarBuilders(markersBuilder: (context, date, events, holidays) => _buildMarkers(events)),
-      onDaySelected: (date, events, holidays) {
-        if (events.isEmpty) {
-          _onDaySelected(date);
+      calendarBuilders: CalendarBuilders(markerBuilder: (context, date, events) => _buildMarker(events)),
+      onDaySelected: (selectDate, focusDate) {
+        final id = DyphicID.makeEventId(selectDate);
+        if (_events.containsKey(id)) {
+          final event = _events[id];
+          _onDaySelected(selectDate, selectedItem: event);
         } else {
-          final event = events.first as CalendarEvent;
-          _onDaySelected(date, selectedItem: event);
+          _onDaySelected(selectDate);
         }
       },
     );
@@ -90,25 +102,32 @@ class _DyphicCalendarState extends State<DyphicCalendar> {
   ///
   /// カレンダーの日付の下に表示するマーカーアイコンの処理
   ///
-  List<Widget> _buildMarkers(List<dynamic> argEvents) {
+  Widget _buildMarker(List<CalendarEvent> argEvents) {
     final markers = <Widget>[];
 
     if (argEvents.isEmpty) {
-      return markers;
+      return SizedBox();
     }
 
-    final event = argEvents.first as CalendarEvent;
+    final event = argEvents.first;
     if (event.typeMedical()) {
-      markers.add(Positioned(bottom: -1, child: Icon(Icons.medical_services, size: 20.0, color: Colors.red)));
-    }
-    if (event.typeInjection()) {
-      markers.add(Positioned(bottom: -1, child: Icon(Icons.colorize, size: 20.0, color: Colors.red)));
-    }
-    if (event.haveRecord()) {
-      markers.add(Positioned(right: -2, bottom: -2, child: Icon(Icons.check_circle, size: 20.0, color: Colors.green)));
+      markers.add(Icon(Icons.medical_services, size: 15.0, color: Colors.red));
+    } else if (event.typeInjection()) {
+      markers.add(Icon(Icons.colorize, size: 15.0, color: Colors.red));
+    } else {
+      markers.add(SizedBox(width: 15.0));
     }
 
-    return markers;
+    if (event.haveRecord()) {
+      markers.add(Icon(Icons.check_circle, size: 15.0, color: Colors.green));
+    } else {
+      markers.add(SizedBox(width: 15.0));
+    }
+
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: markers,
+    );
   }
 
   ///
@@ -120,16 +139,16 @@ class _DyphicCalendarState extends State<DyphicCalendar> {
         margin: const EdgeInsets.only(left: 16.0, right: 16.0, bottom: 8.0),
         elevation: 4.0,
         child: InkWell(
-          child: _detailDailyRecord(),
           onTap: () async {
-            final selectDate = _selectedItem.date;
-            bool isUpdate = await Navigator.of(context).push<bool>(
+            final selectDate = _selectedEvent.date;
+            final isUpdate = await Navigator.of(context).push<bool>(
                   MaterialPageRoute(builder: (_) => RecordPage(selectDate)),
                 ) ??
                 false;
             final recordId = DyphicID.makeRecordId(selectDate);
             widget.onReturnEditPage(isUpdate, recordId);
           },
+          child: _detailDailyRecord(),
         ),
       ),
     );
@@ -153,15 +172,15 @@ class _DyphicCalendarState extends State<DyphicCalendar> {
 
   Widget _labelEventInfo() {
     return Center(
-      child: AppText.normal(_selectedItem.name ?? AppStrings.calenderNoEvent),
+      child: AppText.normal(_selectedEvent.name ?? AppStrings.calenderNoEvent),
     );
   }
 
   Widget _labelRecordInfo() {
     final widgets = <Widget>[];
-    if (_selectedItem.haveRecord()) {
+    if (_selectedEvent.haveRecord()) {
       widgets.add(AppText.normal(AppStrings.calenderDetailConditionLabel));
-      widgets.add(AppText.normal(_selectedItem.toStringConditions()));
+      widgets.add(AppText.normal(_selectedEvent.toStringConditions()));
       widgets.add(_labelMemo());
     } else {
       widgets.add(AppText.normal(AppStrings.calenderUnRegisterLabel));
@@ -176,7 +195,7 @@ class _DyphicCalendarState extends State<DyphicCalendar> {
     return Padding(
       padding: const EdgeInsets.only(top: 8.0),
       child: AppText.multiLine(
-        '${_selectedItem.getConditionMemo()}',
+        '${_selectedEvent.getConditionMemo()}',
         maxLines: 5,
       ),
     );

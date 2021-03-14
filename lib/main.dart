@@ -21,7 +21,7 @@ class App extends StatelessWidget {
           return _SplashScreen();
         } else {
           return ChangeNotifierProvider<AppSettings>(
-            create: (_) => snapshot.data,
+            create: (_) => snapshot.requireData,
             child: _MyApp(),
           );
         }

@@ -7,10 +7,14 @@ import 'package:dyphic/repository/condition_repository.dart';
 import 'package:dyphic/repository/medicine_repository.dart';
 import 'package:dyphic/repository/record_repository.dart';
 import 'package:dyphic/ui/notifier_view_model.dart';
-import 'package:flutter/material.dart';
 
 class RecordViewModel extends NotifierViewModel {
-  RecordViewModel._(this._date, this._repository, this._medicineRepository, this._conditionRepository) {
+  RecordViewModel._(
+    this._date,
+    this._repository,
+    this._medicineRepository,
+    this._conditionRepository,
+  ) {
     _init();
   }
 
@@ -28,7 +32,7 @@ class RecordViewModel extends NotifierViewModel {
   final MedicineRepository _medicineRepository;
   final ConditionRepository _conditionRepository;
 
-  InputRecord _inputRecord;
+  late InputRecord _inputRecord;
   double get morningTemperature => _inputRecord.morningTemperature;
   double get nightTemperature => _inputRecord.nightTemperature;
   Set<int> get selectConditionIds => _inputRecord.selectConditionIds;
@@ -39,10 +43,10 @@ class RecordViewModel extends NotifierViewModel {
   String get dinner => _inputRecord.dinner;
   String get memo => _inputRecord.memo;
 
-  List<Medicine> _allMedicines;
+  late List<Medicine> _allMedicines;
   List<Medicine> get allMedicines => _allMedicines;
 
-  List<Condition> _allConditions;
+  late List<Condition> _allConditions;
   List<Condition> get allConditions => _allConditions;
 
   ///
@@ -52,11 +56,9 @@ class RecordViewModel extends NotifierViewModel {
   Future<void> _init() async {
     final id = DyphicID.makeRecordId(_date);
     final _record = await _repository.find(id);
-    if (_record != null) {
-      _inputRecord = InputRecord.create(_record);
-    } else {
-      _inputRecord = InputRecord.empty(_date);
-    }
+
+    _inputRecord = InputRecord.create(_record);
+
     _allMedicines = await _medicineRepository.findAll();
     _allConditions = await _conditionRepository.findAll();
     loadSuccess();
@@ -128,45 +130,30 @@ class RecordViewModel extends NotifierViewModel {
 ///
 class InputRecord {
   InputRecord._({
-    @required this.date,
-    this.morningTemperature,
-    this.nightTemperature,
-    this.selectMedicineIds,
-    this.selectConditionIds,
-    this.conditionMemo,
-    this.breakfast,
-    this.lunch,
-    this.dinner,
-    this.memo,
+    required this.date,
+    required this.morningTemperature,
+    required this.nightTemperature,
+    required this.selectMedicineIds,
+    required this.selectConditionIds,
+    required this.conditionMemo,
+    required this.breakfast,
+    required this.lunch,
+    required this.dinner,
+    required this.memo,
   });
-
-  factory InputRecord.empty(DateTime date) {
-    return InputRecord._(
-      date: date,
-      morningTemperature: 0,
-      nightTemperature: 0,
-      selectMedicineIds: {},
-      selectConditionIds: {},
-      conditionMemo: '',
-      breakfast: '',
-      lunch: '',
-      dinner: '',
-      memo: '',
-    );
-  }
 
   factory InputRecord.create(Record record) {
     return InputRecord._(
       date: record.date,
-      morningTemperature: record.morningTemperature,
-      nightTemperature: record.nightTemperature,
-      selectMedicineIds: record.medicines.map((e) => e.id).toSet(),
-      selectConditionIds: record.conditions.map((e) => e.id).toSet(),
-      conditionMemo: record.conditionMemo,
-      breakfast: record.breakfast,
-      lunch: record.lunch,
-      dinner: record.dinner,
-      memo: record.memo,
+      morningTemperature: record.morningTemperature ?? 0.0,
+      nightTemperature: record.nightTemperature ?? 0.0,
+      selectMedicineIds: record.medicines?.map((e) => e.id).toSet() ?? {},
+      selectConditionIds: record.conditions?.map((e) => e.id).toSet() ?? {},
+      conditionMemo: record.conditionMemo ?? '',
+      breakfast: record.breakfast ?? '',
+      lunch: record.lunch ?? '',
+      dinner: record.dinner ?? '',
+      memo: record.memo ?? '',
     );
   }
 
@@ -183,8 +170,10 @@ class InputRecord {
 
   Record toRecord(List<Medicine> allMedicine, List<Condition> allCondition) {
     final id = DyphicID.makeRecordId(date);
+
     final selectConditions = allCondition.where((e) => selectConditionIds.contains(e.id)).toList();
     final selectMedicines = allMedicine.where((e) => selectMedicineIds.contains(e.id)).toList();
+
     return Record.create(
       id: id,
       recordOverview: RecordOverview(recordId: id, conditions: selectConditions, conditionMemo: conditionMemo),

@@ -3,7 +3,7 @@ import 'package:dyphic/model/medicine.dart';
 import 'package:flutter/material.dart';
 
 class MedicineTypeRadio extends StatefulWidget {
-  MedicineTypeRadio({@required this.initSelectedType, @required this.onChange});
+  MedicineTypeRadio({required this.initSelectedType, required this.onChange});
 
   final MedicineType initSelectedType;
   final Function(MedicineType) onChange;
@@ -15,7 +15,7 @@ class MedicineTypeRadio extends StatefulWidget {
 class _MedicineTypeRadioState extends State<MedicineTypeRadio> {
   int radioOral = 1;
   int radioNotOral = 2;
-  int selectedRadioValue;
+  late int selectedRadioValue;
 
   @override
   void initState() {
@@ -38,7 +38,7 @@ class _MedicineTypeRadioState extends State<MedicineTypeRadio> {
           value: radioOral,
           groupValue: selectedRadioValue,
           activeColor: Theme.of(context).accentColor,
-          onChanged: (int v) {
+          onChanged: (int? v) {
             widget.onChange(MedicineType.oral);
             setState(() {
               selectedRadioValue = radioOral;
@@ -50,7 +50,7 @@ class _MedicineTypeRadioState extends State<MedicineTypeRadio> {
             value: radioNotOral,
             groupValue: selectedRadioValue,
             activeColor: Theme.of(context).accentColor,
-            onChanged: (int v) {
+            onChanged: (int? v) {
               widget.onChange(MedicineType.notOral);
               setState(() {
                 selectedRadioValue = radioNotOral;

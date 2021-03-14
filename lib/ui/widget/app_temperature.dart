@@ -6,22 +6,34 @@ import 'package:flutter/material.dart';
 class AppTemperature extends StatelessWidget {
   const AppTemperature._(this.temperature, this.isMorning, this.onEditValue, this.dialogTitle);
 
-  factory AppTemperature.morning({@required double temperature, @required Function(double) onEditValue}) {
+  factory AppTemperature.morning({required double temperature, required Function(double?) onEditValue}) {
     return AppTemperature._(temperature, true, onEditValue, AppStrings.recordTemperatureMorning);
   }
 
-  factory AppTemperature.night({@required double temperature, @required Function(double) onEditValue}) {
+  factory AppTemperature.night({required double temperature, required Function(double?) onEditValue}) {
     return AppTemperature._(temperature, false, onEditValue, AppStrings.recordTemperatureNight);
   }
 
   final String dialogTitle;
   final double temperature;
   final bool isMorning;
-  final Function(double) onEditValue;
+  final Function(double?) onEditValue;
 
   @override
   Widget build(BuildContext context) {
     return InkWell(
+      onTap: () async {
+        final inputValue = await showDialog<double>(
+          context: context,
+          builder: (context) {
+            return AppTemperatureEditDialog(
+              title: dialogTitle,
+              initValue: temperature,
+            );
+          },
+        );
+        onEditValue(inputValue);
+      },
       child: Row(
         children: <Widget>[
           _verticalLine(),
@@ -42,18 +54,6 @@ class AppTemperature extends StatelessWidget {
           _verticalLine(),
         ],
       ),
-      onTap: () async {
-        final inputValue = await showDialog<double>(
-          context: context,
-          builder: (context) {
-            return AppTemperatureEditDialog(
-              title: dialogTitle,
-              initValue: temperature,
-            );
-          },
-        );
-        onEditValue(inputValue);
-      },
     );
   }
 

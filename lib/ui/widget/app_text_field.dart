@@ -1,5 +1,7 @@
-import 'package:dyphic/common/app_strings.dart';
 import 'package:flutter/material.dart';
+
+import 'package:dyphic/common/app_extension.dart';
+import 'package:dyphic/common/app_strings.dart';
 
 class AppTextField extends StatefulWidget {
   const AppTextField._(
@@ -12,27 +14,27 @@ class AppTextField extends StatefulWidget {
   );
 
   factory AppTextField.singleLine({
-    @required String label,
-    String initValue,
+    required String label,
+    String? initValue,
     bool isRequired = false,
     String hintText = '',
-    @required void Function(String) onChanged,
+    required void Function(String) onChanged,
   }) {
     return AppTextField._(label, initValue, isRequired, 1, hintText, onChanged);
   }
 
   factory AppTextField.multiLine({
-    String initValue,
+    String? initValue,
     bool isRequired = false,
     int limitLine = 6,
     String hintText = '',
-    @required void Function(String) onChanged,
+    required void Function(String) onChanged,
   }) {
     return AppTextField._('', initValue, isRequired, limitLine, hintText, onChanged);
   }
 
   final String label;
-  final String initValue;
+  final String? initValue;
   final bool isRequired;
   final int limitLine;
   final String hintText;
@@ -43,7 +45,7 @@ class AppTextField extends StatefulWidget {
 }
 
 class _AppTextFieldState extends State<AppTextField> {
-  String _value;
+  String? _value;
 
   @override
   void initState() {
@@ -57,7 +59,7 @@ class _AppTextFieldState extends State<AppTextField> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         _createTextFormField(),
-        if (widget.isRequired && _value != null && _value.isEmpty)
+        if (widget.isRequired && _value.haveValue())
           Padding(
             padding: const EdgeInsets.only(left: 8.0),
             child: Text(AppStrings.textFieldRequiredEmptyError, style: TextStyle(color: Colors.red)),

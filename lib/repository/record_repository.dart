@@ -14,7 +14,7 @@ class RecordRepository {
     return await _recordApi.findOverviewRecords();
   }
 
-  Future<RecordOverview> findOverview(int id) async {
+  Future<RecordOverview?> findOverview(int id) async {
     return await _recordApi.findOverviewRecord(id);
   }
 

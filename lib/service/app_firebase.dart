@@ -1,20 +1,19 @@
 import 'package:dyphic/service/mixin_app_auth.dart';
+import 'package:dyphic/service/mixin_crashlytics.dart';
 import 'package:dyphic/service/mixin_firestore.dart';
 import 'package:dyphic/service/mixin_storage.dart';
 
-class AppFirebase with AppAuthMixin, AppStorageMixin, AppFirestoreMixin {
+///
+/// このクラスを使用する場合はアプリ起動時に必ず1回initを呼ぶ
+///
+class AppFirebase with AppAuthMixin, AppStorageMixin, AppFirestoreMixin, AppCrashlytics {
   AppFirebase._();
 
-  ///
-  /// このクラスを使用する場合はアプリ起動時に必ず1回initを呼ぶ
-  ///
-  factory AppFirebase.getInstance() {
-    return _instance;
-  }
-
   static final AppFirebase _instance = AppFirebase._();
+  static AppFirebase get instance => _instance;
 
   Future<void> init() async {
-    await this.initAuth();
+    await initAuth();
+    await initCrashlytics();
   }
 }

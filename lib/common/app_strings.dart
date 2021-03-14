@@ -1,5 +1,5 @@
 class AppStrings {
-  static const String appTitle = '生活管理';
+  static const String appTitle = '体調管理';
 
   static const String calenderPageTitle = 'カレンダー';
   static const String calenderNoEvent = '予定なし';
@@ -16,10 +16,6 @@ class AppStrings {
   static const String recordMedicalTitle = '飲んだ薬';
   static const String recordMealsTitle = '今日のご飯';
   static const String recordMemoTitle = '今日のメモ';
-  static const String recordSaveDialogTitle = '保存';
-  static const String recordSaveDialogDetail = 'この内容で保存します。よろしいですか？';
-  static const String recordSaveDialogSuccess = '保存しました。';
-  static const String recordSaveDialogError = 'エラーが発生しました。';
   static const String recordMorningDialogTitle = '朝食';
   static const String recordLunchDialogTitle = '昼食';
   static const String recordDinnerDialogTitle = '夕食';
@@ -39,10 +35,6 @@ class AppStrings {
   static const String medicineStartCameraLabel = 'カメラを起動する';
   static const String medicineSaveButton = 'この内容で保存する';
   static const String medicineNotSaveAttention = 'お薬の名前が未入力です。';
-  static const String medicineSaveDialogTitle = '保存';
-  static const String medicineSaveDialogDetail = 'この内容で保存します。よろしいですか？';
-  static const String medicineSaveDialogSuccess = '保存しました。';
-  static const String medicineSaveDialogError = 'エラーが発生しました。';
 
   static const String conditionPageTitle = '体調管理';
   static const String conditionOverview = 'この画面では体調に関する症状を登録・編集できます。';
@@ -51,31 +43,23 @@ class AppStrings {
   static const String conditionInputLabel = '症状名';
   static const String conditionInputDuplicateMessage = 'この症状名は既に登録されています。';
   static const String conditionNewButton = '新しく登録する';
-  static const String conditionNewDialogTitle = '新規登録';
-  static const String conditionNewDialogDetail = '新しい症状名を登録します。よろしいですか？';
-  static const String conditionNewDialogSuccess = '登録が完了しました';
   static const String conditionEditButton = '症状名を修正する';
-  static const String conditionEditDialogTitle = '症状名修正';
-  static const String conditionEditDialogDetail = '既存の症状名を修正します。\nこれまで記録時に選択してきた症状名も修正されるためご注意ください。修正しますか？';
-  static const String conditionEditDialogSuccess = '修正が完了しました';
-  static const String conditionEditDialogError = 'エラーが発生しました。';
 
   static const String settingsPageTitle = '設定';
   static const String settingsAppVersionLabel = 'アプリバージョン';
   static const String settingsChangeAppThemeLabel = 'テーマ切り替え';
   static const String settingsNotLoginNameLabel = 'ー';
+  static const String settingsLoginNameNotSettingLabel = '未設定';
   static const String settingsNotLoginEmailLabel = '未ログイン';
+  static const String settingsLoginEmailNotSettingLabel = '未設定';
   static const String settingsLoginWithGoogle = 'Googleアカウントでログイン';
   static const String settingsLoginInfo = '※ログインするとカレンダー登録やお薬情報などの登録/編集が可能になり、イベント情報も表示されるようになります。';
-  static const String settingsLogoutTitle = 'Googleアカウントからログアウト';
-  static const String settingsLogoutDialogMessage = 'ログアウトしてもよろしいですか？';
-  static const String settingsLogoutSuccessMessage = 'ログアウトが完了しました。';
-  static const String settingsEditDialogError = 'ログアウト処理に失敗しました。';
+  static const String settingsLogoutLabel = 'Googleアカウントからログアウト';
 
   static const String textFieldRequiredEmptyError = '※必須項目';
 
-  static const String dialogOkLabel = 'OK';
-  static const String dialogCancelLabel = 'キャンセル';
-  static const String dialogTitleSuccess = '成功';
-  static const String dialogTitleError = 'エラー';
+  static const String dialogSuccessMessage = '完了しました！';
+  static const String dialogErrorMessage = 'エラーが発生しました';
+  static const String dialogOk = 'OK';
+  static const String dialogCancel = 'キャンセル';
 }

@@ -1,10 +1,11 @@
-import 'package:dyphic/common/app_colors.dart';
-import 'package:dyphic/model/app_settings.dart';
-import 'package:dyphic/ui/widget/app_dialog.dart';
-import 'package:dyphic/ui/widget/app_divider.dart';
-import 'package:dyphic/ui/widget/app_outline_button.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
+import 'package:dyphic/common/app_colors.dart';
+import 'package:dyphic/model/app_settings.dart';
+import 'package:dyphic/ui/widget/app_progress_dialog.dart';
+import 'package:dyphic/ui/widget/app_divider.dart';
+import 'package:dyphic/ui/widget/app_outline_button.dart';
 
 import 'package:dyphic/common/app_strings.dart';
 import 'package:dyphic/model/page_state.dart';
@@ -134,7 +135,7 @@ class ConditionPage extends StatelessWidget {
         filled: true,
       ),
       autovalidateMode: AutovalidateMode.always,
-      validator: (String inputVal) => viewModel.inputValidator(inputVal),
+      validator: (String? inputVal) => viewModel.inputValidator(inputVal),
       onFieldSubmitted: (String value) {
         viewModel.input(value);
       },
@@ -145,36 +146,26 @@ class ConditionPage extends StatelessWidget {
     final viewModel = Provider.of<ConditionViewModel>(context);
 
     String buttonName;
-    String dialogTitle;
-    String dialogDetail;
-    String dialogSuccessMessage;
     if (viewModel.exist()) {
       buttonName = AppStrings.conditionEditButton;
-      dialogTitle = AppStrings.conditionEditDialogTitle;
-      dialogDetail = AppStrings.conditionEditDialogDetail;
-      dialogSuccessMessage = AppStrings.conditionEditDialogSuccess;
     } else {
       buttonName = AppStrings.conditionNewButton;
-      dialogTitle = AppStrings.conditionNewDialogTitle;
-      dialogDetail = AppStrings.conditionNewDialogDetail;
-      dialogSuccessMessage = AppStrings.conditionNewDialogSuccess;
     }
 
-    return RaisedButton(
-      child: Text(buttonName, style: TextStyle(color: Colors.white)),
+    return ElevatedButton(
       onPressed: viewModel.enableOnSave
-          ? () async {
-              final dialog = AppDialog.createInfo(
-                title: dialogTitle,
-                description: dialogDetail,
-                successMessage: dialogSuccessMessage,
-                errorMessage: AppStrings.conditionEditDialogError,
-                onOkPress: viewModel.onSave,
-                onSuccessOkPress: viewModel.refresh,
+          ? () {
+              AppProgressDialog(
+                execute: viewModel.onSave,
+                onSuccess: (bool isSuccess) async {
+                  if (isSuccess) {
+                    await viewModel.refresh();
+                  }
+                },
               );
-              await dialog.show(context);
             }
           : null,
+      child: Text(buttonName, style: TextStyle(color: Colors.white)),
     );
   }
 }

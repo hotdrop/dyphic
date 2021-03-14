@@ -11,39 +11,50 @@ mixin AppStorageMixin {
 
   Future<String> saveImage(String localFilePath) async {
     String fileName = basename(localFilePath);
+    File localFile = File(localFilePath);
 
-    final ref = FirebaseStorage().ref().child('images/$fileName');
-    File localImageFile = File(localFilePath);
-    final task = ref.putFile(localImageFile);
-    final taskSnapshot = await task.onComplete;
-    final url = await taskSnapshot.ref.getDownloadURL() as String;
-
-    AppLogger.i('ファイルをStorageに保存しました。 path=$url');
-    return url;
+    try {
+      final task = await FirebaseStorage.instance.ref('images/$fileName').putFile(localFile);
+      final url = await task.ref.getDownloadURL();
+      AppLogger.d('ファイルをStorageに保存しました。 path=$url');
+      return url;
+    } on FirebaseException catch (e, s) {
+      await AppLogger.e('FirebaseStorage: 保存処理に失敗', e, s);
+      rethrow;
+    }
   }
 
   Future<String> readEventJson() async {
-    return await _readJson(eventJsonFileName);
+    try {
+      final url = await FirebaseStorage.instance.ref(eventJsonFileName).getDownloadURL();
+      final uri = Uri.parse(url);
+      final response = await http.get(uri);
+      return utf8.decode(response.bodyBytes);
+    } on FirebaseException catch (e, s) {
+      await AppLogger.e('FirebaseStorage: $eventJsonFileNameの読み込みに失敗', e, s);
+      rethrow;
+    }
   }
 
-  Future<bool> isUpdateEventJson(DateTime previousReadDate) async {
+  Future<bool> isUpdateEventJson(DateTime? previousReadDate) async {
     if (previousReadDate == null) {
       return true;
     }
 
-    final ref = FirebaseStorage().ref().child(eventJsonFileName);
-    final metadata = await ref.getMetadata();
-    final updateDateTime = DateTime.fromMillisecondsSinceEpoch(metadata.updatedTimeMillis);
-    AppLogger.i('event.jsonの更新日時: $updateDateTime');
-    final updateDate = DateTime(updateDateTime.year, updateDateTime.month, updateDateTime.day);
-
-    return previousReadDate.isBefore(updateDate);
-  }
-
-  Future<String> _readJson(String fileName) async {
-    final ref = FirebaseStorage().ref().child(fileName);
-    final url = await ref.getDownloadURL() as String;
-    final response = await http.get(url);
-    return utf8.decode(response.bodyBytes);
+    try {
+      final metadata = await FirebaseStorage.instance.ref(eventJsonFileName).getMetadata();
+      final updateAt = metadata.updated;
+      AppLogger.d('event.jsonの更新日時: $updateAt');
+      if (updateAt != null) {
+        final updateDate = DateTime(updateAt.year, updateAt.month, updateAt.day);
+        return previousReadDate.isBefore(updateDate);
+      } else {
+        // updateAtが取れない場合はファイルが存在しないので無条件でfalseにする
+        return false;
+      }
+    } on FirebaseException catch (e, s) {
+      await AppLogger.e('FirebaseStorage: $eventJsonFileNameの更新日時取得に失敗', e, s);
+      rethrow;
+    }
   }
 }

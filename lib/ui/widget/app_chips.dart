@@ -10,9 +10,9 @@ import 'package:flutter/material.dart';
 ///
 class ConditionSelectChips extends StatefulWidget {
   const ConditionSelectChips({
-    @required this.selectIds,
-    @required this.allConditions,
-    @required this.onChange,
+    required this.selectIds,
+    required this.allConditions,
+    required this.onChange,
   });
 
   final Set<int> selectIds;
@@ -24,15 +24,13 @@ class ConditionSelectChips extends StatefulWidget {
 }
 
 class _ConditionSelectChipsState extends State<ConditionSelectChips> {
-  Set<int> _selectedIds;
+  Set<int> _selectedIds = <int>{};
 
   @override
   void initState() {
     super.initState();
     if (widget.selectIds.isNotEmpty) {
       _selectedIds = widget.selectIds.toSet();
-    } else {
-      _selectedIds = <int>{};
     }
   }
 
@@ -74,9 +72,9 @@ class _ConditionSelectChipsState extends State<ConditionSelectChips> {
 ///
 class MedicineSelectChips extends StatefulWidget {
   const MedicineSelectChips({
-    @required this.selectIds,
-    @required this.allMedicines,
-    @required this.onChange,
+    required this.selectIds,
+    required this.allMedicines,
+    required this.onChange,
   });
 
   final Set<int> selectIds;
@@ -88,15 +86,13 @@ class MedicineSelectChips extends StatefulWidget {
 }
 
 class _MedicineSelectChipsState extends State<MedicineSelectChips> {
-  Set<int> _selectedIds;
+  Set<int> _selectedIds = <int>{};
 
   @override
   void initState() {
     super.initState();
     if (widget.selectIds.isNotEmpty) {
       _selectedIds = widget.selectIds;
-    } else {
-      _selectedIds = <int>{};
     }
   }
 

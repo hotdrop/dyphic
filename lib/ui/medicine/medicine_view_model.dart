@@ -15,7 +15,7 @@ class MedicineViewModel extends NotifierViewModel {
 
   final MedicineRepository _repository;
 
-  List<Medicine> _medicines;
+  late List<Medicine> _medicines;
   List<Medicine> get medicines => _medicines;
 
   Future<void> _init() async {

@@ -16,8 +16,7 @@ class AppSettings extends ChangeNotifier {
     final dataSource = AppDataSource.getInstance();
     await dataSource.init();
 
-    final firebase = AppFirebase.getInstance();
-    await firebase.init();
+    await AppFirebase.instance.init();
 
     return AppSettings._(AppSettingsRepository.create());
   }

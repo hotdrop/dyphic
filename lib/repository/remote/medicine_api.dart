@@ -6,7 +6,7 @@ class MedicineApi {
   const MedicineApi._(this._appFirebase);
 
   factory MedicineApi.create() {
-    return MedicineApi._(AppFirebase.getInstance());
+    return MedicineApi._(AppFirebase.instance);
   }
 
   final AppFirebase _appFirebase;
@@ -22,7 +22,7 @@ class MedicineApi {
     Medicine newMedicine = medicine;
     if (medicine.imagePath.isNotEmpty && isUpdateImage) {
       final saveUrl = await _appFirebase.saveImage(medicine.imagePath);
-      newMedicine = medicine.copy(imageUrl: saveUrl);
+      newMedicine = medicine.copyWith(imageUrl: saveUrl);
     }
 
     AppLogger.d('お薬情報を保存します。\n${newMedicine.toString()}');

@@ -62,7 +62,7 @@ class MedicinePage extends StatelessWidget {
           int newId = viewModel.createNewId();
           int newOrder = viewModel.createNewOrder();
           bool isUpdate = await Navigator.of(context).push<bool>(MaterialPageRoute(builder: (_) => MedicineEditPage(Medicine.createEmpty(newId, newOrder)))) ?? false;
-          AppLogger.i('戻り値: $isUpdate');
+          AppLogger.d('戻り値: $isUpdate');
           if (isUpdate) {
             await viewModel.reload();
           }
@@ -72,7 +72,7 @@ class MedicinePage extends StatelessWidget {
     );
   }
 
-  Widget _contentsView(BuildContext context, {@required bool isEditable}) {
+  Widget _contentsView(BuildContext context, {required bool isEditable}) {
     final viewModel = Provider.of<MedicineViewModel>(context);
     final medicines = viewModel.medicines;
     if (medicines.isEmpty) {
@@ -81,21 +81,19 @@ class MedicinePage extends StatelessWidget {
       );
     } else {
       return ListView.builder(
+        itemCount: medicines.length,
         itemBuilder: (BuildContext context, int index) {
-          if (index < medicines.length) {
-            return MedicineCardView(
-              medicine: medicines[index],
-              isEditable: isEditable,
-              onTapEvent: () async {
-                bool isUpdate = await Navigator.of(context).push<bool>(MaterialPageRoute(builder: (_) => MedicineEditPage(medicines[index]))) ?? false;
-                AppLogger.i('戻り値: $isUpdate');
-                if (isUpdate) {
-                  await viewModel.reload();
-                }
-              },
-            );
-          }
-          return null;
+          return MedicineCardView(
+            medicine: medicines[index],
+            isEditable: isEditable,
+            onTapEvent: () async {
+              bool isUpdate = await Navigator.of(context).push<bool>(MaterialPageRoute(builder: (_) => MedicineEditPage(medicines[index]))) ?? false;
+              AppLogger.d('戻り値: $isUpdate');
+              if (isUpdate) {
+                await viewModel.reload();
+              }
+            },
+          );
         },
       );
     }

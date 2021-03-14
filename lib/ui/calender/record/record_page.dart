@@ -1,3 +1,4 @@
+import 'package:dyphic/ui/widget/app_progress_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -7,7 +8,6 @@ import 'package:dyphic/common/app_strings.dart';
 import 'package:dyphic/model/app_settings.dart';
 import 'package:dyphic/model/page_state.dart';
 import 'package:dyphic/ui/widget/app_chips.dart';
-import 'package:dyphic/ui/widget/app_dialog.dart';
 import 'package:dyphic/ui/widget/app_meal_card.dart';
 import 'package:dyphic/ui/widget/app_temperature.dart';
 import 'package:dyphic/ui/widget/app_text_field.dart';
@@ -116,7 +116,7 @@ class RecordPage extends StatelessWidget {
         children: <Widget>[
           AppTemperature.morning(
             temperature: viewModel.morningTemperature,
-            onEditValue: (double newValue) {
+            onEditValue: (double? newValue) {
               if (newValue != null) {
                 viewModel.inputMorningTemperature(newValue);
               }
@@ -124,7 +124,7 @@ class RecordPage extends StatelessWidget {
           ),
           AppTemperature.night(
             temperature: viewModel.nightTemperature,
-            onEditValue: (double newValue) {
+            onEditValue: (double? newValue) {
               if (newValue != null) {
                 viewModel.inputNightTemperature(newValue);
               }
@@ -199,7 +199,7 @@ class RecordPage extends StatelessWidget {
               MealCard(
                 type: MealType.morning,
                 detail: viewModel.breakfast,
-                onEditValue: (String newVal) {
+                onEditValue: (String? newVal) {
                   if (newVal != null) {
                     viewModel.inputBreakfast(newVal);
                   }
@@ -209,7 +209,7 @@ class RecordPage extends StatelessWidget {
               MealCard(
                 type: MealType.lunch,
                 detail: viewModel.lunch,
-                onEditValue: (String newVal) {
+                onEditValue: (String? newVal) {
                   if (newVal != null) {
                     viewModel.inputLunch(newVal);
                   }
@@ -219,7 +219,7 @@ class RecordPage extends StatelessWidget {
               MealCard(
                 type: MealType.dinner,
                 detail: viewModel.dinner,
-                onEditValue: (String newVal) {
+                onEditValue: (String? newVal) {
                   if (newVal != null) {
                     viewModel.inputDinner(newVal);
                   }
@@ -255,26 +255,21 @@ class RecordPage extends StatelessWidget {
   Widget _saveFloatingActionButton(BuildContext context) {
     final viewModel = Provider.of<RecordViewModel>(context);
     return FloatingActionButton(
-      child: Icon(Icons.save),
-      onPressed: () async {
+      onPressed: () {
         // キーボードが出ている場合は閉じる
         FocusScope.of(context).unfocus();
-        final dialog = AppDialog.createInfo(
-          title: AppStrings.recordSaveDialogTitle,
-          description: AppStrings.recordSaveDialogDetail,
-          successMessage: AppStrings.recordSaveDialogSuccess,
-          errorMessage: AppStrings.recordSaveDialogError,
-          onOkPress: viewModel.save,
-          onSuccessOkPress: () {
-            Navigator.pop(context, true);
+        AppProgressDialog(
+          execute: viewModel.save,
+          onSuccess: (bool isSuccess) {
+            Navigator.pop(context, isSuccess);
           },
         );
-        await dialog.show(context);
       },
+      child: Icon(Icons.save),
     );
   }
 
-  Widget _contentsTitle({String title, Icon icon}) {
+  Widget _contentsTitle({required String title, required Icon icon}) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[

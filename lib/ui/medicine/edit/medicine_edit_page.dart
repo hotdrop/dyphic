@@ -1,4 +1,5 @@
 import 'package:dyphic/ui/widget/app_outline_button.dart';
+import 'package:dyphic/ui/widget/app_progress_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:image_picker/image_picker.dart';
@@ -8,7 +9,7 @@ import 'package:dyphic/common/app_strings.dart';
 import 'package:dyphic/model/medicine.dart';
 import 'package:dyphic/model/page_state.dart';
 import 'package:dyphic/ui/medicine/edit/medicine_edit_view_model.dart';
-import 'package:dyphic/ui/widget/app_dialog.dart';
+import 'package:dyphic/ui/widget/app_simple_dialog.dart';
 import 'package:dyphic/ui/widget/app_image.dart';
 import 'package:dyphic/ui/medicine/edit/medicine_type_radio.dart';
 import 'package:dyphic/ui/widget/app_text_field.dart';
@@ -75,7 +76,7 @@ class MedicineEditPage extends StatelessWidget {
       label: AppStrings.medicineNameLabel,
       isRequired: true,
       initValue: _medicine.name,
-      onChanged: (v) {
+      onChanged: (String v) {
         viewModel.inputName(v);
       },
     );
@@ -122,6 +123,7 @@ class MedicineEditPage extends StatelessWidget {
   Widget _selectImageView(BuildContext context) {
     final viewModel = Provider.of<MedicineEditViewModel>(context);
     AppLogger.d('読み込んだ画像path=${viewModel.imageFilePath}');
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
@@ -138,9 +140,9 @@ class MedicineEditPage extends StatelessWidget {
               icon: const Icon(Icons.camera_alt),
               onPressed: () async {
                 final imagePicker = ImagePicker();
-                var image = await imagePicker.getImage(source: ImageSource.camera, imageQuality: 10);
-                AppLogger.d('カメラ撮影しました。 path=${image.path}');
+                PickedFile? image = await imagePicker.getImage(source: ImageSource.camera, imageQuality: 10);
                 if (image != null) {
+                  AppLogger.d('カメラ撮影しました。 path=${image.path}');
                   viewModel.inputImagePath(image.path);
                 }
               },
@@ -153,29 +155,27 @@ class MedicineEditPage extends StatelessWidget {
 
   Widget _saveButton(BuildContext context) {
     final viewModel = Provider.of<MedicineEditViewModel>(context);
-    return RaisedButton(
-        color: Theme.of(context).accentColor,
+    return ElevatedButton(
+      style: ElevatedButton.styleFrom(
+        primary: Theme.of(context).accentColor,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.0)),
-        child: const Text(
-          AppStrings.medicineSaveButton,
-          style: TextStyle(color: Colors.white),
-        ),
-        onPressed: () async {
-          if (!viewModel.canSave) {
-            AppSimpleDialog(message: AppStrings.medicineNotSaveAttention)..show(context);
-            return;
-          }
-          final dialog = AppDialog.createInfo(
-            title: AppStrings.medicineSaveDialogTitle,
-            description: AppStrings.medicineSaveDialogDetail,
-            successMessage: AppStrings.medicineSaveDialogSuccess,
-            errorMessage: AppStrings.medicineSaveDialogError,
-            onOkPress: viewModel.save,
-            onSuccessOkPress: () {
-              Navigator.pop(context, true);
-            },
-          );
-          await dialog.show(context);
-        });
+      ),
+      onPressed: () {
+        if (!viewModel.canSave) {
+          AppSimpleDialog(message: AppStrings.medicineNotSaveAttention).show(context);
+          return;
+        }
+        AppProgressDialog(
+          execute: viewModel.save,
+          onSuccess: (bool isSuccess) {
+            Navigator.pop(context, isSuccess);
+          },
+        );
+      },
+      child: const Text(
+        AppStrings.medicineSaveButton,
+        style: TextStyle(color: Colors.white),
+      ),
+    );
   }
 }

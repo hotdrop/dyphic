@@ -7,7 +7,11 @@ import 'package:dyphic/ui/widget/app_text.dart';
 import 'package:dyphic/model/medicine.dart';
 
 class MedicineCardView extends StatelessWidget {
-  MedicineCardView({@required this.medicine, @required this.isEditable, @required this.onTapEvent});
+  MedicineCardView({
+    required this.medicine,
+    required this.isEditable,
+    required this.onTapEvent,
+  });
 
   final Medicine medicine;
   final bool isEditable;
@@ -37,15 +41,15 @@ class MedicineCardView extends StatelessWidget {
 
   Widget _memoView(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.only(left: 8.0, right: 8.0, bottom: 8.0),
+      padding: const EdgeInsets.only(left: 8.0, right: 8.0, bottom: 8.0),
       child: AppText.multiLine(medicine.memo, maxLines: 3),
     );
   }
 
   Widget _editButton(BuildContext context) {
     return TextButton(
-      child: Icon(Icons.edit, color: Theme.of(context).accentColor),
       onPressed: () => onTapEvent(),
+      child: Icon(Icons.edit, color: Theme.of(context).accentColor),
     );
   }
 }

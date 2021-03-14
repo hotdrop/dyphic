@@ -12,7 +12,7 @@ class Condition {
 
   bool get exist => id != nonId;
 
-  Condition copyWith({int newId, String newName}) {
+  Condition copyWith({required int newId, required String newName}) {
     return Condition(newId, newName);
   }
 

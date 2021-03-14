@@ -7,12 +7,12 @@ class EventApi {
   const EventApi._(this._appFirebase);
 
   factory EventApi.create() {
-    return EventApi._(AppFirebase.getInstance());
+    return EventApi._(AppFirebase.instance);
   }
 
   final AppFirebase _appFirebase;
 
-  Future<List<Event>> findByLatest(DateTime prevSaveEventDate) async {
+  Future<List<Event>> findByLatest(DateTime? prevSaveEventDate) async {
     if (!_appFirebase.isLogIn) {
       AppLogger.d('ログインしていないのでイベント取得は行いません。');
       return [];

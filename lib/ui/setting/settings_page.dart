@@ -1,9 +1,10 @@
-import 'package:dyphic/ui/widget/app_dialog.dart';
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import 'package:dyphic/ui/widget/app_progress_dialog.dart';
 import 'package:dyphic/ui/widget/app_divider.dart';
 import 'package:dyphic/ui/widget/app_outline_button.dart';
 import 'package:dyphic/ui/widget/app_text.dart';
-import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 import 'package:dyphic/common/app_strings.dart';
 import 'package:dyphic/model/app_settings.dart';
@@ -94,13 +95,15 @@ class SettingsPage extends StatelessWidget {
     final viewModel = Provider.of<SettingsViewModel>(context);
     return Padding(
       padding: const EdgeInsets.all(32.0),
-      child: RaisedButton(
-        padding: const EdgeInsets.only(top: 4.0, bottom: 4.0),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.0)),
-        child: const Text(AppStrings.settingsLoginWithGoogle, style: TextStyle(color: Colors.white)),
+      child: ElevatedButton(
+        style: ElevatedButton.styleFrom(
+          padding: const EdgeInsets.only(top: 4.0, bottom: 4.0),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.0)),
+        ),
         onPressed: () {
           viewModel.loginWithGoogle();
         },
+        child: const Text(AppStrings.settingsLoginWithGoogle, style: TextStyle(color: Colors.white)),
       ),
     );
   }
@@ -110,17 +113,15 @@ class SettingsPage extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.all(32.0),
       child: AppOutlineButton(
-        label: AppStrings.settingsLogoutTitle,
+        label: AppStrings.settingsLogoutLabel,
         isCircular: true,
-        onPressed: () async {
-          final dialog = AppDialog.createInfo(
-            title: AppStrings.settingsLogoutTitle,
-            description: AppStrings.settingsLogoutDialogMessage,
-            successMessage: AppStrings.settingsLogoutSuccessMessage,
-            errorMessage: AppStrings.settingsEditDialogError,
-            onOkPress: viewModel.logout,
+        onPressed: () {
+          AppProgressDialog(
+            execute: viewModel.logout,
+            onSuccess: (_) {
+              // 特に何もしない
+            },
           );
-          await dialog.show(context);
         },
       ),
     );

@@ -6,7 +6,7 @@ class RecordApi {
   const RecordApi._(this._appFirebase);
 
   factory RecordApi.create() {
-    return RecordApi._(AppFirebase.getInstance());
+    return RecordApi._(AppFirebase.instance);
   }
 
   final AppFirebase _appFirebase;
@@ -17,15 +17,16 @@ class RecordApi {
     return overviewRecords;
   }
 
-  Future<RecordOverview> findOverviewRecord(int id) async {
+  Future<RecordOverview?> findOverviewRecord(int id) async {
     return await _appFirebase.findOverviewRecord(id);
   }
 
   Future<Record> find(int id) async {
     AppLogger.d('$id の記録情報を取得します。');
-    final overview = await _appFirebase.findOverviewRecord(id);
-    final temperature = await _appFirebase.findTemperatureRecord(id);
-    final detail = await _appFirebase.findDetailRecord(id);
+    final RecordOverview? overview = await _appFirebase.findOverviewRecord(id);
+    final RecordTemperature? temperature = await _appFirebase.findTemperatureRecord(id);
+    final RecordDetail? detail = await _appFirebase.findDetailRecord(id);
+
     final record = Record.create(
       id: id,
       recordOverview: overview,
@@ -37,14 +38,20 @@ class RecordApi {
 
   Future<void> save(Record record) async {
     AppLogger.d('${record.id} の記録情報を保存します。\n${record.toString()}');
-    if (record.overview != null) {
-      await _appFirebase.saveOverviewRecord(record.overview);
+
+    final overview = record.overview;
+    if (overview != null) {
+      await _appFirebase.saveOverviewRecord(overview);
     }
-    if (record.temperature != null) {
-      await _appFirebase.saveTemperatureRecord(record.temperature);
+
+    final temperature = record.temperature;
+    if (temperature != null) {
+      await _appFirebase.saveTemperatureRecord(temperature);
     }
-    if (record.detail != null) {
-      await _appFirebase.saveDetailRecord(record.detail);
+
+    final detail = record.detail;
+    if (detail != null) {
+      await _appFirebase.saveDetailRecord(detail);
     }
   }
 }

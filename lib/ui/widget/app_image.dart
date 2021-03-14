@@ -6,11 +6,11 @@ import 'package:flutter/material.dart';
 class AppImage extends StatelessWidget {
   const AppImage._(this._path, this._width, this._height);
 
-  factory AppImage.icon({@required String path}) {
+  factory AppImage.icon({required String path}) {
     return AppImage._(path, 50.0, 50.0);
   }
 
-  factory AppImage.large({@required String path}) {
+  factory AppImage.large({required String path}) {
     return AppImage._(path, 150.0, 150.0);
   }
 

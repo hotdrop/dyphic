@@ -3,12 +3,12 @@ import 'package:flutter/material.dart';
 
 class AppTemperatureEditDialog extends StatefulWidget {
   const AppTemperatureEditDialog({
-    @required this.title,
+    required this.title,
     this.initValue,
   });
 
   final String title;
-  final double initValue;
+  final double? initValue;
 
   @override
   _AppTemperatureEditDialogState createState() => _AppTemperatureEditDialogState();
@@ -16,18 +16,18 @@ class AppTemperatureEditDialog extends StatefulWidget {
 
 class _AppTemperatureEditDialogState extends State<AppTemperatureEditDialog> {
   final _controller = TextEditingController();
-  List<String> inputValues;
+  List<String> inputValues = [];
 
   @override
   void initState() {
     super.initState();
 
-    if (widget.initValue > 0) {
-      final initVal = widget.initValue.toString();
+    double? i = widget.initValue ?? 0;
+    if (i > 0) {
+      final initVal = i.toString();
       inputValues = initVal.split('');
       _controller.text = '$initVal ℃';
     } else {
-      inputValues = [];
       _controller.text = '**.* ℃';
     }
   }
@@ -87,16 +87,16 @@ class _AppTemperatureEditDialogState extends State<AppTemperatureEditDialog> {
         ],
       ),
       actions: <Widget>[
-        FlatButton(
-          child: Text(AppStrings.dialogCancelLabel),
+        TextButton(
           onPressed: () => Navigator.pop(context),
+          child: Text(AppStrings.dialogCancel),
         ),
-        FlatButton(
-          child: Text(AppStrings.dialogOkLabel),
+        TextButton(
           onPressed: () {
             String v = inputValues.join();
             Navigator.pop<double>(context, double.parse(v));
           },
+          child: Text(AppStrings.dialogOk),
         ),
       ],
     );
@@ -145,7 +145,7 @@ class _AppTemperatureEditDialogState extends State<AppTemperatureEditDialog> {
 /// 数字ボタン
 ///
 class NumberCircleButton extends StatelessWidget {
-  const NumberCircleButton({@required this.number, @required this.onTap});
+  const NumberCircleButton({required this.number, required this.onTap});
 
   final int number;
   final VoidCallback onTap;
@@ -169,7 +169,7 @@ class NumberCircleButton extends StatelessWidget {
 /// アイコンボタン
 ///
 class IconCircleButton extends StatelessWidget {
-  const IconCircleButton({@required this.icon, @required this.onTap});
+  const IconCircleButton({required this.icon, required this.onTap});
 
   final IconData icon;
   final VoidCallback onTap;

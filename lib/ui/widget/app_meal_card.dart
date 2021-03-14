@@ -1,20 +1,21 @@
+import 'package:flutter/material.dart';
+
 import 'package:dyphic/common/app_colors.dart';
 import 'package:dyphic/common/app_strings.dart';
-import 'package:dyphic/ui/widget/app_dialog.dart';
-import 'package:flutter/material.dart';
+import 'package:dyphic/ui/widget/app_meal_edit_dialog.dart';
 
 enum MealType { morning, lunch, dinner }
 
 class MealCard extends StatelessWidget {
   const MealCard({
-    @required this.type,
-    @required this.detail,
-    @required this.onEditValue,
+    required this.type,
+    required this.detail,
+    required this.onEditValue,
   });
 
   final MealType type;
   final String detail;
-  final Function(String) onEditValue;
+  final Function(String?) onEditValue;
 
   @override
   Widget build(BuildContext context) {
@@ -23,6 +24,19 @@ class MealCard extends StatelessWidget {
       child: Ink(
         decoration: _decorationEachType(),
         child: InkWell(
+          onTap: () async {
+            String dialogTitle = _dialogTitle();
+            final inputValue = await showDialog<String>(
+              context: context,
+              builder: (context) {
+                return AppMealEditDialog(
+                  title: dialogTitle,
+                  initValue: detail,
+                );
+              },
+            );
+            onEditValue(inputValue);
+          },
           child: Padding(
             padding: const EdgeInsets.only(top: 8, left: 16, right: 16),
             child: Column(
@@ -34,19 +48,6 @@ class MealCard extends StatelessWidget {
               ],
             ),
           ),
-          onTap: () async {
-            String dialogTitle = _dialogTitle();
-            final inputValue = await showDialog<String>(
-              context: context,
-              builder: (context) {
-                return TextEditDialog(
-                  title: dialogTitle,
-                  initValue: detail,
-                );
-              },
-            );
-            onEditValue(inputValue);
-          },
         ),
       ),
     );
@@ -119,13 +120,10 @@ class MealCard extends StatelessWidget {
     switch (type) {
       case MealType.morning:
         return AppStrings.recordMorningDialogTitle;
-        break;
       case MealType.lunch:
         return AppStrings.recordLunchDialogTitle;
-        break;
       default:
         return AppStrings.recordDinnerDialogTitle;
-        break;
     }
   }
 }

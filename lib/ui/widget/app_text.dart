@@ -7,7 +7,7 @@ class AppText extends StatelessWidget {
     return AppText._(text, 12.0, 1);
   }
 
-  factory AppText.multiLine(String text, {@required int maxLines}) {
+  factory AppText.multiLine(String text, {required int maxLines}) {
     return AppText._(text, 12.0, maxLines);
   }
 

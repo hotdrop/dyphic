@@ -1,11 +1,12 @@
 import 'dart:math';
+import 'package:flutter/material.dart';
 
 import 'package:dyphic/common/app_logger.dart';
 import 'package:dyphic/common/app_strings.dart';
+import 'package:dyphic/common/app_extension.dart';
 import 'package:dyphic/model/condition.dart';
 import 'package:dyphic/repository/condition_repository.dart';
 import 'package:dyphic/ui/notifier_view_model.dart';
-import 'package:flutter/material.dart';
 
 class ConditionViewModel extends NotifierViewModel {
   ConditionViewModel._(this._repository) {
@@ -17,18 +18,21 @@ class ConditionViewModel extends NotifierViewModel {
   }
 
   final ConditionRepository _repository;
-  List<Condition> conditions;
+
+  late List<Condition> _conditions;
+  List<Condition> get conditions => _conditions;
 
   Condition _selectedCondition = Condition.empty();
   Condition get selectedCondition => _selectedCondition;
 
-  TextEditingController _controller = TextEditingController();
+  final TextEditingController _controller = TextEditingController();
   TextEditingController get editController => _controller;
+
   bool _enableOnSave = false;
   bool get enableOnSave => _enableOnSave;
 
   Future<void> _init() async {
-    conditions = await _repository.findAll();
+    _conditions = await _repository.findAll();
     loadSuccess();
   }
 
@@ -39,15 +43,15 @@ class ConditionViewModel extends NotifierViewModel {
     notifyListeners();
   }
 
-  String inputValidator(String inputVal) {
-    if (inputVal.isEmpty) {
+  String? inputValidator(String? inputVal) {
+    if (inputVal.isNullOrEmpty()) {
       _enableOnSave = false;
       return null;
     }
 
     // 自分以外で入力値と重複する名前がある場合は重複エラー
-    Condition sameNameCondition = conditions.firstWhere((c) => c.name == inputVal, orElse: () => null);
-    if (sameNameCondition != null && sameNameCondition.id != _selectedCondition.id) {
+    Condition sameNameCondition = conditions.firstWhere((c) => c.name == inputVal, orElse: () => Condition.empty());
+    if (sameNameCondition.id != _selectedCondition.id) {
       _enableOnSave = false;
       return AppStrings.conditionInputDuplicateMessage;
     }
@@ -87,7 +91,7 @@ class ConditionViewModel extends NotifierViewModel {
   }
 
   Future<void> refresh() async {
-    conditions = await _repository.findAll();
+    _conditions = await _repository.findAll();
     clear();
   }
 

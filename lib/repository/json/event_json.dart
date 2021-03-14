@@ -5,24 +5,29 @@ import 'package:dyphic/model/calendar_event.dart';
 
 class EventJson {
   static List<Event> parse(String json) {
-    final dynamic jsonMap = jsonDecode(json);
-    final results = (jsonMap['events'] as List)?.map((dynamic obj) => EventObject.fromJson(obj as Map<String, dynamic>))?.toList() ?? [];
+    final dynamic jsonDecodeMap = jsonDecode(json);
+    final results = (jsonDecodeMap['events'] as List)
+        .map((dynamic obj) => obj as Map<String, dynamic>)
+        .map((Map<String, dynamic> objMap) {
+          return EventObject(
+            dateId: objMap['date'] as int,
+            name: objMap['name'] as String,
+            typeIdx: objMap['type'] as int,
+          );
+        })
+        .map((obj) => obj.toEvent())
+        .toList();
     AppLogger.d('Eventをパースしました。 size=${results.length}');
-    return results.map((obj) => obj.toEvent()).toList();
+    return results;
   }
 }
 
 class EventObject {
-  const EventObject({this.dateId, this.name, this.typeIdx});
-
-  static EventObject fromJson(Map<String, dynamic> json) {
-    if (json == null) return null;
-    return EventObject(
-      dateId: json['date'] as int,
-      typeIdx: json['type'] as int,
-      name: json['name'] as String,
-    );
-  }
+  const EventObject({
+    required this.dateId,
+    required this.name,
+    required this.typeIdx,
+  });
 
   final int dateId;
   final String name;

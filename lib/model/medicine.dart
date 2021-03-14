@@ -1,15 +1,14 @@
 import 'package:dyphic/common/app_strings.dart';
-import 'package:flutter/material.dart';
 
 class Medicine {
   const Medicine({
-    @required this.id,
-    @required this.name,
-    @required this.overview,
-    @required this.type,
-    this.memo,
+    required this.id,
+    required this.name,
+    required this.overview,
+    required this.type,
+    this.memo = '',
     this.imagePath = '',
-    @required this.order,
+    required this.order,
   });
 
   factory Medicine.createEmpty(int id, int order) {
@@ -24,7 +23,7 @@ class Medicine {
   final String imagePath;
   final int order;
 
-  Medicine copy({String imageUrl}) {
+  Medicine copyWith({required String imageUrl}) {
     return Medicine(id: id, name: name, overview: overview, type: type, order: order, memo: memo, imagePath: imageUrl);
   }
 

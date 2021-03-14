@@ -1,7 +1,6 @@
 import 'package:dyphic/model/condition.dart';
 import 'package:dyphic/model/dyphic_id.dart';
 import 'package:dyphic/model/medicine.dart';
-import 'package:flutter/material.dart';
 
 ///
 /// 記録情報を保持する
@@ -16,29 +15,29 @@ class Record {
   );
 
   factory Record.create({
-    @required int id,
-    RecordOverview recordOverview,
-    RecordTemperature recordTemperature,
-    RecordDetail recordDetail,
+    required int id,
+    RecordOverview? recordOverview,
+    RecordTemperature? recordTemperature,
+    RecordDetail? recordDetail,
   }) {
     return Record._(id, DyphicID.idToDate(id), recordOverview, recordTemperature, recordDetail);
   }
 
   final int id;
   final DateTime date;
-  final RecordOverview overview;
-  final RecordTemperature temperature;
-  final RecordDetail detail;
+  final RecordOverview? overview;
+  final RecordTemperature? temperature;
+  final RecordDetail? detail;
 
-  List<Condition> get conditions => overview?.conditions ?? [];
-  String get conditionMemo => overview?.conditionMemo ?? '';
-  double get morningTemperature => temperature?.morningTemperature ?? 0;
-  double get nightTemperature => temperature?.nightTemperature ?? 0;
-  List<Medicine> get medicines => detail?.medicines ?? [];
-  String get breakfast => detail?.breakfast ?? '';
-  String get lunch => detail?.lunch ?? '';
-  String get dinner => detail?.dinner ?? '';
-  String get memo => detail?.memo ?? '';
+  List<Condition>? get conditions => overview?.conditions;
+  String? get conditionMemo => overview?.conditionMemo;
+  double? get morningTemperature => temperature?.morningTemperature;
+  double? get nightTemperature => temperature?.nightTemperature;
+  List<Medicine>? get medicines => detail?.medicines;
+  String? get breakfast => detail?.breakfast;
+  String? get lunch => detail?.lunch;
+  String? get dinner => detail?.dinner;
+  String? get memo => detail?.memo;
 
   static String listSeparator = ',';
 
@@ -59,10 +58,10 @@ class Record {
 /// このアプリは体調情報がメインなので、体調情報を保持している
 ///
 class RecordOverview {
-  RecordOverview({
-    @required this.recordId,
-    @required this.conditions,
-    @required this.conditionMemo,
+  const RecordOverview({
+    required this.recordId,
+    required this.conditions,
+    required this.conditionMemo,
   });
 
   final int recordId;
@@ -72,17 +71,15 @@ class RecordOverview {
   String toStringConditionIds() {
     if (conditions.isEmpty) {
       return '';
-    } else {
-      return conditions.map((c) => c.id).join(Record.listSeparator);
     }
+    return conditions.map((c) => c.id).join(Record.listSeparator);
   }
 
   String toStringConditionNames() {
     if (conditions.isEmpty) {
       return '';
-    } else {
-      return conditions.map((c) => c.name).join('${Record.listSeparator} ');
     }
+    return conditions.map((c) => c.name).join('${Record.listSeparator} ');
   }
 
   @override
@@ -100,9 +97,9 @@ class RecordOverview {
 ///
 class RecordTemperature {
   const RecordTemperature({
-    @required this.recordId,
-    this.morningTemperature,
-    this.nightTemperature,
+    required this.recordId,
+    required this.morningTemperature,
+    required this.nightTemperature,
   });
 
   final int recordId;
@@ -124,12 +121,12 @@ class RecordTemperature {
 ///
 class RecordDetail {
   const RecordDetail({
-    @required this.recordId,
-    this.medicines,
-    this.breakfast,
-    this.lunch,
-    this.dinner,
-    this.memo,
+    required this.recordId,
+    required this.medicines,
+    required this.breakfast,
+    required this.lunch,
+    required this.dinner,
+    required this.memo,
   });
 
   final int recordId;
@@ -142,9 +139,8 @@ class RecordDetail {
   String toStringMedicineIds() {
     if (medicines.isEmpty) {
       return '';
-    } else {
-      return medicines.map((m) => m.id).join(Record.listSeparator);
     }
+    return medicines.map((m) => m.id).join(Record.listSeparator);
   }
 
   @override

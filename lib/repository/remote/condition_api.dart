@@ -6,7 +6,7 @@ class ConditionApi {
   const ConditionApi._(this._appFirebase);
 
   factory ConditionApi.create() {
-    return ConditionApi._(AppFirebase.getInstance());
+    return ConditionApi._(AppFirebase.instance);
   }
 
   final AppFirebase _appFirebase;

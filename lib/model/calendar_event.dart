@@ -1,13 +1,12 @@
 import 'package:dyphic/model/dyphic_id.dart';
 import 'package:dyphic/model/record.dart';
-import 'package:flutter/material.dart';
 
 class CalendarEvent {
   const CalendarEvent._({
-    @required this.id,
-    @required this.type,
-    @required this.name,
-    @required this.recordOverview,
+    required this.id,
+    this.type,
+    this.name,
+    this.recordOverview,
   });
 
   factory CalendarEvent.create(Event event, RecordOverview overview) {
@@ -28,9 +27,9 @@ class CalendarEvent {
   }
 
   final int id;
-  final EventType type;
-  final String name;
-  final RecordOverview recordOverview;
+  final EventType? type;
+  final String? name;
+  final RecordOverview? recordOverview;
 
   DateTime get date => DyphicID.idToDate(id);
   bool typeMedical() => type == EventType.hospital;
@@ -42,14 +41,11 @@ class CalendarEvent {
   }
 
   String toStringConditions() {
-    return recordOverview.toStringConditionNames();
+    return recordOverview?.toStringConditionNames() ?? '';
   }
 
   String getConditionMemo() {
-    if (recordOverview.conditionMemo == null) {
-      return '';
-    }
-    return recordOverview.conditionMemo;
+    return recordOverview?.conditionMemo ?? '';
   }
 
   CalendarEvent updateRecord(RecordOverview newRecord) {
@@ -64,9 +60,9 @@ enum EventType { none, hospital, injection }
 ///
 class Event {
   const Event({
-    @required this.id,
-    @required this.type,
-    @required this.name,
+    required this.id,
+    required this.type,
+    required this.name,
   });
 
   final int id;

@@ -15,7 +15,7 @@ class SettingsViewModel extends NotifierViewModel {
   }
 
   final AccountRepository _repository;
-  PackageInfo _packageInfo;
+  late PackageInfo _packageInfo;
   String get appVersion => _packageInfo.version + '-' + _packageInfo.buildNumber;
 
   // ステータス
@@ -23,18 +23,12 @@ class SettingsViewModel extends NotifierViewModel {
   bool get loggedIn => _loginStatus == _LoginStatus.loggedIn;
 
   Future<void> _init() async {
-    try {
-      _packageInfo = await PackageInfo.fromPlatform();
+    _packageInfo = await PackageInfo.fromPlatform();
 
-      await _repository.load();
-      if (_repository.isLogIn) {
-        _loginStatus = _LoginStatus.loggedIn;
-      } else {
-        _loginStatus = _LoginStatus.notLogin;
-      }
-    } catch (e, s) {
-      await AppLogger.e('設定画面のロードに失敗しました。', e, s);
-      loadError();
+    if (_repository.isLogIn) {
+      _loginStatus = _LoginStatus.loggedIn;
+    } else {
+      _loginStatus = _LoginStatus.notLogin;
     }
 
     loadSuccess();
@@ -42,7 +36,7 @@ class SettingsViewModel extends NotifierViewModel {
 
   String getLoginUserName() {
     if (loggedIn) {
-      return _repository.userName;
+      return _repository.userName ?? AppStrings.settingsLoginNameNotSettingLabel;
     } else {
       return AppStrings.settingsNotLoginNameLabel;
     }
@@ -50,7 +44,7 @@ class SettingsViewModel extends NotifierViewModel {
 
   String getLoginEmail() {
     if (loggedIn) {
-      return _repository.userEmail;
+      return _repository.userEmail ?? AppStrings.settingsLoginEmailNotSettingLabel;
     } else {
       return AppStrings.settingsNotLoginEmailLabel;
     }
@@ -58,12 +52,8 @@ class SettingsViewModel extends NotifierViewModel {
 
   Future<void> loginWithGoogle() async {
     nowLoading();
-    try {
-      await _repository.login();
-      _loginStatus = _LoginStatus.loggedIn;
-    } catch (e, s) {
-      await AppLogger.e('Googleアカウントのサインインに失敗しました。', e, s);
-    }
+    await _repository.login();
+    _loginStatus = _LoginStatus.loggedIn;
     loadSuccess();
   }
 

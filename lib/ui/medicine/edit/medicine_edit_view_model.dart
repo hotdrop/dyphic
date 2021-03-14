@@ -13,10 +13,9 @@ class MedicineEditViewModel extends NotifierViewModel {
   }
 
   final MedicineRepository _repository;
+  final Medicine _originalMedicine;
+  late _InputItem _inputItem;
 
-  Medicine _originalMedicine;
-
-  _InputItem _inputItem;
   String get imageFilePath => _inputItem.localImagePath;
   bool get canSave => _inputItem.isCompletedRequiredFields();
 
@@ -85,6 +84,6 @@ class _InputItem {
   String localImagePath;
 
   bool isCompletedRequiredFields() {
-    return name != null && name.isNotEmpty;
+    return name.isNotEmpty;
   }
 }

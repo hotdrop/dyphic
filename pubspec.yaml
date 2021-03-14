@@ -7,7 +7,7 @@ publish_to: 'none'
 version: 1.0.0+1
 
 environment:
-  sdk: ">=2.8.0 <3.0.0"
+  sdk: ">=2.12.0 <3.0.0"
 
 dependencies:
   flutter:
@@ -16,43 +16,41 @@ dependencies:
     sdk: flutter
 
   # design
-  provider: ^4.3.2
-  path_provider: ^1.6.22
-  path: ^1.7.0
+  provider: ^5.0.0
+  path_provider: ^2.0.1
+  path: ^1.8.0
 
   # ui
-  table_calendar: ^2.3.3
-  image_picker: ^0.6.7+22
-  awesome_dialog: ^1.3.1
-  progress_dialog: ^1.2.4
-  expansion_tile_card: ^1.1.0
+  table_calendar: ^3.0.0-nullsafety.1
+  image_picker: ^0.7.2+1
+  expansion_tile_card: ^2.0.0
 
   # network
-  http: ^0.12.2
-  cached_network_image: ^2.5.0
+  http: ^0.13.0
+  cached_network_image: ^3.0.0-nullsafety
 
   # storage
-  sqflite: ^1.3.1
-  shared_preferences: ^0.5.12+2
+  sqflite: ^2.0.0+2
+  shared_preferences: ^2.0.4
 
   # other
-  package_info: ^0.4.3
-  logger: ^0.9.4
-  intl: ^0.16.1
+  package_info: ^2.0.0
+  logger: ^1.0.0-nullsafety.0
+  intl: ^0.17.0
 
   # Firebase
-  google_sign_in: ^4.5.5
-  firebase_core: ^0.5.1
-  firebase_auth: ^0.18.2
-  cloud_firestore: ^0.14.2
-  firebase_storage: ^4.0.1
-  firebase_crashlytics: ^0.2.2
+  google_sign_in: ^5.0.0
+  firebase_core: ^1.0.1
+  firebase_auth: ^1.0.1
+  cloud_firestore: ^1.0.1
+  firebase_storage: ^8.0.0
+  firebase_crashlytics: ^1.0.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
 
-  pedantic: ^1.8.0+1
+  pedantic: ^1.11.0
 
 flutter:
   uses-material-design: true

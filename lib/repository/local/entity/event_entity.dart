@@ -1,7 +1,7 @@
 import 'package:dyphic/model/calendar_event.dart';
 
 class EventEntity {
-  EventEntity(this.id, this.type, this.name);
+  const EventEntity(this.id, this.type, this.name);
 
   EventEntity.fromMap(Map<String, dynamic> map)
       : id = map[columnId] as int,
@@ -22,7 +22,7 @@ class EventEntity {
   ''';
 
   static const String columnId = 'id';
-  int id;
+  final int id;
 
   static const String columnType = 'type';
   final int type;
@@ -33,13 +33,13 @@ class EventEntity {
 
 extension EventMapper on Event {
   EventEntity toEntity() {
-    return EventEntity(this.id, this.type.index, this.name);
+    return EventEntity(id, type.index, name);
   }
 }
 
 extension EventEntityMapper on EventEntity {
   Event toEvent() {
     final type = Event.toType(this.type);
-    return Event(id: id, type: type, name: this.name);
+    return Event(id: id, type: type, name: name);
   }
 }
