@@ -52,6 +52,14 @@ dev_dependencies:
 
   pedantic: ^1.11.0
 
+flutter_icons:
+  image_path_android: "res/launcher/ic_launcher.png"
+  image_path_ios: "res/launcher/ic_launcher.png"
+  android: true
+  ios: true
+  adaptive_icon_background: "#000000"
+  adaptive_icon_foreground: "res/launcher/ic_launcher_round.png"
+
 flutter:
   uses-material-design: true
   assets:
