@@ -111,9 +111,9 @@ class _DyphicCalendarState extends State<DyphicCalendar> {
 
     final event = argEvents.first;
     if (event.typeMedical()) {
-      markers.add(Icon(Icons.medical_services, size: 15.0, color: Colors.red));
+      markers.add(Image.asset('res/images/ic_hospital.png', width: 15.0, height: 15.0));
     } else if (event.typeInjection()) {
-      markers.add(Icon(Icons.colorize, size: 15.0, color: Colors.red));
+      markers.add(Image.asset('res/images/ic_inject.png', width: 15.0, height: 15.0));
     } else {
       markers.add(SizedBox(width: 15.0));
     }
