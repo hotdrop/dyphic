@@ -62,7 +62,13 @@ class _AppTextFieldState extends State<AppTextField> {
         if (widget.isRequired && _value.haveValue())
           Padding(
             padding: const EdgeInsets.only(left: 8.0),
-            child: Text(AppStrings.textFieldRequiredEmptyError, style: TextStyle(color: Colors.red)),
+            child: Text(
+              AppStrings.textFieldRequiredEmptyError,
+              style: TextStyle(
+                color: Colors.red,
+                fontSize: 12.0,
+              ),
+            ),
           ),
       ],
     );

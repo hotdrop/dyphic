@@ -107,7 +107,7 @@ class ConditionPage extends StatelessWidget {
   Widget _inputArea(BuildContext context) {
     final appSettings = Provider.of<AppSettings>(context);
     return Padding(
-      padding: const EdgeInsets.only(left: 36, right: 36, top: 16),
+      padding: const EdgeInsets.only(left: 36.0, right: 36.0, top: 16.0, bottom: 36.0),
       child: Column(
         children: [
           _textFieldOnInputArea(context),

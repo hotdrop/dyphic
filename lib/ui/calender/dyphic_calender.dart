@@ -20,8 +20,7 @@ class DyphicCalendar extends StatefulWidget {
 class _DyphicCalendarState extends State<DyphicCalendar> {
   final Map<int, CalendarEvent> _events = {};
 
-  final DateTime _focusDate = DateTime.now();
-
+  DateTime _focusDate = DateTime.now();
   DateTime? _selectedDate;
   CalendarEvent _selectedEvent = CalendarEvent.createEmpty(DateTime.now());
 
@@ -46,6 +45,7 @@ class _DyphicCalendarState extends State<DyphicCalendar> {
 
   void _onDaySelected(DateTime date, {CalendarEvent? selectedItem}) {
     setState(() {
+      _focusDate = date;
       _selectedDate = date;
       _selectedEvent = selectedItem ?? CalendarEvent.createEmpty(date);
     });
@@ -56,13 +56,14 @@ class _DyphicCalendarState extends State<DyphicCalendar> {
     return Column(
       mainAxisSize: MainAxisSize.max,
       children: [
-        _buildCalendar(),
+        _buildCalendar(context),
+        SizedBox(height: 8.0),
         _cardDailyRecord(context),
       ],
     );
   }
 
-  Widget _buildCalendar() {
+  Widget _buildCalendar(BuildContext context) {
     return TableCalendar<CalendarEvent>(
       firstDay: DateTime(2020, 11, 1),
       lastDay: DateTime(2030, 12, 31),
@@ -71,6 +72,7 @@ class _DyphicCalendarState extends State<DyphicCalendar> {
       rangeSelectionMode: RangeSelectionMode.disabled,
       headerStyle: HeaderStyle(formatButtonVisible: false),
       locale: 'ja_JP',
+      daysOfWeekHeight: 18.0, // デフォルト値の16だと日本語で見切れるのでちょっとふやす
       calendarFormat: CalendarFormat.month,
       eventLoader: _getEventForDay,
       calendarStyle: CalendarStyle(
@@ -79,7 +81,7 @@ class _DyphicCalendarState extends State<DyphicCalendar> {
           shape: BoxShape.circle,
         ),
         todayDecoration: BoxDecoration(
-          color: Theme.of(context).accentColor,
+          color: Theme.of(context).primaryColor,
           shape: BoxShape.circle,
         ),
         outsideDaysVisible: false,
@@ -146,20 +148,20 @@ class _DyphicCalendarState extends State<DyphicCalendar> {
             final recordId = DyphicID.makeRecordId(selectDate);
             widget.onReturnEditPage(isUpdate, recordId);
           },
-          child: _detailDailyRecord(),
+          child: _detailDailyRecord(context),
         ),
       ),
     );
   }
 
-  Widget _detailDailyRecord() {
+  Widget _detailDailyRecord(BuildContext context) {
     return SingleChildScrollView(
       child: Padding(
         padding: EdgeInsets.all(8.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _labelEventInfo(),
+            _labelEventInfo(context),
             const Divider(),
             _labelRecordInfo(),
           ],
@@ -168,10 +170,19 @@ class _DyphicCalendarState extends State<DyphicCalendar> {
     );
   }
 
-  Widget _labelEventInfo() {
-    return Center(
-      child: Text(_selectedEvent.name ?? AppStrings.calenderNoEvent),
-    );
+  Widget _labelEventInfo(BuildContext context) {
+    if (_selectedEvent.name != null) {
+      return Center(
+        child: Text(
+          _selectedEvent.name!,
+          style: TextStyle(color: Theme.of(context).accentColor),
+        ),
+      );
+    } else {
+      return Center(
+        child: Text(AppStrings.calenderNoEvent),
+      );
+    }
   }
 
   Widget _labelRecordInfo() {
