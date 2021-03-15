@@ -1,10 +1,8 @@
 import 'package:dyphic/model/dyphic_id.dart';
-import 'package:dyphic/ui/widget/app_text.dart';
 import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 import 'package:dyphic/ui/calender/record/record_page.dart';
-import 'package:dyphic/ui/widget/app_divider.dart';
 
 import 'package:dyphic/model/calendar_event.dart';
 import 'package:dyphic/common/app_strings.dart';
@@ -162,7 +160,7 @@ class _DyphicCalendarState extends State<DyphicCalendar> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _labelEventInfo(),
-            DividerThemeColor.create(),
+            const Divider(),
             _labelRecordInfo(),
           ],
         ),
@@ -172,18 +170,20 @@ class _DyphicCalendarState extends State<DyphicCalendar> {
 
   Widget _labelEventInfo() {
     return Center(
-      child: AppText.normal(_selectedEvent.name ?? AppStrings.calenderNoEvent),
+      child: Text(_selectedEvent.name ?? AppStrings.calenderNoEvent),
     );
   }
 
   Widget _labelRecordInfo() {
     final widgets = <Widget>[];
     if (_selectedEvent.haveRecord()) {
-      widgets.add(AppText.normal(AppStrings.calenderDetailConditionLabel));
-      widgets.add(AppText.normal(_selectedEvent.toStringConditions()));
+      widgets.add(Text(AppStrings.calenderDetailConditionLabel));
+      widgets.add(Text(_selectedEvent.toStringConditions()));
+      widgets.add(SizedBox(height: 8.0));
+      widgets.add(Text(AppStrings.calenderDetailConditionMemoLabel));
       widgets.add(_labelMemo());
     } else {
-      widgets.add(AppText.normal(AppStrings.calenderUnRegisterLabel));
+      widgets.add(Text(AppStrings.calenderUnRegisterLabel));
     }
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -192,12 +192,10 @@ class _DyphicCalendarState extends State<DyphicCalendar> {
   }
 
   Widget _labelMemo() {
-    return Padding(
-      padding: const EdgeInsets.only(top: 8.0),
-      child: AppText.multiLine(
-        '${_selectedEvent.getConditionMemo()}',
-        maxLines: 5,
-      ),
+    return Text(
+      '${_selectedEvent.getConditionMemo()}',
+      maxLines: 5,
+      overflow: TextOverflow.ellipsis,
     );
   }
 }

@@ -1,21 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import 'package:dyphic/ui/setting/settings_view_model.dart';
 import 'package:dyphic/ui/widget/app_progress_dialog.dart';
-import 'package:dyphic/ui/widget/app_divider.dart';
-import 'package:dyphic/ui/widget/app_outline_button.dart';
-import 'package:dyphic/ui/widget/app_text.dart';
 
 import 'package:dyphic/common/app_strings.dart';
 import 'package:dyphic/model/app_settings.dart';
 import 'package:dyphic/model/page_state.dart';
-import 'package:dyphic/ui/setting/settings_view_model.dart';
 
 class SettingsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(centerTitle: true, title: const Text(AppStrings.settingsPageTitle)),
+      appBar: AppBar(
+        centerTitle: true,
+        title: const Text(AppStrings.settingsPageTitle),
+      ),
       body: ChangeNotifierProvider<SettingsViewModel>(
         create: (_) => SettingsViewModel.create(),
         builder: (context, _) {
@@ -33,7 +33,7 @@ class SettingsPage extends StatelessWidget {
 
   Widget _nowLoadingView() {
     return Center(
-      child: CircularProgressIndicator(),
+      child: const CircularProgressIndicator(),
     );
   }
 
@@ -43,9 +43,9 @@ class SettingsPage extends StatelessWidget {
       children: [
         _rowAppVersion(context),
         _rowThemeModeSwitch(context),
-        DividerThemeColor.create(),
+        const Divider(),
         _rowAccountInfo(context),
-        DividerThemeColor.create(),
+        const Divider(),
         _loginDescriptionLabel(),
         if (loggedIn) _logoutButton(context),
         if (!loggedIn) _loginButton(context),
@@ -68,7 +68,6 @@ class SettingsPage extends StatelessWidget {
       leading: Icon(appSettings.isDarkMode ? Icons.brightness_7 : Icons.brightness_4),
       title: const Text(AppStrings.settingsChangeAppThemeLabel),
       trailing: Switch(
-        activeColor: Theme.of(context).primaryColor,
         onChanged: (isDark) => appSettings.changeTheme(isDark),
         value: appSettings.isDarkMode,
       ),
@@ -87,23 +86,20 @@ class SettingsPage extends StatelessWidget {
   Widget _loginDescriptionLabel() {
     return Padding(
       padding: const EdgeInsets.only(left: 16.0, right: 16.0, top: 8.0),
-      child: AppText.normal(AppStrings.settingsLoginInfo),
+      child: Text(AppStrings.settingsLoginInfo),
     );
   }
 
   Widget _loginButton(BuildContext context) {
     final viewModel = Provider.of<SettingsViewModel>(context);
     return Padding(
-      padding: const EdgeInsets.all(32.0),
+      padding: const EdgeInsets.only(left: 32.0, right: 32.0, bottom: 32.0),
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
-          padding: const EdgeInsets.only(top: 4.0, bottom: 4.0),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.0)),
         ),
-        onPressed: () {
-          viewModel.loginWithGoogle();
-        },
-        child: const Text(AppStrings.settingsLoginWithGoogle, style: TextStyle(color: Colors.white)),
+        onPressed: () => viewModel.loginWithGoogle(),
+        child: const Text(AppStrings.settingsLoginWithGoogle),
       ),
     );
   }
@@ -111,10 +107,11 @@ class SettingsPage extends StatelessWidget {
   Widget _logoutButton(BuildContext context) {
     final viewModel = Provider.of<SettingsViewModel>(context);
     return Padding(
-      padding: const EdgeInsets.all(32.0),
-      child: AppOutlineButton(
-        label: AppStrings.settingsLogoutLabel,
-        isCircular: true,
+      padding: const EdgeInsets.only(left: 32.0, right: 32.0, bottom: 32.0),
+      child: OutlinedButton(
+        style: ElevatedButton.styleFrom(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.0)),
+        ),
         onPressed: () {
           AppProgressDialog(
             execute: viewModel.logout,
@@ -123,6 +120,7 @@ class SettingsPage extends StatelessWidget {
             },
           );
         },
+        child: Text(AppStrings.settingsLogoutLabel),
       ),
     );
   }

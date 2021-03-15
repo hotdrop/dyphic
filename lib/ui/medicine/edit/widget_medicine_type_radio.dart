@@ -33,11 +33,11 @@ class _MedicineTypeRadioState extends State<MedicineTypeRadio> {
   @override
   Widget build(BuildContext context) {
     return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Radio(
           value: radioOral,
           groupValue: selectedRadioValue,
-          activeColor: Theme.of(context).accentColor,
           onChanged: (int? v) {
             widget.onChange(MedicineType.oral);
             setState(() {
@@ -49,14 +49,13 @@ class _MedicineTypeRadioState extends State<MedicineTypeRadio> {
         Radio(
             value: radioNotOral,
             groupValue: selectedRadioValue,
-            activeColor: Theme.of(context).accentColor,
             onChanged: (int? v) {
               widget.onChange(MedicineType.notOral);
               setState(() {
                 selectedRadioValue = radioNotOral;
               });
             }),
-        Text(AppStrings.medicineNotOralLabel),
+        const Text(AppStrings.medicineNotOralLabel),
       ],
     );
   }

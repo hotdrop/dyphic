@@ -1,18 +1,18 @@
-import 'package:dyphic/ui/widget/app_outline_button.dart';
-import 'package:dyphic/ui/widget/app_progress_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:image_picker/image_picker.dart';
+
+import 'package:dyphic/ui/medicine/edit/medicine_edit_view_model.dart';
+import 'package:dyphic/ui/widget/app_simple_dialog.dart';
+import 'package:dyphic/ui/widget/app_image.dart';
+import 'package:dyphic/ui/medicine/edit/widget_medicine_type_radio.dart';
+import 'package:dyphic/ui/widget/app_text_field.dart';
+import 'package:dyphic/ui/widget/app_progress_dialog.dart';
 
 import 'package:dyphic/common/app_logger.dart';
 import 'package:dyphic/common/app_strings.dart';
 import 'package:dyphic/model/medicine.dart';
 import 'package:dyphic/model/page_state.dart';
-import 'package:dyphic/ui/medicine/edit/medicine_edit_view_model.dart';
-import 'package:dyphic/ui/widget/app_simple_dialog.dart';
-import 'package:dyphic/ui/widget/app_image.dart';
-import 'package:dyphic/ui/medicine/edit/medicine_type_radio.dart';
-import 'package:dyphic/ui/widget/app_text_field.dart';
 
 class MedicineEditPage extends StatelessWidget {
   const MedicineEditPage(this._medicine);
@@ -135,9 +135,9 @@ class MedicineEditPage extends StatelessWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-            AppOutlineButton(
-              label: AppStrings.medicineStartCameraLabel,
+            OutlinedButton.icon(
               icon: const Icon(Icons.camera_alt),
+              label: Text(AppStrings.medicineStartCameraLabel),
               onPressed: () async {
                 final imagePicker = ImagePicker();
                 PickedFile? image = await imagePicker.getImage(source: ImageSource.camera, imageQuality: 10);
@@ -157,7 +157,6 @@ class MedicineEditPage extends StatelessWidget {
     final viewModel = Provider.of<MedicineEditViewModel>(context);
     return ElevatedButton(
       style: ElevatedButton.styleFrom(
-        primary: Theme.of(context).accentColor,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.0)),
       ),
       onPressed: () {

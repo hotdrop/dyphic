@@ -2,8 +2,6 @@ import 'package:dyphic/ui/widget/app_image.dart';
 import 'package:flutter/material.dart';
 import 'package:expansion_tile_card/expansion_tile_card.dart';
 
-import 'package:dyphic/ui/widget/app_divider.dart';
-import 'package:dyphic/ui/widget/app_text.dart';
 import 'package:dyphic/model/medicine.dart';
 
 class MedicineCardView extends StatelessWidget {
@@ -24,9 +22,12 @@ class MedicineCardView extends StatelessWidget {
       child: ExpansionTileCard(
         leading: AppImage.icon(path: medicine.imagePath),
         title: Text(medicine.name),
-        subtitle: AppText.normal(medicine.overview),
+        subtitle: Text(
+          medicine.overview,
+          style: Theme.of(context).textTheme.caption,
+        ),
         children: [
-          DividerThemeColor.create(),
+          const Divider(),
           Row(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
@@ -42,7 +43,12 @@ class MedicineCardView extends StatelessWidget {
   Widget _memoView(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(left: 8.0, right: 8.0, bottom: 8.0),
-      child: AppText.multiLine(medicine.memo, maxLines: 3),
+      child: Text(
+        medicine.memo,
+        maxLines: 3,
+        overflow: TextOverflow.ellipsis,
+        style: Theme.of(context).textTheme.caption,
+      ),
     );
   }
 

@@ -8,10 +8,22 @@ class AppTheme {
     accentColor: Colors.pinkAccent,
     primaryColorDark: Colors.pink[700],
     backgroundColor: Colors.white,
-    buttonTheme: ButtonThemeData(
-      buttonColor: Colors.pink[300],
-      textTheme: ButtonTextTheme.accent,
+    dividerColor: Colors.pinkAccent,
+    toggleableActiveColor: Colors.pinkAccent,
+    outlinedButtonTheme: OutlinedButtonThemeData(
+      style: OutlinedButton.styleFrom(
+        primary: Colors.pinkAccent,
+      ),
     ),
+    elevatedButtonTheme: ElevatedButtonThemeData(
+      style: ElevatedButton.styleFrom(
+        primary: Colors.pink[200],
+      ),
+    ),
+    textButtonTheme: TextButtonThemeData(
+        style: TextButton.styleFrom(
+      primary: Colors.pinkAccent,
+    )),
     floatingActionButtonTheme: FloatingActionButtonThemeData(
       backgroundColor: Colors.pink[200],
     ),
@@ -22,10 +34,22 @@ class AppTheme {
     accentColor: Colors.pink[300],
     scaffoldBackgroundColor: Color(0xFF232323),
     applyElevationOverlayColor: true,
-    buttonTheme: ButtonThemeData(
-      buttonColor: Colors.pink[300],
-      textTheme: ButtonTextTheme.accent,
+    dividerColor: Colors.pinkAccent,
+    toggleableActiveColor: Colors.pinkAccent,
+    outlinedButtonTheme: OutlinedButtonThemeData(
+      style: OutlinedButton.styleFrom(
+        primary: Colors.pinkAccent,
+      ),
     ),
+    elevatedButtonTheme: ElevatedButtonThemeData(
+      style: ElevatedButton.styleFrom(
+        primary: Colors.pink[200],
+      ),
+    ),
+    textButtonTheme: TextButtonThemeData(
+        style: TextButton.styleFrom(
+      primary: Colors.pinkAccent,
+    )),
     floatingActionButtonTheme: FloatingActionButtonThemeData(
       backgroundColor: Colors.pink[200],
     ),

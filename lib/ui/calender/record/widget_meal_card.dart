@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:dyphic/common/app_colors.dart';
 import 'package:dyphic/common/app_strings.dart';
-import 'package:dyphic/ui/widget/app_meal_edit_dialog.dart';
+import 'package:dyphic/ui/calender/record/widget_meal_edit_dialog.dart';
 
 enum MealType { morning, lunch, dinner }
 
@@ -29,7 +29,7 @@ class MealCard extends StatelessWidget {
             final inputValue = await showDialog<String>(
               context: context,
               builder: (context) {
-                return AppMealEditDialog(
+                return MealEditDialog(
                   title: dialogTitle,
                   initValue: detail,
                 );
@@ -110,7 +110,6 @@ class MealCard extends StatelessWidget {
           detail,
           maxLines: 4,
           overflow: TextOverflow.ellipsis,
-          style: TextStyle(color: AppColors.mealTextDetail),
         ),
       ),
     );

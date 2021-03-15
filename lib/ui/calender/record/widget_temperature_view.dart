@@ -1,17 +1,17 @@
 import 'package:dyphic/common/app_colors.dart';
 import 'package:dyphic/common/app_strings.dart';
-import 'package:dyphic/ui/widget/app_temperature_dialog.dart';
+import 'package:dyphic/ui/calender/record/widget_temperature_dialog.dart';
 import 'package:flutter/material.dart';
 
-class AppTemperature extends StatelessWidget {
-  const AppTemperature._(this.temperature, this.isMorning, this.onEditValue, this.dialogTitle);
+class TemperatureView extends StatelessWidget {
+  const TemperatureView._(this.temperature, this.isMorning, this.onEditValue, this.dialogTitle);
 
-  factory AppTemperature.morning({required double temperature, required Function(double?) onEditValue}) {
-    return AppTemperature._(temperature, true, onEditValue, AppStrings.recordTemperatureMorning);
+  factory TemperatureView.morning({required double temperature, required Function(double?) onEditValue}) {
+    return TemperatureView._(temperature, true, onEditValue, AppStrings.recordTemperatureMorning);
   }
 
-  factory AppTemperature.night({required double temperature, required Function(double?) onEditValue}) {
-    return AppTemperature._(temperature, false, onEditValue, AppStrings.recordTemperatureNight);
+  factory TemperatureView.night({required double temperature, required Function(double?) onEditValue}) {
+    return TemperatureView._(temperature, false, onEditValue, AppStrings.recordTemperatureNight);
   }
 
   final String dialogTitle;
@@ -26,7 +26,7 @@ class AppTemperature extends StatelessWidget {
         final inputValue = await showDialog<double>(
           context: context,
           builder: (context) {
-            return AppTemperatureEditDialog(
+            return TemperatureEditDialog(
               title: dialogTitle,
               initValue: temperature,
             );
@@ -37,7 +37,7 @@ class AppTemperature extends StatelessWidget {
       child: Row(
         children: <Widget>[
           _verticalLine(),
-          SizedBox(width: 6),
+          const SizedBox(width: 6),
           Column(
             children: <Widget>[
               _titleLabel(context),
@@ -50,7 +50,7 @@ class AppTemperature extends StatelessWidget {
               )
             ],
           ),
-          SizedBox(width: 12),
+          const SizedBox(width: 12),
           _verticalLine(),
         ],
       ),
@@ -63,7 +63,7 @@ class AppTemperature extends StatelessWidget {
       width: 2,
       decoration: BoxDecoration(
         color: isMorning ? AppColors.morningTemperature : AppColors.nightTemperature,
-        borderRadius: BorderRadius.all(Radius.circular(4.0)),
+        borderRadius: const BorderRadius.all(Radius.circular(4.0)),
       ),
     );
   }

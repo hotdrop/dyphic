@@ -1,8 +1,8 @@
 import 'package:dyphic/common/app_strings.dart';
 import 'package:flutter/material.dart';
 
-class AppTemperatureEditDialog extends StatefulWidget {
-  const AppTemperatureEditDialog({
+class TemperatureEditDialog extends StatefulWidget {
+  const TemperatureEditDialog({
     required this.title,
     this.initValue,
   });
@@ -11,10 +11,10 @@ class AppTemperatureEditDialog extends StatefulWidget {
   final double? initValue;
 
   @override
-  _AppTemperatureEditDialogState createState() => _AppTemperatureEditDialogState();
+  _TemperatureEditDialogState createState() => _TemperatureEditDialogState();
 }
 
-class _AppTemperatureEditDialogState extends State<AppTemperatureEditDialog> {
+class _TemperatureEditDialogState extends State<TemperatureEditDialog> {
   final _controller = TextEditingController();
   List<String> inputValues = [];
 
@@ -154,11 +154,10 @@ class NumberCircleButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return ElevatedButton(
       style: ElevatedButton.styleFrom(
-          primary: Colors.white,
-          onPrimary: Theme.of(context).primaryColor,
-          shape: const CircleBorder(
-            side: BorderSide(color: Colors.black87, width: 1, style: BorderStyle.solid),
-          )),
+        primary: Colors.white,
+        onPrimary: Theme.of(context).primaryColor,
+        shape: const CircleBorder(),
+      ),
       onPressed: onTap,
       child: Center(child: Text('$number')),
     );
@@ -178,11 +177,10 @@ class IconCircleButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return ElevatedButton(
       style: ElevatedButton.styleFrom(
-          primary: Colors.white,
-          onPrimary: Theme.of(context).primaryColor,
-          shape: const CircleBorder(
-            side: BorderSide(color: Colors.black87, width: 1, style: BorderStyle.solid),
-          )),
+        primary: Colors.white,
+        onPrimary: Theme.of(context).primaryColor,
+        shape: const CircleBorder(),
+      ),
       onPressed: onTap,
       child: Center(child: Icon(icon)),
     );

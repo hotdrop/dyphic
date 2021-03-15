@@ -5,7 +5,9 @@ class AppStrings {
   static const String calenderNoEvent = '予定なし';
   static const String calenderUnRegisterLabel = 'この日の記録は未登録です。\nここをタップして記録しましょう。';
   static const String calenderDetailConditionLabel = '【体調】';
+  static const String calenderDetailConditionMemoLabel = '【体調メモ】';
 
+  static const String recordPageTitleDateFormat = 'yyyy年MM月dd日';
   static const String recordTemperatureMorning = '朝の体温';
   static const String recordTemperatureNight = '夜の体温';
   static const String recordTemperatureTextHint = '入力例: 36.5';

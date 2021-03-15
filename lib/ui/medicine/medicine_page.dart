@@ -29,9 +29,12 @@ class MedicinePage extends StatelessWidget {
 
   Widget _nowLoadingView() {
     return Scaffold(
-      appBar: AppBar(centerTitle: true, title: const Text(AppStrings.medicinePageTitle)),
+      appBar: AppBar(
+        centerTitle: true,
+        title: const Text(AppStrings.medicinePageTitle),
+      ),
       body: Center(
-        child: CircularProgressIndicator(),
+        child: const CircularProgressIndicator(),
       ),
     );
   }
@@ -47,7 +50,10 @@ class MedicinePage extends StatelessWidget {
 
   Widget _rootViewDeniedEdit(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(centerTitle: true, title: Text(AppStrings.medicinePageTitle)),
+      appBar: AppBar(
+        centerTitle: true,
+        title: Text(AppStrings.medicinePageTitle),
+      ),
       body: _contentsView(context, isEditable: false),
     );
   }
@@ -55,7 +61,10 @@ class MedicinePage extends StatelessWidget {
   Widget _rootViewAllowEdit(BuildContext context) {
     final viewModel = Provider.of<MedicineViewModel>(context);
     return Scaffold(
-      appBar: AppBar(centerTitle: true, title: Text(AppStrings.medicinePageTitle)),
+      appBar: AppBar(
+        centerTitle: true,
+        title: Text(AppStrings.medicinePageTitle),
+      ),
       body: _contentsView(context, isEditable: true),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
@@ -77,7 +86,7 @@ class MedicinePage extends StatelessWidget {
     final medicines = viewModel.medicines;
     if (medicines.isEmpty) {
       return Center(
-        child: Text(AppStrings.medicinePageNothingItemLabel),
+        child: const Text(AppStrings.medicinePageNothingItemLabel),
       );
     } else {
       return ListView.builder(

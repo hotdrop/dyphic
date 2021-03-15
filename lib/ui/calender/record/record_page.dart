@@ -1,4 +1,3 @@
-import 'package:dyphic/ui/widget/app_progress_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -8,10 +7,11 @@ import 'package:dyphic/common/app_strings.dart';
 import 'package:dyphic/model/app_settings.dart';
 import 'package:dyphic/model/page_state.dart';
 import 'package:dyphic/ui/widget/app_chips.dart';
-import 'package:dyphic/ui/widget/app_meal_card.dart';
-import 'package:dyphic/ui/widget/app_temperature.dart';
+import 'package:dyphic/ui/calender/record/widget_meal_card.dart';
+import 'package:dyphic/ui/calender/record/widget_temperature_view.dart';
 import 'package:dyphic/ui/widget/app_text_field.dart';
 import 'package:dyphic/ui/calender/record/record_view_model.dart';
+import 'package:dyphic/ui/widget/app_progress_dialog.dart';
 
 class RecordPage extends StatelessWidget {
   const RecordPage(this._date);
@@ -20,7 +20,7 @@ class RecordPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final headerTitle = DateFormat('yyyy年MM月dd日').format(_date);
+    final headerTitle = DateFormat(AppStrings.recordPageTitleDateFormat).format(_date);
     return ChangeNotifierProvider<RecordViewModel>(
       create: (_) => RecordViewModel.create(_date),
       builder: (context, _) {
@@ -42,7 +42,7 @@ class RecordPage extends StatelessWidget {
         title: Text(headerTitle),
       ),
       body: Center(
-        child: CircularProgressIndicator(),
+        child: const CircularProgressIndicator(),
       ),
     );
   }
@@ -78,9 +78,7 @@ class RecordPage extends StatelessWidget {
         title: Text(headerTitle),
       ),
       body: GestureDetector(
-        onTap: () {
-          FocusScope.of(context).unfocus();
-        },
+        onTap: () => FocusScope.of(context).unfocus(),
         child: _contentsView(context),
       ),
       floatingActionButton: _saveFloatingActionButton(context),
@@ -114,7 +112,7 @@ class RecordPage extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: <Widget>[
-          AppTemperature.morning(
+          TemperatureView.morning(
             temperature: viewModel.morningTemperature,
             onEditValue: (double? newValue) {
               if (newValue != null) {
@@ -122,7 +120,7 @@ class RecordPage extends StatelessWidget {
               }
             },
           ),
-          AppTemperature.night(
+          TemperatureView.night(
             temperature: viewModel.nightTemperature,
             onEditValue: (double? newValue) {
               if (newValue != null) {
@@ -141,23 +139,19 @@ class RecordPage extends StatelessWidget {
       children: [
         _contentsTitle(
           title: AppStrings.recordConditionTitle,
-          icon: Icon(Icons.sentiment_satisfied_rounded, color: AppColors.condition),
+          icon: const Icon(Icons.sentiment_satisfied_rounded, color: AppColors.condition),
         ),
         ConditionSelectChips(
           selectIds: viewModel.selectConditionIds,
           allConditions: viewModel.allConditions,
-          onChange: (Set<int> ids) {
-            viewModel.changeSelectedCondition(ids);
-          },
+          onChange: (Set<int> ids) => viewModel.changeSelectedCondition(ids),
         ),
         SizedBox(height: 8),
         AppTextField.multiLine(
           limitLine: 3,
           initValue: viewModel.conditionMemo,
           hintText: AppStrings.recordConditionMemoHint,
-          onChanged: (String inputVal) {
-            viewModel.inputConditionMemo(inputVal);
-          },
+          onChanged: (String inputVal) => viewModel.inputConditionMemo(inputVal),
         ),
       ],
     );
@@ -169,14 +163,12 @@ class RecordPage extends StatelessWidget {
       children: [
         _contentsTitle(
           title: AppStrings.recordMedicalTitle,
-          icon: Icon(Icons.medical_services, color: AppColors.medicine),
+          icon: const Icon(Icons.medical_services, color: AppColors.medicine),
         ),
         MedicineSelectChips(
           selectIds: viewModel.selectMedicineIds,
           allMedicines: viewModel.allMedicines,
-          onChange: (Set<int> ids) {
-            viewModel.changeSelectedMedicine(ids);
-          },
+          onChange: (Set<int> ids) => viewModel.changeSelectedMedicine(ids),
         ),
       ],
     );
@@ -188,7 +180,7 @@ class RecordPage extends StatelessWidget {
       children: [
         _contentsTitle(
           title: AppStrings.recordMealsTitle,
-          icon: Icon(Icons.restaurant),
+          icon: const Icon(Icons.restaurant),
         ),
         Container(
           height: 150,
@@ -205,7 +197,7 @@ class RecordPage extends StatelessWidget {
                   }
                 },
               ),
-              SizedBox(width: 8),
+              const SizedBox(width: 8),
               MealCard(
                 type: MealType.lunch,
                 detail: viewModel.lunch,
@@ -215,7 +207,7 @@ class RecordPage extends StatelessWidget {
                   }
                 },
               ),
-              SizedBox(width: 8),
+              const SizedBox(width: 8),
               MealCard(
                 type: MealType.dinner,
                 detail: viewModel.dinner,
@@ -227,7 +219,7 @@ class RecordPage extends StatelessWidget {
               ),
             ],
           ),
-        )
+        ),
       ],
     );
   }
@@ -238,9 +230,9 @@ class RecordPage extends StatelessWidget {
       children: [
         _contentsTitle(
           title: AppStrings.recordMemoTitle,
-          icon: Icon(Icons.notes),
+          icon: const Icon(Icons.notes),
         ),
-        SizedBox(height: 8),
+        const SizedBox(height: 8),
         AppTextField.multiLine(
           limitLine: 10,
           initValue: viewModel.memo,
@@ -265,7 +257,7 @@ class RecordPage extends StatelessWidget {
           },
         );
       },
-      child: Icon(Icons.save),
+      child: const Icon(Icons.save),
     );
   }
 
@@ -274,7 +266,7 @@ class RecordPage extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
         icon,
-        SizedBox(width: 8),
+        const SizedBox(width: 8),
         Text(title),
       ],
     );

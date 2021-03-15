@@ -28,7 +28,7 @@ class CalenderPage extends StatelessWidget {
 
   Widget _nowLoadingView() {
     return Center(
-      child: CircularProgressIndicator(),
+      child: const CircularProgressIndicator(),
     );
   }
 

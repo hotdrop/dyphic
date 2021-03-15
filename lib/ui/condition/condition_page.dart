@@ -1,11 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import 'package:dyphic/common/app_colors.dart';
 import 'package:dyphic/model/app_settings.dart';
 import 'package:dyphic/ui/widget/app_progress_dialog.dart';
-import 'package:dyphic/ui/widget/app_divider.dart';
-import 'package:dyphic/ui/widget/app_outline_button.dart';
 
 import 'package:dyphic/common/app_strings.dart';
 import 'package:dyphic/model/page_state.dart';
@@ -47,9 +44,9 @@ class ConditionPage extends StatelessWidget {
       children: [
         _overview(context),
         _clearButton(context),
-        DividerThemeColor.createWithPadding(),
+        const Divider(),
         _conditionArea(context),
-        DividerThemeColor.createWithPadding(),
+        const Divider(),
         _inputArea(context),
       ],
     );
@@ -76,12 +73,10 @@ class ConditionPage extends StatelessWidget {
       mainAxisSize: MainAxisSize.max,
       children: [
         Padding(
-          padding: EdgeInsets.only(right: 16),
-          child: AppOutlineButton(
-            label: AppStrings.conditionClearSelectedLabel,
-            onPressed: () {
-              viewModel.clear();
-            },
+          padding: const EdgeInsets.only(right: 16),
+          child: OutlinedButton(
+            onPressed: () => viewModel.clear(),
+            child: const Text(AppStrings.conditionClearSelectedLabel),
           ),
         ),
       ],
@@ -100,7 +95,6 @@ class ConditionPage extends StatelessWidget {
             .map((c) => ChoiceChip(
                   label: Text(c.name),
                   selected: viewModel.selectedCondition.name == c.name,
-                  selectedColor: AppColors.condition,
                   onSelected: (bool isSelected) {
                     viewModel.selectCondition(c);
                   },
@@ -113,11 +107,11 @@ class ConditionPage extends StatelessWidget {
   Widget _inputArea(BuildContext context) {
     final appSettings = Provider.of<AppSettings>(context);
     return Padding(
-      padding: EdgeInsets.only(left: 36, right: 36, top: 16),
+      padding: const EdgeInsets.only(left: 36, right: 36, top: 16),
       child: Column(
         children: [
           _textFieldOnInputArea(context),
-          SizedBox(height: 16),
+          const SizedBox(height: 16),
           if (appSettings.isLogin) _saveButtonOnInputArea(context),
         ],
       ),
@@ -165,7 +159,7 @@ class ConditionPage extends StatelessWidget {
               );
             }
           : null,
-      child: Text(buttonName, style: TextStyle(color: Colors.white)),
+      child: Text(buttonName),
     );
   }
 }

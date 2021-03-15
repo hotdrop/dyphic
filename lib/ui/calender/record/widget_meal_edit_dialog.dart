@@ -1,8 +1,8 @@
 import 'package:dyphic/common/app_strings.dart';
 import 'package:flutter/material.dart';
 
-class AppMealEditDialog extends StatefulWidget {
-  const AppMealEditDialog({
+class MealEditDialog extends StatefulWidget {
+  const MealEditDialog({
     required this.title,
     required this.initValue,
   });
@@ -11,10 +11,10 @@ class AppMealEditDialog extends StatefulWidget {
   final String initValue;
 
   @override
-  _AppMealEditDialogState createState() => _AppMealEditDialogState();
+  _MealEditDialogState createState() => _MealEditDialogState();
 }
 
-class _AppMealEditDialogState extends State<AppMealEditDialog> {
+class _MealEditDialogState extends State<MealEditDialog> {
   final _controller = TextEditingController();
 
   @override

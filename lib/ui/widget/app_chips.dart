@@ -1,9 +1,9 @@
+import 'package:flutter/material.dart';
+
 import 'package:dyphic/common/app_colors.dart';
 import 'package:dyphic/model/condition.dart';
 import 'package:dyphic/model/medicine.dart';
 import 'package:dyphic/ui/widget/app_image.dart';
-import 'package:dyphic/ui/widget/app_text.dart';
-import 'package:flutter/material.dart';
 
 ///
 /// 体調用の選択chips
@@ -58,7 +58,7 @@ class _ConditionSelectChipsState extends State<ConditionSelectChips> {
     return widget.allConditions.map((condition) {
       return FilterChip(
         key: ValueKey<String>(condition.name),
-        label: AppText.normal(condition.name),
+        label: Text(condition.name, style: TextStyle(fontSize: 12.0)),
         selected: _selectedIds.contains(condition.id) ? true : false,
         onSelected: (isSelect) => updateState(isSelect, condition.id),
         selectedColor: AppColors.condition,
@@ -130,7 +130,7 @@ class _MedicineSelectChipsState extends State<MedicineSelectChips> {
           ),
           showCheckmark: false,
           key: ValueKey<String>(medicine.name),
-          label: AppText.normal(medicine.name),
+          label: Text(medicine.name, style: TextStyle(fontSize: 12.0)),
           selected: _selectedIds.contains(medicine.id) ? true : false,
           onSelected: (isSelect) => updateState(isSelect, medicine.id),
           selectedColor: AppColors.medicine,
