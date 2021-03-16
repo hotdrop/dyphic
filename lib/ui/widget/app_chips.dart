@@ -1,9 +1,10 @@
+import 'package:dyphic/model/app_settings.dart';
 import 'package:flutter/material.dart';
 
 import 'package:dyphic/common/app_colors.dart';
 import 'package:dyphic/model/condition.dart';
 import 'package:dyphic/model/medicine.dart';
-import 'package:dyphic/ui/widget/app_image.dart';
+import 'package:provider/provider.dart';
 
 ///
 /// 体調用の選択chips
@@ -55,13 +56,15 @@ class _ConditionSelectChipsState extends State<ConditionSelectChips> {
   }
 
   List<Widget> _makeChips(BuildContext context) {
+    final appSettings = Provider.of<AppSettings>(context);
+    final conditionColor = (appSettings.isDarkMode) ? AppColors.conditionNight : AppColors.condition;
     return widget.allConditions.map((condition) {
       return FilterChip(
         key: ValueKey<String>(condition.name),
         label: Text(condition.name, style: TextStyle(fontSize: 12.0)),
         selected: _selectedIds.contains(condition.id) ? true : false,
         onSelected: (isSelect) => updateState(isSelect, condition.id),
-        selectedColor: AppColors.condition,
+        selectedColor: conditionColor,
       );
     }).toList();
   }
@@ -111,29 +114,23 @@ class _MedicineSelectChipsState extends State<MedicineSelectChips> {
   Widget build(BuildContext context) {
     return Wrap(
       direction: Axis.horizontal,
-      spacing: 8.0,
+      spacing: 4.0,
       children: _makeChips(context),
     );
   }
 
   List<Widget> _makeChips(BuildContext context) {
+    final appSettings = Provider.of<AppSettings>(context);
+    final medicineColor = (appSettings.isDarkMode) ? AppColors.medicineNight : AppColors.medicine;
     return widget.allMedicines.map((medicine) {
       return Tooltip(
         message: medicine.overview,
         child: FilterChip(
-          avatar: ClipOval(
-            child: Container(
-              width: 30.0,
-              height: 30.0,
-              child: AppImage.icon(path: medicine.imagePath),
-            ),
-          ),
-          showCheckmark: false,
           key: ValueKey<String>(medicine.name),
           label: Text(medicine.name, style: TextStyle(fontSize: 12.0)),
           selected: _selectedIds.contains(medicine.id) ? true : false,
           onSelected: (isSelect) => updateState(isSelect, medicine.id),
-          selectedColor: AppColors.medicine,
+          selectedColor: medicineColor,
         ),
       );
     }).toList();

@@ -1,4 +1,6 @@
 class AppStrings {
+  AppStrings._();
+
   static const String appTitle = '体調管理';
 
   static const String calenderPageTitle = 'カレンダー';
@@ -10,14 +12,15 @@ class AppStrings {
   static const String recordPageTitleDateFormat = 'yyyy年MM月dd日';
   static const String recordTemperatureMorning = '朝の体温';
   static const String recordTemperatureNight = '夜の体温';
-  static const String recordTemperatureTextHint = '入力例: 36.5';
   static const String recordTemperatureUnit = '度';
   static const String recordTemperatureNonSet = '未登録';
   static const String recordConditionTitle = '今日の体調';
+  static const String recordConditionMemoTitle = '体調メモ';
   static const String recordConditionMemoHint = '細かい体調はこちらに記載しましょう！';
   static const String recordMedicalTitle = '飲んだ薬';
   static const String recordMealsTitle = '今日のご飯';
   static const String recordMemoTitle = '今日のメモ';
+  static const String recordMemoHint = 'その他、残しておきたい記録があったらここに記載してください。';
   static const String recordMorningDialogTitle = '朝食';
   static const String recordLunchDialogTitle = '昼食';
   static const String recordDinnerDialogTitle = '夕食';
@@ -33,9 +36,10 @@ class AppStrings {
   static const String medicineOverviewLabel = '一言メモ';
   static const String medicineOralLabel = '内服薬';
   static const String medicineNotOralLabel = '頓服薬';
-  static const String medicineMemoLabel = '詳細メモ';
   static const String medicineImageOverviewLabel = 'カメラボタンでお薬の写真を撮って保存することができます。';
   static const String medicineStartCameraLabel = 'カメラを起動する';
+  static const String medicineMemoLabel = 'お薬の詳細メモ';
+  static const String medicineMemoHint = '詳細な情報を残したい場合はここに記載してください。';
   static const String medicineSaveButton = 'この内容で保存する';
   static const String medicineNotSaveAttention = 'お薬の名前が未入力です。';
 

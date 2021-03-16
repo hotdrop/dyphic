@@ -63,9 +63,7 @@ class RecordPage extends StatelessWidget {
         title: Text(headerTitle),
       ),
       body: GestureDetector(
-        onTap: () {
-          FocusScope.of(context).unfocus();
-        },
+        onTap: () => FocusScope.of(context).unfocus(),
         child: _contentsView(context),
       ),
     );
@@ -87,7 +85,7 @@ class RecordPage extends StatelessWidget {
 
   Widget _contentsView(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(top: 4.0, left: 16.0, right: 16.0, bottom: 16.0),
+      padding: const EdgeInsets.only(top: 16.0, left: 8.0, right: 8.0, bottom: 16.0),
       child: ListView(
         children: <Widget>[
           _mealViewArea(context),
@@ -103,80 +101,10 @@ class RecordPage extends StatelessWidget {
     );
   }
 
-  Widget _temperatureViewArea(BuildContext context) {
-    final viewModel = Provider.of<RecordViewModel>(context);
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: <Widget>[
-          TemperatureView.morning(
-            temperature: viewModel.morningTemperature,
-            onEditValue: (double? newValue) {
-              if (newValue != null) {
-                viewModel.inputMorningTemperature(newValue);
-              }
-            },
-          ),
-          TemperatureView.night(
-            temperature: viewModel.nightTemperature,
-            onEditValue: (double? newValue) {
-              if (newValue != null) {
-                viewModel.inputNightTemperature(newValue);
-              }
-            },
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _conditionViewArea(BuildContext context) {
-    final viewModel = Provider.of<RecordViewModel>(context);
-    return Column(
-      children: [
-        _contentsTitle(
-          title: AppStrings.recordConditionTitle,
-          icon: const Icon(Icons.sentiment_satisfied_rounded, color: AppColors.condition),
-        ),
-        ConditionSelectChips(
-          selectIds: viewModel.selectConditionIds,
-          allConditions: viewModel.allConditions,
-          onChange: (Set<int> ids) => viewModel.changeSelectedCondition(ids),
-        ),
-        SizedBox(height: 8),
-        AppTextField.multiLine(
-          limitLine: 3,
-          initValue: viewModel.conditionMemo,
-          hintText: AppStrings.recordConditionMemoHint,
-          onChanged: (String inputVal) => viewModel.inputConditionMemo(inputVal),
-        ),
-      ],
-    );
-  }
-
-  Widget _medicineViewArea(BuildContext context) {
-    final viewModel = Provider.of<RecordViewModel>(context);
-    return Column(
-      children: [
-        _contentsTitle(
-          title: AppStrings.recordMedicalTitle,
-          icon: const Icon(Icons.medical_services, color: AppColors.medicine),
-        ),
-        MedicineSelectChips(
-          selectIds: viewModel.selectMedicineIds,
-          allMedicines: viewModel.allMedicines,
-          onChange: (Set<int> ids) => viewModel.changeSelectedMedicine(ids),
-        ),
-      ],
-    );
-  }
-
   Widget _mealViewArea(BuildContext context) {
     final viewModel = Provider.of<RecordViewModel>(context);
     return Column(
       children: [
-        const SizedBox(height: 8.0),
         Container(
           height: 150,
           width: double.infinity,
@@ -219,23 +147,103 @@ class RecordPage extends StatelessWidget {
     );
   }
 
+  Widget _temperatureViewArea(BuildContext context) {
+    final viewModel = Provider.of<RecordViewModel>(context);
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: <Widget>[
+          TemperatureView.morning(
+            temperature: viewModel.morningTemperature,
+            onEditValue: (double? newValue) {
+              if (newValue != null) {
+                viewModel.inputMorningTemperature(newValue);
+              }
+            },
+          ),
+          TemperatureView.night(
+            temperature: viewModel.nightTemperature,
+            onEditValue: (double? newValue) {
+              if (newValue != null) {
+                viewModel.inputNightTemperature(newValue);
+              }
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _medicineViewArea(BuildContext context) {
+    final viewModel = Provider.of<RecordViewModel>(context);
+    final appSettings = Provider.of<AppSettings>(context);
+    final medicineColor = (appSettings.isDarkMode) ? AppColors.medicineNight : AppColors.medicine;
+    return Card(
+      elevation: 4.0,
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          children: [
+            _contentsTitle(
+              title: AppStrings.recordMedicalTitle,
+              iconData: Icons.medical_services,
+              color: medicineColor,
+            ),
+            Divider(),
+            MedicineSelectChips(
+              selectIds: viewModel.selectMedicineIds,
+              allMedicines: viewModel.allMedicines,
+              onChange: (Set<int> ids) => viewModel.changeSelectedMedicine(ids),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _conditionViewArea(BuildContext context) {
+    final viewModel = Provider.of<RecordViewModel>(context);
+    final appSettings = Provider.of<AppSettings>(context);
+    final conditionColor = (appSettings.isDarkMode) ? AppColors.conditionNight : AppColors.condition;
+    return Card(
+      elevation: 4.0,
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          children: [
+            _contentsTitle(
+              title: AppStrings.recordConditionTitle,
+              iconData: Icons.sentiment_satisfied_rounded,
+              color: conditionColor,
+            ),
+            ConditionSelectChips(
+              selectIds: viewModel.selectConditionIds,
+              allConditions: viewModel.allConditions,
+              onChange: (Set<int> ids) => viewModel.changeSelectedCondition(ids),
+            ),
+            SizedBox(height: 8.0),
+            MultiLineTextField(
+              label: AppStrings.recordConditionMemoTitle,
+              initValue: viewModel.conditionMemo,
+              limitLine: 5,
+              hintText: AppStrings.recordConditionMemoHint,
+              onChanged: viewModel.inputConditionMemo,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   Widget _memoView(BuildContext context) {
     final viewModel = Provider.of<RecordViewModel>(context);
-    return Column(
-      children: [
-        _contentsTitle(
-          title: AppStrings.recordMemoTitle,
-          icon: const Icon(Icons.notes),
-        ),
-        const SizedBox(height: 8),
-        AppTextField.multiLine(
-          limitLine: 10,
-          initValue: viewModel.memo,
-          onChanged: (String inputVal) {
-            viewModel.inputMemo(inputVal);
-          },
-        ),
-      ],
+    return MultiLineTextField(
+      label: AppStrings.recordMemoTitle,
+      initValue: viewModel.memo,
+      limitLine: 5,
+      hintText: AppStrings.recordMemoHint,
+      onChanged: viewModel.inputMemo,
     );
   }
 
@@ -263,11 +271,11 @@ class RecordPage extends StatelessWidget {
     );
   }
 
-  Widget _contentsTitle({required String title, required Icon icon}) {
+  Widget _contentsTitle({required String title, required IconData iconData, required Color color}) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
-        icon,
+        Icon(iconData, color: color),
         const SizedBox(width: 8),
         Text(title),
       ],

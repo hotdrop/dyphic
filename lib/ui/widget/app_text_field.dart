@@ -8,7 +8,6 @@ class AppTextField extends StatefulWidget {
     this.label,
     this.initValue,
     this.isRequired,
-    this.limitLine,
     this.hintText,
     this.onChanged,
   );
@@ -20,23 +19,12 @@ class AppTextField extends StatefulWidget {
     String hintText = '',
     required void Function(String) onChanged,
   }) {
-    return AppTextField._(label, initValue, isRequired, 1, hintText, onChanged);
-  }
-
-  factory AppTextField.multiLine({
-    String? initValue,
-    bool isRequired = false,
-    int limitLine = 6,
-    String hintText = '',
-    required void Function(String) onChanged,
-  }) {
-    return AppTextField._('', initValue, isRequired, limitLine, hintText, onChanged);
+    return AppTextField._(label, initValue, isRequired, hintText, onChanged);
   }
 
   final String label;
   final String? initValue;
   final bool isRequired;
-  final int limitLine;
   final String hintText;
   final void Function(String) onChanged;
 
@@ -64,10 +52,7 @@ class _AppTextFieldState extends State<AppTextField> {
             padding: const EdgeInsets.only(left: 8.0),
             child: Text(
               AppStrings.textFieldRequiredEmptyError,
-              style: TextStyle(
-                color: Colors.red,
-                fontSize: 12.0,
-              ),
+              style: TextStyle(color: Colors.red, fontSize: 12.0),
             ),
           ),
       ],
@@ -77,21 +62,72 @@ class _AppTextFieldState extends State<AppTextField> {
   TextFormField _createTextFormField() {
     return TextFormField(
       textCapitalization: TextCapitalization.words,
-      style: TextStyle(fontSize: 12.0),
       decoration: InputDecoration(
         labelText: widget.label,
+        hintText: widget.hintText,
         border: const OutlineInputBorder(
           borderRadius: BorderRadius.all(Radius.circular(10.0)),
         ),
-        hintText: widget.hintText,
       ),
       initialValue: widget.initValue,
-      maxLines: widget.limitLine,
-      onChanged: (v) {
+      onChanged: (String value) {
         setState(() {
-          widget.onChanged(v);
+          widget.onChanged(value);
         });
       },
     );
+  }
+}
+
+///
+/// 複数行のテキストフィールド
+///
+class MultiLineTextField extends StatefulWidget {
+  const MultiLineTextField({
+    required this.label,
+    required this.initValue,
+    required this.limitLine,
+    required this.hintText,
+    required this.onChanged,
+  });
+
+  final String label;
+  final String? initValue;
+  final int limitLine;
+  final String hintText;
+  final void Function(String) onChanged;
+
+  @override
+  _MultiLineTextFieldState createState() => _MultiLineTextFieldState();
+}
+
+class _MultiLineTextFieldState extends State<MultiLineTextField> {
+  final _controller = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    _controller.text = widget.initValue.toString();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return TextField(
+      controller: _controller,
+      maxLines: widget.limitLine,
+      decoration: InputDecoration(
+        labelText: widget.label,
+        hintText: widget.hintText,
+        border: const OutlineInputBorder(),
+      ),
+      style: TextStyle(fontSize: 14.0),
+      onChanged: (String value) => widget.onChanged(value),
+    );
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _controller.dispose();
   }
 }

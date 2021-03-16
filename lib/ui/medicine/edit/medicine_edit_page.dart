@@ -105,18 +105,12 @@ class MedicineEditPage extends StatelessWidget {
 
   Widget _editFieldMemo(BuildContext context) {
     final viewModel = Provider.of<MedicineEditViewModel>(context);
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(AppStrings.medicineMemoLabel),
-        SizedBox(height: 4.0),
-        AppTextField.multiLine(
-          initValue: _medicine.memo,
-          onChanged: (inputVal) {
-            viewModel.inputMemo(inputVal);
-          },
-        )
-      ],
+    return MultiLineTextField(
+      label: AppStrings.medicineMemoLabel,
+      initValue: _medicine.memo,
+      limitLine: 5,
+      hintText: AppStrings.medicineMemoHint,
+      onChanged: viewModel.inputMemo,
     );
   }
 
