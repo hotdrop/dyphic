@@ -65,8 +65,8 @@ class AppStrings {
 
   static const String textFieldRequiredEmptyError = '※必須項目';
 
-  static const String dialogSuccessMessage = '完了しました！';
-  static const String dialogErrorMessage = 'エラーが発生しました';
+  static const String dialogSuccessMessage = '処理が完了しました！';
+  static const String dialogErrorMessage = 'エラーが発生しました(´·ω·`)';
   static const String dialogOk = 'OK';
   static const String dialogCancel = 'キャンセル';
 }

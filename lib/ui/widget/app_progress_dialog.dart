@@ -59,45 +59,70 @@ class _AppProgressDialogState extends State<AppProgressDialog> {
 
   Dialog _dialogLoadSuccess(BuildContext context) {
     return _createDialog(
-      icon: Icon(Icons.info, color: Colors.blue),
-      messageView: Text(AppStrings.dialogSuccessMessage, style: TextStyle(color: Colors.blue)),
+      message: AppStrings.dialogSuccessMessage,
+      iconData: Icons.check_circle,
+      messageColor: Colors.blue,
       result: true,
     );
   }
 
   Dialog _dialogLoadError() {
     return _createDialog(
-      icon: Icon(Icons.error, color: Colors.red),
-      messageView: Text(AppStrings.dialogErrorMessage, style: TextStyle(color: Colors.red)),
+      message: AppStrings.dialogErrorMessage,
+      iconData: Icons.error,
+      messageColor: Colors.red,
       result: false,
     );
   }
 
-  Dialog _createDialog({required Widget icon, required Widget messageView, required bool result}) {
+  Dialog _createDialog({
+    required String message,
+    required Color messageColor,
+    required IconData iconData,
+    required bool result,
+  }) {
     return Dialog(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(8.0),
+      ),
       elevation: 0,
-      child: Padding(
-        padding: const EdgeInsets.only(left: 8.0, top: 16.0, right: 8.0),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                icon,
-                SizedBox(width: 8.0),
-                messageView,
+      backgroundColor: Colors.transparent,
+      child: Stack(
+        children: [
+          Container(
+            padding: const EdgeInsets.only(top: 40.0),
+            margin: EdgeInsets.only(top: 30.0),
+            decoration: BoxDecoration(
+              shape: BoxShape.rectangle,
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(16.0),
+              boxShadow: [
+                BoxShadow(color: Colors.black, offset: Offset(0, 4), blurRadius: 4),
               ],
             ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
               children: [
-                TextButton(onPressed: () => widget.onSuccess(result), child: Text(AppStrings.dialogOk)),
+                Text(message, style: TextStyle(color: messageColor)),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    TextButton(onPressed: () => widget.onSuccess(result), child: Text(AppStrings.dialogOk)),
+                  ],
+                ),
               ],
             ),
-          ],
-        ),
+          ),
+          Positioned(
+            left: 8.0,
+            right: 8.0,
+            child: CircleAvatar(
+              backgroundColor: Colors.white,
+              radius: 32.0,
+              child: Icon(iconData, size: 60.0, color: messageColor),
+            ),
+          ),
+        ],
       ),
     );
   }
