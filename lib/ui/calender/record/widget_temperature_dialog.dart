@@ -4,10 +4,12 @@ import 'package:flutter/material.dart';
 class TemperatureEditDialog extends StatefulWidget {
   const TemperatureEditDialog({
     required this.title,
+    required this.color,
     this.initValue,
   });
 
   final String title;
+  final Color color;
   final double? initValue;
 
   @override
@@ -71,7 +73,7 @@ class _TemperatureEditDialogState extends State<TemperatureEditDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text(widget.title),
+      title: Text(widget.title, style: TextStyle(color: widget.color)),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -79,7 +81,7 @@ class _TemperatureEditDialogState extends State<TemperatureEditDialog> {
             padding: const EdgeInsets.only(left: 32.0),
             child: Text(
               '${_controller.text}',
-              style: Theme.of(context).textTheme.headline4,
+              style: TextStyle(fontSize: 32.0, color: widget.color),
             ),
           ),
           SizedBox(height: 16.0),

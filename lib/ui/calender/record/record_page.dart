@@ -91,9 +91,7 @@ class RecordPage extends StatelessWidget {
       child: ListView(
         children: <Widget>[
           _mealViewArea(context),
-          SizedBox(height: 16),
           _temperatureViewArea(context),
-          SizedBox(height: 16),
           _medicineViewArea(context),
           SizedBox(height: 16),
           _conditionViewArea(context),
