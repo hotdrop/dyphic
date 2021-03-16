@@ -27,10 +27,14 @@ class _MealEditDialogState extends State<MealEditDialog> {
   Widget build(BuildContext context) {
     return AlertDialog(
       title: Text(widget.title),
-      content: TextFormField(
+      content: TextField(
         autofocus: true,
         controller: _controller,
-        maxLines: 3,
+        maxLines: 5,
+        decoration: InputDecoration(
+          labelText: AppStrings.recordMealDialogHint,
+          border: const OutlineInputBorder(),
+        ),
       ),
       actions: <Widget>[
         TextButton(

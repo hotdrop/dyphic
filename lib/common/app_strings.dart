@@ -21,6 +21,7 @@ class AppStrings {
   static const String recordMorningDialogTitle = '朝食';
   static const String recordLunchDialogTitle = '昼食';
   static const String recordDinnerDialogTitle = '夕食';
+  static const String recordMealDialogHint = '食事の内容(簡単に)';
 
   static const String medicinePageTitle = 'お薬';
   static const String medicinePageNothingItemLabel = 'お薬が登録されていません。\nログインしてお薬を登録しましょう。';

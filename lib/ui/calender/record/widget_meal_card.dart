@@ -21,29 +21,24 @@ class MealCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return SizedBox(
       width: 130,
-      child: Ink(
-        decoration: _decorationEachType(),
+      child: Card(
+        shadowColor: _shadowColorEachType(),
+        elevation: 4.0,
         child: InkWell(
           onTap: () async {
             String dialogTitle = _dialogTitle();
             final inputValue = await showDialog<String>(
               context: context,
-              builder: (context) {
-                return MealEditDialog(
-                  title: dialogTitle,
-                  initValue: detail,
-                );
-              },
+              builder: (context) => MealEditDialog(title: dialogTitle, initValue: detail),
             );
             onEditValue(inputValue);
           },
           child: Padding(
-            padding: const EdgeInsets.only(top: 8, left: 16, right: 16),
+            padding: const EdgeInsets.all(8.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 _titleIcon(),
-                SizedBox(height: 4.0),
                 _detailLabel(context),
               ],
             ),
@@ -53,36 +48,15 @@ class MealCard extends StatelessWidget {
     );
   }
 
-  BoxDecoration _decorationEachType() {
-    Color typeColor;
-    Color typeColorThin;
+  Color _shadowColorEachType() {
     switch (type) {
       case MealType.morning:
-        typeColor = AppColors.mealBreakFast;
-        typeColorThin = AppColors.mealBreakFastThin;
-        break;
+        return AppColors.mealBreakFast;
       case MealType.lunch:
-        typeColor = AppColors.mealLunch;
-        typeColorThin = AppColors.mealLunchThin;
-        break;
+        return AppColors.mealLunch;
       case MealType.dinner:
-        typeColor = AppColors.mealDinner;
-        typeColorThin = AppColors.mealDinnerThin;
-        break;
+        return AppColors.mealDinner;
     }
-
-    return BoxDecoration(
-      gradient: LinearGradient(
-        colors: <Color>[
-          Colors.white,
-          typeColorThin,
-          typeColor,
-        ],
-        begin: Alignment.topLeft,
-        end: Alignment.bottomRight,
-      ),
-      borderRadius: const BorderRadius.all(Radius.circular(16.0)),
-    );
   }
 
   Widget _titleIcon() {
@@ -99,7 +73,7 @@ class MealCard extends StatelessWidget {
         break;
     }
 
-    return Image.asset(iconPath);
+    return Center(child: Image.asset(iconPath));
   }
 
   Widget _detailLabel(BuildContext context) {

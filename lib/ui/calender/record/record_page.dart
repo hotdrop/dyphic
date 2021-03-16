@@ -178,10 +178,7 @@ class RecordPage extends StatelessWidget {
     final viewModel = Provider.of<RecordViewModel>(context);
     return Column(
       children: [
-        _contentsTitle(
-          title: AppStrings.recordMealsTitle,
-          icon: const Icon(Icons.restaurant),
-        ),
+        const SizedBox(height: 8.0),
         Container(
           height: 150,
           width: double.infinity,
@@ -197,7 +194,7 @@ class RecordPage extends StatelessWidget {
                   }
                 },
               ),
-              const SizedBox(width: 8),
+              const SizedBox(width: 4),
               MealCard(
                 type: MealType.lunch,
                 detail: viewModel.lunch,
@@ -207,7 +204,7 @@ class RecordPage extends StatelessWidget {
                   }
                 },
               ),
-              const SizedBox(width: 8),
+              const SizedBox(width: 4),
               MealCard(
                 type: MealType.dinner,
                 detail: viewModel.dinner,
