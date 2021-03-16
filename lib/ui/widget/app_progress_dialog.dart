@@ -39,34 +39,33 @@ class _AppProgressDialogState extends State<AppProgressDialog> {
   Widget build(BuildContext context) {
     switch (_state) {
       case _ExecState.success:
-        return _loadSuccessView(context);
+        return _dialogLoadSuccess(context);
       case _ExecState.error:
-        return _loadErrorView();
+        return _dialogLoadError();
       default:
-        return _loadingView();
+        return _dialogLoading();
     }
   }
 
-  Widget _loadingView() {
+  Dialog _dialogLoading() {
     return Dialog(
       backgroundColor: Colors.transparent,
       elevation: 0,
-      child: Center(child: CircularProgressIndicator()),
+      child: Center(
+        child: const CircularProgressIndicator(),
+      ),
     );
   }
 
-  Widget _loadSuccessView(BuildContext context) {
+  Dialog _dialogLoadSuccess(BuildContext context) {
     return _createDialog(
-      icon: Icon(
-        Icons.info,
-        color: Theme.of(context).accentColor,
-      ),
-      messageView: Text(AppStrings.dialogSuccessMessage, style: TextStyle(color: Theme.of(context).accentColor)),
+      icon: Icon(Icons.info, color: Colors.blue),
+      messageView: Text(AppStrings.dialogSuccessMessage, style: TextStyle(color: Colors.blue)),
       result: true,
     );
   }
 
-  Widget _loadErrorView() {
+  Dialog _dialogLoadError() {
     return _createDialog(
       icon: Icon(Icons.error, color: Colors.red),
       messageView: Text(AppStrings.dialogErrorMessage, style: TextStyle(color: Colors.red)),
@@ -74,7 +73,7 @@ class _AppProgressDialogState extends State<AppProgressDialog> {
     );
   }
 
-  Widget _createDialog({required Widget icon, required Widget messageView, required bool result}) {
+  Dialog _createDialog({required Widget icon, required Widget messageView, required bool result}) {
     return Dialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
       elevation: 0,

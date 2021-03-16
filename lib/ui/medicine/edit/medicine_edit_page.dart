@@ -159,17 +159,24 @@ class MedicineEditPage extends StatelessWidget {
       style: ElevatedButton.styleFrom(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.0)),
       ),
-      onPressed: () {
+      onPressed: () async {
         if (!viewModel.canSave) {
           AppSimpleDialog(message: AppStrings.medicineNotSaveAttention).show(context);
           return;
         }
-        AppProgressDialog(
-          execute: viewModel.save,
-          onSuccess: (bool isSuccess) {
-            Navigator.pop(context, isSuccess);
-          },
-        );
+
+        bool? isSuccess = await showDialog<bool>(
+                context: context,
+                builder: (_) {
+                  return AppProgressDialog(
+                    execute: viewModel.save,
+                    onSuccess: (bool isSuccess) => Navigator.pop(context, isSuccess),
+                  );
+                }) ??
+            false;
+        if (isSuccess) {
+          Navigator.pop(context, isSuccess);
+        }
       },
       child: const Text(
         AppStrings.medicineSaveButton,

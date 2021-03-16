@@ -112,11 +112,14 @@ class SettingsPage extends StatelessWidget {
         style: ElevatedButton.styleFrom(
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.0)),
         ),
-        onPressed: () {
-          AppProgressDialog(
-            execute: viewModel.logout,
-            onSuccess: (_) {
-              // 特に何もしない
+        onPressed: () async {
+          await showDialog<void>(
+            context: context,
+            builder: (_) {
+              return AppProgressDialog(
+                execute: viewModel.logout,
+                onSuccess: (bool isSuccess) => Navigator.pop(context),
+              );
             },
           );
         },

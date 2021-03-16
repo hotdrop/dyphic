@@ -148,13 +148,18 @@ class ConditionPage extends StatelessWidget {
 
     return ElevatedButton(
       onPressed: viewModel.enableOnSave
-          ? () {
-              AppProgressDialog(
-                execute: viewModel.onSave,
-                onSuccess: (bool isSuccess) async {
-                  if (isSuccess) {
-                    await viewModel.refresh();
-                  }
+          ? () async {
+              await showDialog<void>(
+                context: context,
+                builder: (_) {
+                  return AppProgressDialog(
+                    execute: viewModel.onSave,
+                    onSuccess: (bool isSuccess) async {
+                      if (isSuccess) {
+                        await viewModel.refresh();
+                      }
+                    },
+                  );
                 },
               );
             }

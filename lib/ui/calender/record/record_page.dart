@@ -247,15 +247,22 @@ class RecordPage extends StatelessWidget {
   Widget _saveFloatingActionButton(BuildContext context) {
     final viewModel = Provider.of<RecordViewModel>(context);
     return FloatingActionButton(
-      onPressed: () {
+      onPressed: () async {
         // キーボードが出ている場合は閉じる
         FocusScope.of(context).unfocus();
-        AppProgressDialog(
-          execute: viewModel.save,
-          onSuccess: (bool isSuccess) {
-            Navigator.pop(context, isSuccess);
-          },
-        );
+        bool? isSuccess = await showDialog<bool>(
+              context: context,
+              builder: (_) {
+                return AppProgressDialog(
+                  execute: viewModel.save,
+                  onSuccess: (bool isSuccess) => Navigator.pop(context, isSuccess),
+                );
+              },
+            ) ??
+            false;
+        if (isSuccess) {
+          Navigator.pop(context, isSuccess);
+        }
       },
       child: const Icon(Icons.save),
     );
