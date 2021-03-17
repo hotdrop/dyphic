@@ -13,11 +13,6 @@ class EventApi {
   final AppFirebase _appFirebase;
 
   Future<List<Event>> findByLatest(DateTime? prevSaveEventDate) async {
-    if (!_appFirebase.isLogIn) {
-      AppLogger.d('ログインしていないのでイベント取得は行いません。');
-      return [];
-    }
-
     final isUpdate = await _appFirebase.isUpdateEventJson(prevSaveEventDate);
     AppLogger.d('イベント情報更新が必要か？ $isUpdate');
 
