@@ -91,9 +91,7 @@ class RecordPage extends StatelessWidget {
           _mealViewArea(context),
           _temperatureViewArea(context),
           _medicineViewArea(context),
-          SizedBox(height: 16),
           _conditionViewArea(context),
-          SizedBox(height: 16),
           _memoView(context),
           SizedBox(height: 36),
         ],
@@ -213,6 +211,7 @@ class RecordPage extends StatelessWidget {
               title: AppStrings.recordConditionTitle,
               icon: AppIcon.condition(isDarkMode),
             ),
+            Divider(),
             ConditionSelectChips(
               selectIds: viewModel.selectConditionIds,
               allConditions: viewModel.allConditions,
@@ -234,12 +233,18 @@ class RecordPage extends StatelessWidget {
 
   Widget _memoView(BuildContext context) {
     final viewModel = Provider.of<RecordViewModel>(context);
-    return MultiLineTextField(
-      label: AppStrings.recordMemoTitle,
-      initValue: viewModel.memo,
-      limitLine: 5,
-      hintText: AppStrings.recordMemoHint,
-      onChanged: viewModel.inputMemo,
+    return Card(
+      elevation: 4.0,
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: MultiLineTextField(
+          label: AppStrings.recordMemoTitle,
+          initValue: viewModel.memo,
+          limitLine: 5,
+          hintText: AppStrings.recordMemoHint,
+          onChanged: viewModel.inputMemo,
+        ),
+      ),
     );
   }
 
