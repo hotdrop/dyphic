@@ -1,4 +1,5 @@
 import 'package:dyphic/model/app_settings.dart';
+import 'package:dyphic/ui/widget/app_image.dart';
 import 'package:flutter/material.dart';
 
 import 'package:dyphic/common/app_colors.dart';
@@ -126,6 +127,14 @@ class _MedicineSelectChipsState extends State<MedicineSelectChips> {
       return Tooltip(
         message: medicine.overview,
         child: FilterChip(
+          avatar: ClipOval(
+            child: Container(
+              width: 30.0,
+              height: 30.0,
+              child: AppImage.icon(path: medicine.imagePath),
+            ),
+          ),
+          showCheckmark: false,
           key: ValueKey<String>(medicine.name),
           label: Text(medicine.name, style: TextStyle(fontSize: 12.0)),
           selected: _selectedIds.contains(medicine.id) ? true : false,

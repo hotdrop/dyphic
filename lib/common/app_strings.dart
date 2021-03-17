@@ -10,21 +10,20 @@ class AppStrings {
   static const String calenderDetailConditionMemoLabel = '【体調メモ】';
 
   static const String recordPageTitleDateFormat = 'yyyy年MM月dd日';
-  static const String recordTemperatureMorning = '朝の体温';
-  static const String recordTemperatureNight = '夜の体温';
-  static const String recordTemperatureUnit = '度';
-  static const String recordTemperatureNonSet = '未登録';
-  static const String recordConditionTitle = '今日の体調';
-  static const String recordConditionMemoTitle = '体調メモ';
-  static const String recordConditionMemoHint = '細かい体調はこちらに記載しましょう！';
-  static const String recordMedicalTitle = '飲んだ薬';
-  static const String recordMealsTitle = '今日のご飯';
-  static const String recordMemoTitle = '今日のメモ';
-  static const String recordMemoHint = 'その他、残しておきたい記録があったらここに記載してください。';
   static const String recordMorningDialogTitle = '朝食';
   static const String recordLunchDialogTitle = '昼食';
   static const String recordDinnerDialogTitle = '夕食';
   static const String recordMealDialogHint = '食事の内容(簡単に)';
+  static const String recordTemperatureMorning = '朝の体温';
+  static const String recordTemperatureNight = '夜の体温';
+  static const String recordTemperatureUnit = '度';
+  static const String recordTemperatureNonSet = '未登録';
+  static const String recordMedicalTitle = '服用した薬';
+  static const String recordConditionTitle = '体調';
+  static const String recordConditionMemoTitle = '体調メモ';
+  static const String recordConditionMemoHint = '細かい体調はこちらに記載しましょう！';
+  static const String recordMemoTitle = '今日のメモ';
+  static const String recordMemoHint = 'その他、残しておきたい記録があったらここに記載してください。';
 
   static const String medicinePageTitle = 'お薬';
   static const String medicinePageNothingItemLabel = 'お薬が登録されていません。\nログインしてお薬を登録しましょう。';
