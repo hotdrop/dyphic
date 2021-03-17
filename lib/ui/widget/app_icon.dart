@@ -37,3 +37,26 @@ class AppIcon extends StatelessWidget {
     }
   }
 }
+
+class ThermometerIcon extends StatelessWidget {
+  const ThermometerIcon._(this.imagePath);
+
+  factory ThermometerIcon.morning() {
+    return ThermometerIcon._('res/images/ic_thermometer_morning.png');
+  }
+
+  factory ThermometerIcon.night() {
+    return ThermometerIcon._('res/images/ic_thermometer_night.png');
+  }
+
+  final String imagePath;
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: 28,
+      height: 28,
+      child: Image.asset(imagePath),
+    );
+  }
+}

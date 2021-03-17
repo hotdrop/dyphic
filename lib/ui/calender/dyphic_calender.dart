@@ -188,7 +188,6 @@ class _DyphicCalendarState extends State<DyphicCalendar> {
   Widget _labelRecordInfo() {
     final widgets = <Widget>[];
     if (_selectedEvent.haveRecord()) {
-      widgets.add(Text(AppStrings.calenderDetailConditionLabel));
       widgets.add(Text(_selectedEvent.toStringConditions()));
       widgets.add(SizedBox(height: 8.0));
       widgets.add(Text(AppStrings.calenderDetailConditionMemoLabel));

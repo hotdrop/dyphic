@@ -1,6 +1,7 @@
 import 'package:dyphic/common/app_colors.dart';
 import 'package:dyphic/common/app_strings.dart';
 import 'package:dyphic/ui/calender/record/widget_temperature_dialog.dart';
+import 'package:dyphic/ui/widget/app_icon.dart';
 import 'package:flutter/material.dart';
 
 class TemperatureView extends StatelessWidget {
@@ -86,12 +87,7 @@ class TemperatureView extends StatelessWidget {
   }
 
   Widget _thermometerIcon() {
-    final pngPath = isMorning ? 'res/images/ic_thermometer_morning.png' : 'res/images/ic_thermometer_night.png';
-    return SizedBox(
-      width: 28,
-      height: 28,
-      child: Image.asset(pngPath),
-    );
+    return isMorning ? ThermometerIcon.morning() : ThermometerIcon.night();
   }
 
   Widget _temperatureLabel(BuildContext context) {
