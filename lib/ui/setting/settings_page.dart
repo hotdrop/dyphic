@@ -1,3 +1,6 @@
+import 'package:dyphic/ui/condition/condition_page.dart';
+import 'package:dyphic/ui/medicine/medicine_page.dart';
+import 'package:dyphic/ui/widget/app_icon.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -9,6 +12,8 @@ import 'package:dyphic/model/app_settings.dart';
 import 'package:dyphic/model/page_state.dart';
 
 class SettingsPage extends StatelessWidget {
+  final double _iconSize = 30;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -41,31 +46,61 @@ class SettingsPage extends StatelessWidget {
     final loggedIn = context.select<SettingsViewModel, bool>((vm) => vm.loggedIn);
     return ListView(
       children: [
-        _rowAppVersion(context),
-        _rowThemeModeSwitch(context),
-        const Divider(),
         _rowAccountInfo(context),
+        if (!loggedIn) _loginDescriptionLabel(context),
         const Divider(),
-        _loginDescriptionLabel(),
-        if (loggedIn) _logoutButton(context),
-        if (!loggedIn) _loginButton(context),
+        _rowConditionEdit(context),
+        _rowMedicineEdit(context),
+        _rowSwitchTheme(context),
+        const Divider(),
+        _rowAppVersion(context),
       ],
     );
   }
 
-  Widget _rowAppVersion(BuildContext context) {
-    final appVersion = context.select<SettingsViewModel, String>((vm) => vm.appVersion);
+  Widget _rowAccountInfo(BuildContext context) {
+    final viewModel = Provider.of<SettingsViewModel>(context);
+    final loggedIn = context.select<SettingsViewModel, bool>((vm) => vm.loggedIn);
     return ListTile(
-      leading: const Icon(Icons.info),
-      title: const Text(AppStrings.settingsAppVersionLabel),
-      trailing: Text(appVersion),
+      leading: Icon(Icons.account_circle, size: _iconSize),
+      title: Text(viewModel.getLoginEmail()),
+      subtitle: Text(viewModel.getLoginUserName()),
+      trailing: (loggedIn) ? _logoutButton(context) : _loginButton(context),
     );
   }
 
-  Widget _rowThemeModeSwitch(BuildContext context) {
+  Widget _rowConditionEdit(BuildContext context) {
+    final isDarkMode = Provider.of<AppSettings>(context).isDarkMode;
+    return ListTile(
+      leading: AppIcon.condition(isDarkMode, size: _iconSize),
+      title: const Text(AppStrings.settingsEditConditionLabel),
+      subtitle: const Text(AppStrings.settingsEditConditionSubLabel),
+      onTap: () {
+        Navigator.of(context).push<void>(
+          MaterialPageRoute(builder: (_) => ConditionPage()),
+        );
+      },
+    );
+  }
+
+  Widget _rowMedicineEdit(BuildContext context) {
+    final isDarkMode = Provider.of<AppSettings>(context).isDarkMode;
+    return ListTile(
+      leading: AppIcon.medicine(isDarkMode, size: _iconSize),
+      title: const Text(AppStrings.settingsEditMedicineLabel),
+      subtitle: const Text(AppStrings.settingsEditMedicineSubLabel),
+      onTap: () {
+        Navigator.of(context).push<void>(
+          MaterialPageRoute(builder: (_) => MedicinePage()),
+        );
+      },
+    );
+  }
+
+  Widget _rowSwitchTheme(BuildContext context) {
     final appSettings = Provider.of<AppSettings>(context);
     return ListTile(
-      leading: Icon(appSettings.isDarkMode ? Icons.brightness_7 : Icons.brightness_4),
+      leading: AppIcon.changeTheme(appSettings.isDarkMode, size: _iconSize),
       title: const Text(AppStrings.settingsChangeAppThemeLabel),
       trailing: Switch(
         onChanged: (isDark) => appSettings.changeTheme(isDark),
@@ -74,57 +109,45 @@ class SettingsPage extends StatelessWidget {
     );
   }
 
-  Widget _rowAccountInfo(BuildContext context) {
-    final viewModel = Provider.of<SettingsViewModel>(context);
+  Widget _rowAppVersion(BuildContext context) {
+    final appVersion = context.select<SettingsViewModel, String>((vm) => vm.appVersion);
     return ListTile(
-      leading: const Icon(Icons.account_circle, size: 40.0),
-      title: Text(viewModel.getLoginEmail()),
-      subtitle: Text(viewModel.getLoginUserName()),
-    );
-  }
-
-  Widget _loginDescriptionLabel() {
-    return Padding(
-      padding: const EdgeInsets.only(left: 16.0, right: 16.0, top: 8.0),
-      child: Text(AppStrings.settingsLoginInfo),
+      leading: Icon(Icons.info, size: _iconSize),
+      title: const Text(AppStrings.settingsAppVersionLabel),
+      trailing: Text(appVersion),
     );
   }
 
   Widget _loginButton(BuildContext context) {
     final viewModel = Provider.of<SettingsViewModel>(context);
+    return ElevatedButton(
+      onPressed: () => viewModel.loginWithGoogle(),
+      child: const Text(AppStrings.settingsLoginWithGoogle),
+    );
+  }
+
+  Widget _loginDescriptionLabel(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(left: 32.0, right: 32.0, bottom: 32.0),
-      child: ElevatedButton(
-        style: ElevatedButton.styleFrom(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.0)),
-        ),
-        onPressed: () => viewModel.loginWithGoogle(),
-        child: const Text(AppStrings.settingsLoginWithGoogle),
-      ),
+      padding: const EdgeInsets.only(left: 16.0, right: 16.0),
+      child: Text(AppStrings.settingsLoginInfo, style: Theme.of(context).textTheme.caption),
     );
   }
 
   Widget _logoutButton(BuildContext context) {
     final viewModel = Provider.of<SettingsViewModel>(context);
-    return Padding(
-      padding: const EdgeInsets.only(left: 32.0, right: 32.0, bottom: 32.0),
-      child: OutlinedButton(
-        style: ElevatedButton.styleFrom(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.0)),
-        ),
-        onPressed: () async {
-          await showDialog<void>(
-            context: context,
-            builder: (_) {
-              return AppProgressDialog(
-                execute: viewModel.logout,
-                onSuccess: (bool isSuccess) => Navigator.pop(context),
-              );
-            },
-          );
-        },
-        child: Text(AppStrings.settingsLogoutLabel),
-      ),
+    return OutlinedButton(
+      onPressed: () async {
+        await showDialog<void>(
+          context: context,
+          builder: (_) {
+            return AppProgressDialog(
+              execute: viewModel.logout,
+              onSuccess: (bool isSuccess) => Navigator.pop(context),
+            );
+          },
+        );
+      },
+      child: Text(AppStrings.settingsLogoutLabel),
     );
   }
 }

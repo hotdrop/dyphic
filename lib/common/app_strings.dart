@@ -53,15 +53,19 @@ class AppStrings {
   static const String conditionEditButton = '症状名を修正する';
 
   static const String settingsPageTitle = '設定';
-  static const String settingsAppVersionLabel = 'アプリバージョン';
-  static const String settingsChangeAppThemeLabel = 'テーマ切り替え';
-  static const String settingsNotLoginNameLabel = 'ー';
-  static const String settingsLoginNameNotSettingLabel = '未設定';
   static const String settingsNotLoginEmailLabel = '未ログイン';
+  static const String settingsNotLoginNameLabel = 'ー';
+  static const String settingsLoginInfo = '※Googleアカウントでログインできます。ログインすると各データの登録/編集が可能になります。';
+  static const String settingsLoginNameNotSettingLabel = '未設定';
   static const String settingsLoginEmailNotSettingLabel = '未設定';
-  static const String settingsLoginWithGoogle = 'Googleアカウントでログイン';
-  static const String settingsLoginInfo = '※ログインするとカレンダー登録やお薬情報などの登録/編集が可能になり、イベント情報も表示されるようになります。';
-  static const String settingsLogoutLabel = 'Googleアカウントからログアウト';
+  static const String settingsLoginWithGoogle = 'ログイン';
+  static const String settingsLogoutLabel = 'ログアウト';
+  static const String settingsChangeAppThemeLabel = 'テーマ切り替え';
+  static const String settingsEditConditionLabel = '体調情報';
+  static const String settingsEditConditionSubLabel = 'タップで体調情報を表示します。';
+  static const String settingsEditMedicineLabel = 'お薬情報';
+  static const String settingsEditMedicineSubLabel = 'タップでお薬情報を表示します。';
+  static const String settingsAppVersionLabel = 'アプリバージョン';
 
   static const String textFieldRequiredEmptyError = '※必須項目';
 

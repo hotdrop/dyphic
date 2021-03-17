@@ -65,7 +65,10 @@ class MedicinePage extends StatelessWidget {
         centerTitle: true,
         title: Text(AppStrings.medicinePageTitle),
       ),
-      body: _contentsView(context, isEditable: true),
+      body: Padding(
+        padding: const EdgeInsets.only(bottom: 32.0),
+        child: _contentsView(context, isEditable: true),
+      ),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
           int newId = viewModel.createNewId();

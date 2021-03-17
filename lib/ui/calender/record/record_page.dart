@@ -1,8 +1,8 @@
+import 'package:dyphic/ui/widget/app_icon.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
-import 'package:dyphic/common/app_colors.dart';
 import 'package:dyphic/common/app_strings.dart';
 import 'package:dyphic/model/app_settings.dart';
 import 'package:dyphic/model/page_state.dart';
@@ -177,8 +177,7 @@ class RecordPage extends StatelessWidget {
 
   Widget _medicineViewArea(BuildContext context) {
     final viewModel = Provider.of<RecordViewModel>(context);
-    final appSettings = Provider.of<AppSettings>(context);
-    final medicineColor = (appSettings.isDarkMode) ? AppColors.medicineNight : AppColors.medicine;
+    final isDarkMode = Provider.of<AppSettings>(context).isDarkMode;
     return Card(
       elevation: 4.0,
       child: Padding(
@@ -187,8 +186,7 @@ class RecordPage extends StatelessWidget {
           children: [
             _contentsTitle(
               title: AppStrings.recordMedicalTitle,
-              iconData: Icons.medical_services,
-              color: medicineColor,
+              icon: AppIcon.medicine(isDarkMode),
             ),
             Divider(),
             MedicineSelectChips(
@@ -204,8 +202,7 @@ class RecordPage extends StatelessWidget {
 
   Widget _conditionViewArea(BuildContext context) {
     final viewModel = Provider.of<RecordViewModel>(context);
-    final appSettings = Provider.of<AppSettings>(context);
-    final conditionColor = (appSettings.isDarkMode) ? AppColors.conditionNight : AppColors.condition;
+    final isDarkMode = Provider.of<AppSettings>(context).isDarkMode;
     return Card(
       elevation: 4.0,
       child: Padding(
@@ -214,8 +211,7 @@ class RecordPage extends StatelessWidget {
           children: [
             _contentsTitle(
               title: AppStrings.recordConditionTitle,
-              iconData: Icons.sentiment_satisfied_rounded,
-              color: conditionColor,
+              icon: AppIcon.condition(isDarkMode),
             ),
             ConditionSelectChips(
               selectIds: viewModel.selectConditionIds,
@@ -271,11 +267,11 @@ class RecordPage extends StatelessWidget {
     );
   }
 
-  Widget _contentsTitle({required String title, required IconData iconData, required Color color}) {
+  Widget _contentsTitle({required String title, required AppIcon icon}) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
-        Icon(iconData, color: color),
+        icon,
         const SizedBox(width: 8),
         Text(title),
       ],
