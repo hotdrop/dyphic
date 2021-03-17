@@ -108,7 +108,7 @@ class MedicineEditPage extends StatelessWidget {
     return MultiLineTextField(
       label: AppStrings.medicineMemoLabel,
       initValue: _medicine.memo,
-      limitLine: 5,
+      limitLine: 3,
       hintText: AppStrings.medicineMemoHint,
       onChanged: viewModel.inputMemo,
     );

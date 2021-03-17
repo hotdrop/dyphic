@@ -36,9 +36,9 @@ class AppStrings {
   static const String medicineOverviewLabel = '一言メモ';
   static const String medicineOralLabel = '内服薬';
   static const String medicineNotOralLabel = '頓服薬';
-  static const String medicineImageOverviewLabel = 'カメラボタンでお薬の写真を撮って保存することができます。';
+  static const String medicineImageOverviewLabel = 'カメラボタンでお薬の写真を撮ってください。';
   static const String medicineStartCameraLabel = 'カメラを起動する';
-  static const String medicineMemoLabel = 'お薬の詳細メモ';
+  static const String medicineMemoLabel = '詳細メモ';
   static const String medicineMemoHint = '詳細な情報を残したい場合はここに記載してください。';
   static const String medicineSaveButton = 'この内容で保存する';
   static const String medicineNotSaveAttention = 'お薬の名前が未入力です。';
