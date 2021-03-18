@@ -63,7 +63,7 @@ class SettingsPage extends StatelessWidget {
     final loggedIn = context.select<SettingsViewModel, bool>((vm) => vm.loggedIn);
     return ListTile(
       leading: Icon(Icons.account_circle, size: _iconSize),
-      title: Text(viewModel.getLoginEmail()),
+      title: Text(viewModel.getLoginEmail(), style: TextStyle(fontSize: 12.0)),
       subtitle: Text(viewModel.getLoginUserName()),
       trailing: (loggedIn) ? _logoutButton(context) : _loginButton(context),
     );

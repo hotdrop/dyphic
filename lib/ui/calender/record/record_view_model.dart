@@ -52,6 +52,9 @@ class RecordViewModel extends NotifierViewModel {
   bool _isEditNotSaved = false;
   bool get isEditNotSaved => _isEditNotSaved;
 
+  bool _isUpdate = false;
+  bool get isUpdate => _isUpdate;
+
   ///
   /// 初期処理
   /// コンストラクタでよび、使用元のViewではPageStateでViewModelの利用状態を判断する。
@@ -135,6 +138,10 @@ class RecordViewModel extends NotifierViewModel {
       await AppLogger.e('記録情報の保存に失敗しました。', e, s);
       return false;
     }
+  }
+
+  void isSuccessSaved() {
+    _isUpdate = true;
   }
 }
 

@@ -84,6 +84,9 @@ class RecordPage extends StatelessWidget {
           ).show(context);
           return false;
         } else {
+          if (viewModel.isUpdate) {
+            Navigator.pop(context, true);
+          }
           return true;
         }
       },
@@ -166,9 +169,9 @@ class RecordPage extends StatelessWidget {
   Widget _temperatureViewArea(BuildContext context) {
     final viewModel = Provider.of<RecordViewModel>(context);
     return Padding(
-      padding: const EdgeInsets.all(16.0),
+      padding: const EdgeInsets.only(top: 16.0, bottom: 16.0),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: <Widget>[
           TemperatureView.morning(
             temperature: viewModel.morningTemperature,
@@ -277,13 +280,13 @@ class RecordPage extends StatelessWidget {
               builder: (_) {
                 return AppProgressDialog(
                   execute: viewModel.save,
-                  onSuccess: (bool isSuccess) => Navigator.pop(context, isSuccess),
+                  onSuccess: (bool isSuccess) => Navigator.pop(context, true),
                 );
               },
             ) ??
             false;
         if (isSuccess) {
-          Navigator.pop(context, isSuccess);
+          viewModel.isSuccessSaved();
         }
       },
       child: const Icon(Icons.save),
