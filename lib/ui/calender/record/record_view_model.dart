@@ -49,6 +49,9 @@ class RecordViewModel extends NotifierViewModel {
   late List<Condition> _allConditions;
   List<Condition> get allConditions => _allConditions;
 
+  bool _isEditNotSaved = false;
+  bool get isEditNotSaved => _isEditNotSaved;
+
   ///
   /// 初期処理
   /// コンストラクタでよび、使用元のViewではPageStateでViewModelの利用状態を判断する。
@@ -64,52 +67,61 @@ class RecordViewModel extends NotifierViewModel {
     loadSuccess();
   }
 
+  void inputBreakfast(String newVal) {
+    _inputRecord.breakfast = newVal;
+    _isEditNotSaved = true;
+    notifyListeners();
+  }
+
+  void inputLunch(String newVal) {
+    _inputRecord.lunch = newVal;
+    _isEditNotSaved = true;
+    notifyListeners();
+  }
+
+  void inputDinner(String newVal) {
+    _inputRecord.dinner = newVal;
+    _isEditNotSaved = true;
+    notifyListeners();
+  }
+
   void inputMorningTemperature(double newVal) {
     AppLogger.d('入力した値は $newVal です');
     _inputRecord.morningTemperature = newVal;
+    _isEditNotSaved = true;
     notifyListeners();
   }
 
   void inputNightTemperature(double newVal) {
     AppLogger.d('入力した値は $newVal です');
     _inputRecord.nightTemperature = newVal;
+    _isEditNotSaved = true;
     notifyListeners();
   }
 
   void changeSelectedCondition(Set<int> selectedIds) {
     AppLogger.d('選択している症状は $selectedIds 個です');
     _inputRecord.selectConditionIds = selectedIds;
+    _isEditNotSaved = true;
     notifyListeners();
   }
 
   void inputConditionMemo(String newVal) {
     _inputRecord.conditionMemo = newVal;
+    _isEditNotSaved = true;
     notifyListeners();
   }
 
   void changeSelectedMedicine(Set<int> selectedIds) {
     AppLogger.d('選択しているお薬は $selectedIds です');
     _inputRecord.selectMedicineIds = selectedIds;
-    notifyListeners();
-  }
-
-  void inputBreakfast(String newVal) {
-    _inputRecord.breakfast = newVal;
-    notifyListeners();
-  }
-
-  void inputLunch(String newVal) {
-    _inputRecord.lunch = newVal;
-    notifyListeners();
-  }
-
-  void inputDinner(String newVal) {
-    _inputRecord.dinner = newVal;
+    _isEditNotSaved = true;
     notifyListeners();
   }
 
   void inputMemo(String newVal) {
     _inputRecord.memo = newVal;
+    _isEditNotSaved = true;
     notifyListeners();
   }
 
@@ -117,6 +129,7 @@ class RecordViewModel extends NotifierViewModel {
     final newRecord = _inputRecord.toRecord(_allMedicines, _allConditions);
     try {
       await _repository.save(newRecord);
+      _isEditNotSaved = false;
       return true;
     } catch (e, s) {
       await AppLogger.e('記録情報の保存に失敗しました。', e, s);

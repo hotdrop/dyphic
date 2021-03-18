@@ -23,6 +23,7 @@ class AppStrings {
   static const String recordConditionMemoHint = '細かい体調はこちらに記載しましょう！';
   static const String recordMemoTitle = '今日のメモ';
   static const String recordMemoHint = 'その他、残しておきたい記録があったらここに記載してください。';
+  static const String recordNotEditSavedWhenCloseScreen = '変更した内容を保存していませんが、画面を閉じてしまっても良いですか？';
 
   static const String medicinePageTitle = 'お薬';
   static const String medicinePageNothingItemLabel = 'お薬が登録されていません。\nログインしてお薬を登録しましょう。';

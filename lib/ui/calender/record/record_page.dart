@@ -1,4 +1,3 @@
-import 'package:dyphic/ui/widget/app_icon.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -12,6 +11,8 @@ import 'package:dyphic/ui/calender/record/widget_temperature_view.dart';
 import 'package:dyphic/ui/widget/app_text_field.dart';
 import 'package:dyphic/ui/calender/record/record_view_model.dart';
 import 'package:dyphic/ui/widget/app_progress_dialog.dart';
+import 'package:dyphic/ui/widget/app_icon.dart';
+import 'package:dyphic/ui/widget/app_simple_dialog.dart';
 
 class RecordPage extends StatelessWidget {
   const RecordPage(this._date);
@@ -70,16 +71,33 @@ class RecordPage extends StatelessWidget {
   }
 
   Widget _rootViewAllowEdit(BuildContext context, String headerTitle) {
-    return Scaffold(
-      appBar: AppBar(
-        centerTitle: true,
-        title: Text(headerTitle),
+    return WillPopScope(
+      onWillPop: () async {
+        // TODO このダイアログうざいので各項目を編集したら自動で保存するようにしたい。
+        final viewModel = context.read<RecordViewModel>();
+        if (viewModel.isEditNotSaved) {
+          AppDialog.okAndCancel(
+            message: AppStrings.recordNotEditSavedWhenCloseScreen,
+            onOk: () {
+              Navigator.pop(context, false);
+            },
+          ).show(context);
+          return false;
+        } else {
+          return true;
+        }
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          centerTitle: true,
+          title: Text(headerTitle),
+        ),
+        body: GestureDetector(
+          onTap: () => FocusScope.of(context).unfocus(),
+          child: _contentsView(context),
+        ),
+        floatingActionButton: _saveFloatingActionButton(context),
       ),
-      body: GestureDetector(
-        onTap: () => FocusScope.of(context).unfocus(),
-        child: _contentsView(context),
-      ),
-      floatingActionButton: _saveFloatingActionButton(context),
     );
   }
 

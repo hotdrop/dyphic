@@ -3,11 +3,11 @@ import 'package:provider/provider.dart';
 import 'package:image_picker/image_picker.dart';
 
 import 'package:dyphic/ui/medicine/edit/medicine_edit_view_model.dart';
-import 'package:dyphic/ui/widget/app_simple_dialog.dart';
 import 'package:dyphic/ui/widget/app_image.dart';
 import 'package:dyphic/ui/medicine/edit/widget_medicine_type_radio.dart';
 import 'package:dyphic/ui/widget/app_text_field.dart';
 import 'package:dyphic/ui/widget/app_progress_dialog.dart';
+import 'package:dyphic/ui/widget/app_simple_dialog.dart';
 
 import 'package:dyphic/common/app_logger.dart';
 import 'package:dyphic/common/app_strings.dart';
@@ -155,7 +155,7 @@ class MedicineEditPage extends StatelessWidget {
       ),
       onPressed: () async {
         if (!viewModel.canSave) {
-          AppSimpleDialog(message: AppStrings.medicineNotSaveAttention).show(context);
+          AppDialog.ok(message: AppStrings.medicineNotSaveAttention).show(context);
           return;
         }
 
