@@ -25,6 +25,16 @@ class AppStrings {
   static const String recordMemoHint = 'その他、残しておきたい記録があったらここに記載してください。';
   static const String recordNotEditSavedWhenCloseScreen = '変更した内容を保存していませんが、画面を閉じてしまっても良いですか？';
 
+  static const String notesPageTitle = 'ノート';
+  static const String notesNotRegisterLabel = 'ノートが1つも登録されていません。';
+  static const String noteEditPageTitle = 'ノート編集';
+  static const String noteEditPageLabelTitle = 'タイトル';
+  static const String noteEditPageLabelDetail = '詳細';
+  static const String noteEditPageLabelDetailHint = 'ここに詳細メモを記載してください。';
+  static const String noteEditPageSaveButton = 'この内容で保存する';
+
+  static const String temperaturePageTitle = '体温グラフ';
+
   static const String medicinePageTitle = 'お薬';
   static const String medicinePageNothingItemLabel = 'お薬が登録されていません。\nログインしてお薬を登録しましょう。';
   static const String medicinePageOralName = '内服薬';

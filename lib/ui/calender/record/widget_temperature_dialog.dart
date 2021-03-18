@@ -117,25 +117,25 @@ class _TemperatureEditDialogState extends State<TemperatureEditDialog> {
       children: [
         Column(
           children: [
-            NumberCircleButton(number: 1, onTap: () => input(1)),
-            NumberCircleButton(number: 4, onTap: () => input(4)),
-            NumberCircleButton(number: 7, onTap: () => input(7)),
+            _NumberCircleButton(number: 1, onTap: () => input(1)),
+            _NumberCircleButton(number: 4, onTap: () => input(4)),
+            _NumberCircleButton(number: 7, onTap: () => input(7)),
           ],
         ),
         Column(
           children: [
-            NumberCircleButton(number: 2, onTap: () => input(2)),
-            NumberCircleButton(number: 5, onTap: () => input(5)),
-            NumberCircleButton(number: 8, onTap: () => input(8)),
-            NumberCircleButton(number: 0, onTap: () => input(0)),
+            _NumberCircleButton(number: 2, onTap: () => input(2)),
+            _NumberCircleButton(number: 5, onTap: () => input(5)),
+            _NumberCircleButton(number: 8, onTap: () => input(8)),
+            _NumberCircleButton(number: 0, onTap: () => input(0)),
           ],
         ),
         Column(
           children: [
-            NumberCircleButton(number: 3, onTap: () => input(3)),
-            NumberCircleButton(number: 6, onTap: () => input(6)),
-            NumberCircleButton(number: 9, onTap: () => input(9)),
-            IconCircleButton(icon: Icons.backspace, onTap: () => delete()),
+            _NumberCircleButton(number: 3, onTap: () => input(3)),
+            _NumberCircleButton(number: 6, onTap: () => input(6)),
+            _NumberCircleButton(number: 9, onTap: () => input(9)),
+            _IconCircleButton(icon: Icons.backspace, onTap: () => delete()),
           ],
         ),
       ],
@@ -146,8 +146,8 @@ class _TemperatureEditDialogState extends State<TemperatureEditDialog> {
 ///
 /// 数字ボタン
 ///
-class NumberCircleButton extends StatelessWidget {
-  const NumberCircleButton({required this.number, required this.onTap});
+class _NumberCircleButton extends StatelessWidget {
+  const _NumberCircleButton({required this.number, required this.onTap});
 
   final int number;
   final VoidCallback onTap;
@@ -169,8 +169,8 @@ class NumberCircleButton extends StatelessWidget {
 ///
 /// アイコンボタン
 ///
-class IconCircleButton extends StatelessWidget {
-  const IconCircleButton({required this.icon, required this.onTap});
+class _IconCircleButton extends StatelessWidget {
+  const _IconCircleButton({required this.icon, required this.onTap});
 
   final IconData icon;
   final VoidCallback onTap;

@@ -1,14 +1,13 @@
 import 'package:dyphic/common/app_logger.dart';
+import 'package:dyphic/common/app_strings.dart';
 import 'package:dyphic/model/app_settings.dart';
 import 'package:dyphic/model/medicine.dart';
-import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-
-import 'package:dyphic/common/app_strings.dart';
 import 'package:dyphic/model/page_state.dart';
 import 'package:dyphic/ui/medicine/edit/medicine_edit_page.dart';
 import 'package:dyphic/ui/medicine/medicine_card_view.dart';
 import 'package:dyphic/ui/medicine/medicine_view_model.dart';
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class MedicinePage extends StatelessWidget {
   @override
@@ -40,26 +39,8 @@ class MedicinePage extends StatelessWidget {
   }
 
   Widget _loadSuccessView(BuildContext context) {
-    final appSettings = Provider.of<AppSettings>(context);
-    if (appSettings.isLogin) {
-      return _rootViewAllowEdit(context);
-    } else {
-      return _rootViewDeniedEdit(context);
-    }
-  }
-
-  Widget _rootViewDeniedEdit(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        centerTitle: true,
-        title: Text(AppStrings.medicinePageTitle),
-      ),
-      body: _contentsView(context, isEditable: false),
-    );
-  }
-
-  Widget _rootViewAllowEdit(BuildContext context) {
     final viewModel = Provider.of<MedicineViewModel>(context);
+    final isLogin = Provider.of<AppSettings>(context).isLogin;
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
@@ -67,20 +48,25 @@ class MedicinePage extends StatelessWidget {
       ),
       body: Padding(
         padding: const EdgeInsets.only(bottom: 32.0),
-        child: _contentsView(context, isEditable: true),
+        child: _contentsView(context, isEditable: isLogin),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () async {
-          int newId = viewModel.createNewId();
-          int newOrder = viewModel.createNewOrder();
-          bool isUpdate = await Navigator.of(context).push<bool>(MaterialPageRoute(builder: (_) => MedicineEditPage(Medicine.createEmpty(newId, newOrder)))) ?? false;
-          AppLogger.d('戻り値: $isUpdate');
-          if (isUpdate) {
-            await viewModel.reload();
-          }
-        },
-        child: Icon(Icons.add),
-      ),
+      floatingActionButton: isLogin
+          ? FloatingActionButton(
+              onPressed: () async {
+                int newId = viewModel.createNewId();
+                int newOrder = viewModel.createNewOrder();
+                bool isUpdate = await Navigator.of(context).push<bool>(
+                      MaterialPageRoute(builder: (_) => MedicineEditPage(Medicine.createEmpty(newId, newOrder))),
+                    ) ??
+                    false;
+                AppLogger.d('戻り値: $isUpdate');
+                if (isUpdate) {
+                  await viewModel.reload();
+                }
+              },
+              child: Icon(Icons.add),
+            )
+          : null,
     );
   }
 

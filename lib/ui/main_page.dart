@@ -1,10 +1,9 @@
-import 'package:flutter/material.dart';
-
-import 'package:dyphic/ui/condition/condition_page.dart';
 import 'package:dyphic/common/app_strings.dart';
 import 'package:dyphic/ui/calender/calendar_page.dart';
-import 'package:dyphic/ui/medicine/medicine_page.dart';
+import 'package:dyphic/ui/note/notes_page.dart';
 import 'package:dyphic/ui/setting/settings_page.dart';
+import 'package:dyphic/ui/temperature/temperature_page.dart';
+import 'package:flutter/material.dart';
 
 class MainPage extends StatefulWidget {
   @override
@@ -44,9 +43,9 @@ class _MainPageState extends State<MainPage> {
       case 0:
         return CalenderPage();
       case 1:
-        return MedicinePage();
+        return TemperaturePage();
       case 2:
-        return ConditionPage();
+        return NotesPage();
       default:
         return SettingsPage();
     }
@@ -61,7 +60,7 @@ class Destination {
 
 const _allDestinations = <Destination>[
   Destination(AppStrings.calenderPageTitle, Icons.calendar_today),
-  Destination(AppStrings.medicinePageTitle, Icons.medical_services),
-  Destination(AppStrings.conditionPageTitle, Icons.sentiment_satisfied_rounded),
+  Destination(AppStrings.temperaturePageTitle, Icons.thermostat_outlined),
+  Destination(AppStrings.notesPageTitle, Icons.sticky_note_2),
   Destination(AppStrings.settingsPageTitle, Icons.settings),
 ];

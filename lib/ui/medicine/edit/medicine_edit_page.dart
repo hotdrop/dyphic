@@ -1,18 +1,16 @@
-import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:image_picker/image_picker.dart';
-
-import 'package:dyphic/ui/medicine/edit/medicine_edit_view_model.dart';
-import 'package:dyphic/ui/widget/app_image.dart';
-import 'package:dyphic/ui/medicine/edit/widget_medicine_type_radio.dart';
-import 'package:dyphic/ui/widget/app_text_field.dart';
-import 'package:dyphic/ui/widget/app_progress_dialog.dart';
-import 'package:dyphic/ui/widget/app_simple_dialog.dart';
-
 import 'package:dyphic/common/app_logger.dart';
 import 'package:dyphic/common/app_strings.dart';
 import 'package:dyphic/model/medicine.dart';
 import 'package:dyphic/model/page_state.dart';
+import 'package:dyphic/ui/medicine/edit/medicine_edit_view_model.dart';
+import 'package:dyphic/ui/medicine/edit/widget_medicine_type_radio.dart';
+import 'package:dyphic/ui/widget/app_image.dart';
+import 'package:dyphic/ui/widget/app_progress_dialog.dart';
+import 'package:dyphic/ui/widget/app_simple_dialog.dart';
+import 'package:dyphic/ui/widget/app_text_field.dart';
+import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:provider/provider.dart';
 
 class MedicineEditPage extends StatelessWidget {
   const MedicineEditPage(this._medicine);
@@ -51,10 +49,10 @@ class MedicineEditPage extends StatelessWidget {
 
   Widget _loadSuccessView(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(16.0),
+      padding: const EdgeInsets.only(left: 16.0, right: 16.0),
       child: ListView(
         children: [
-          const SizedBox(height: 8.0),
+          const SizedBox(height: 16.0),
           _editFieldName(context),
           const SizedBox(height: 8.0),
           _editFieldOverview(context),
@@ -65,6 +63,7 @@ class MedicineEditPage extends StatelessWidget {
           _editFieldMemo(context),
           const SizedBox(height: 8.0),
           _saveButton(context),
+          const SizedBox(height: 16.0),
         ],
       ),
     );
@@ -72,10 +71,10 @@ class MedicineEditPage extends StatelessWidget {
 
   Widget _editFieldName(BuildContext context) {
     final viewModel = Provider.of<MedicineEditViewModel>(context);
-    return AppTextField.singleLine(
+    return AppTextField(
       label: AppStrings.medicineNameLabel,
-      isRequired: true,
       initValue: _medicine.name,
+      isRequired: true,
       onChanged: (String v) {
         viewModel.inputName(v);
       },
@@ -84,10 +83,10 @@ class MedicineEditPage extends StatelessWidget {
 
   Widget _editFieldOverview(BuildContext context) {
     final viewModel = Provider.of<MedicineEditViewModel>(context);
-    return AppTextField.singleLine(
+    return AppTextField(
       label: AppStrings.medicineOverviewLabel,
-      isRequired: true,
       initValue: _medicine.overview,
+      isRequired: true,
       onChanged: (v) {
         viewModel.inputOverview(v);
       },

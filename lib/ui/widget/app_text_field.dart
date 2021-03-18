@@ -1,26 +1,15 @@
-import 'package:flutter/material.dart';
-
 import 'package:dyphic/common/app_extension.dart';
 import 'package:dyphic/common/app_strings.dart';
+import 'package:flutter/material.dart';
 
 class AppTextField extends StatefulWidget {
-  const AppTextField._(
-    this.label,
+  const AppTextField({
+    required this.label,
     this.initValue,
-    this.isRequired,
-    this.hintText,
-    this.onChanged,
-  );
-
-  factory AppTextField.singleLine({
-    required String label,
-    String? initValue,
-    bool isRequired = false,
-    String hintText = '',
-    required void Function(String) onChanged,
-  }) {
-    return AppTextField._(label, initValue, isRequired, hintText, onChanged);
-  }
+    this.isRequired = false,
+    this.hintText = '',
+    required this.onChanged,
+  });
 
   final String label;
   final String? initValue;
