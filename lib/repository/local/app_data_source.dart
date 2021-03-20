@@ -52,7 +52,7 @@ class AppDataSource {
     return null;
   }
 
-  Future<void> saveSaveGetEventDate() async {
+  Future<void> savePreviousGetEventDate() async {
     final nowDate = DateTime.now();
     final monthStr = nowDate.month.toString().padLeft(2, '0');
     final dayStr = nowDate.day.toString().padLeft(2, '0');

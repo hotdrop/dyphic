@@ -22,7 +22,7 @@ class NoteType {
   const NoteType(this.typeValue, this.iconData, this.color);
 
   factory NoteType.fromValue(int typeValue) {
-    return values.firstWhere((e) => e.typeValue == typeValue, orElse: () => NoteType(1, Icons.local_drink, Colors.blue[300]));
+    return values.firstWhere((e) => e.typeValue == typeValue, orElse: () => NoteType(1, Icons.lunch_dining, Colors.orange[300]));
   }
 
   final int typeValue;
@@ -30,9 +30,10 @@ class NoteType {
   final Color? color;
 
   static List<NoteType> get values => [
-        NoteType(1, Icons.local_drink, Colors.blue[300]),
-        NoteType(2, Icons.medical_services_outlined, Colors.green[300]),
-        NoteType(3, Icons.local_hospital, Colors.red[300]),
-        NoteType(4, Icons.sticky_note_2_outlined, Colors.purple[300]),
+        NoteType(1, Icons.lunch_dining, Colors.orange[300]),
+        NoteType(2, Icons.local_hospital_outlined, Colors.blue[300]),
+        NoteType(3, Icons.sick_outlined, Colors.purple[300]),
+        NoteType(4, Icons.sticky_note_2_outlined, Colors.green[300]),
+        NoteType(5, Icons.do_not_disturb, Colors.red[300]),
       ];
 }

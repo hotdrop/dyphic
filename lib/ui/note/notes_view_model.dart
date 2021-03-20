@@ -23,17 +23,17 @@ class NotesViewModel extends NotifierViewModel {
     loadSuccess();
   }
 
+  Future<void> reload() async {
+    nowLoading();
+    _notes = await _repository.findAll();
+    loadSuccess();
+  }
+
   int createNewId() {
     if (_notes.isNotEmpty) {
       return _notes.map((e) => e.id).reduce(max) + 1;
     } else {
       return 1;
     }
-  }
-
-  Future<void> reload() async {
-    nowLoading();
-    _notes = await _repository.findAll();
-    loadSuccess();
   }
 }

@@ -1,16 +1,12 @@
 import 'package:dyphic/model/calendar_event.dart';
+import 'package:dyphic/repository/local/entity/db_entity.dart';
 
-class EventEntity {
-  const EventEntity(this.id, this.type, this.name);
-
-  EventEntity.fromMap(Map<String, dynamic> map)
-      : id = map[columnId] as int,
-        type = map[columnType] as int,
-        name = map[columnName] as String;
-
-  Map<String, dynamic> toMap() {
-    return <String, dynamic>{columnId: id, columnType: type, columnName: name};
-  }
+class EventEntity extends DBEntity {
+  const EventEntity({
+    required this.id,
+    required this.type,
+    required this.name,
+  });
 
   static const String tableName = 'Event';
   static const String createTableSql = '''
@@ -29,11 +25,24 @@ class EventEntity {
 
   static const String columnName = 'name';
   final String name;
+
+  static EventEntity fromMap(Map<String, dynamic> map) {
+    return EventEntity(
+      id: map[columnId] as int,
+      type: map[columnType] as int,
+      name: map[columnName] as String,
+    );
+  }
+
+  @override
+  Map<String, dynamic> toMap() {
+    return <String, dynamic>{columnId: id, columnType: type, columnName: name};
+  }
 }
 
 extension EventMapper on Event {
   EventEntity toEntity() {
-    return EventEntity(id, type.index, name);
+    return EventEntity(id: id, type: type.index, name: name);
   }
 }
 

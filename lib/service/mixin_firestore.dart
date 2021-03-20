@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dyphic/common/app_logger.dart';
 import 'package:dyphic/model/condition.dart';
 import 'package:dyphic/model/medicine.dart';
+import 'package:dyphic/model/note.dart';
 import 'package:dyphic/model/record.dart';
 
 mixin AppFirestoreMixin {
@@ -271,6 +272,43 @@ mixin AppFirestoreMixin {
       await FirebaseFirestore.instance.collection(_conditionRootName).doc(id).set(map);
     } on FirebaseException catch (e, s) {
       await AppLogger.e('Firestore: condition(id=$id name=${condition.name})の保存に失敗', e, s);
+      rethrow;
+    }
+  }
+
+  ///
+  /// ノート
+  ///
+  static final String _noteRootName = 'notes';
+
+  Future<List<Note>> findNotes() async {
+    try {
+      final snapshot = await FirebaseFirestore.instance.collection(_noteRootName).get();
+      return snapshot.docs.map((doc) {
+        return Note(
+          id: int.parse(doc.id),
+          typeValue: doc.get('typeValue') as int,
+          title: doc.get('title') as String,
+          detail: doc.get('detail') as String,
+        );
+      }).toList();
+    } on FirebaseException catch (e, s) {
+      await AppLogger.e('Firestore: notesの取得に失敗', e, s);
+      rethrow;
+    }
+  }
+
+  Future<void> saveNote(Note note) async {
+    final id = note.id.toString();
+    final map = <String, dynamic>{
+      'typeValue': note.typeValue,
+      'title': note.title,
+      'detail': note.detail,
+    };
+    try {
+      await FirebaseFirestore.instance.collection(_noteRootName).doc(id).set(map);
+    } on FirebaseException catch (e, s) {
+      await AppLogger.e('Firestore: note(id=$id title=${note.title})の保存に失敗', e, s);
       rethrow;
     }
   }

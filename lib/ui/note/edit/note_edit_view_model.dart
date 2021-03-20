@@ -37,6 +37,7 @@ class NoteEditViewModel extends NotifierViewModel {
 
   void inputTitle(String title) {
     _inputTitle = title;
+    notifyListeners();
   }
 
   void inputDetail(String detail) {

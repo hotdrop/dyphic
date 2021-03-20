@@ -1,6 +1,6 @@
 import 'package:dyphic/model/calendar_event.dart';
-import 'package:dyphic/repository/local/event_data_source.dart';
 import 'package:dyphic/repository/local/app_data_source.dart';
+import 'package:dyphic/repository/local/event_data_source.dart';
 import 'package:dyphic/repository/remote/event_api.dart';
 
 class EventRepository {
@@ -20,7 +20,7 @@ class EventRepository {
 
     if (latestEvents.isNotEmpty) {
       await _eventDb.update(latestEvents);
-      await _prefs.saveSaveGetEventDate();
+      await _prefs.savePreviousGetEventDate();
     }
 
     return await _eventDb.findAll();
