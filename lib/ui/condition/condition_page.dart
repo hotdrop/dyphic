@@ -1,12 +1,10 @@
-import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-
-import 'package:dyphic/model/app_settings.dart';
-import 'package:dyphic/ui/widget/app_progress_dialog.dart';
-
 import 'package:dyphic/common/app_strings.dart';
+import 'package:dyphic/model/app_settings.dart';
 import 'package:dyphic/model/page_state.dart';
 import 'package:dyphic/ui/condition/condition_view_model.dart';
+import 'package:dyphic/ui/widget/app_progress_dialog.dart';
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class ConditionPage extends StatelessWidget {
   @override
@@ -149,19 +147,10 @@ class ConditionPage extends StatelessWidget {
     return ElevatedButton(
       onPressed: viewModel.enableOnSave
           ? () async {
-              await showDialog<void>(
-                context: context,
-                builder: (_) {
-                  return AppProgressDialog(
-                    execute: viewModel.onSave,
-                    onSuccess: (bool isSuccess) async {
-                      if (isSuccess) {
-                        await viewModel.refresh();
-                      }
-                    },
-                  );
-                },
-              );
+              bool? isSuccess = await AppProgressDialog(execute: viewModel.onSave).show(context);
+              if (isSuccess) {
+                await viewModel.refresh();
+              }
             }
           : null,
       child: Text(buttonName),

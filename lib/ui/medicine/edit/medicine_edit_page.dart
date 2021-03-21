@@ -158,15 +158,7 @@ class MedicineEditPage extends StatelessWidget {
           return;
         }
 
-        bool? isSuccess = await showDialog<bool>(
-                context: context,
-                builder: (_) {
-                  return AppProgressDialog(
-                    execute: viewModel.save,
-                    onSuccess: (bool isSuccess) => Navigator.pop(context, isSuccess),
-                  );
-                }) ??
-            false;
+        bool? isSuccess = await AppProgressDialog(execute: viewModel.save).show(context);
         if (isSuccess) {
           Navigator.pop(context, isSuccess);
         }

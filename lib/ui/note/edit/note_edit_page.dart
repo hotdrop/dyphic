@@ -144,15 +144,7 @@ class NoteEditPage extends StatelessWidget {
           ? () async {
               // キーボードが出ている場合は閉じる
               FocusScope.of(context).unfocus();
-              bool? isSuccess = await showDialog<bool>(
-                      context: context,
-                      builder: (_) {
-                        return AppProgressDialog(
-                          execute: viewModel.save,
-                          onSuccess: (bool isSuccess) => Navigator.pop(context, isSuccess),
-                        );
-                      }) ??
-                  false;
+              bool? isSuccess = await AppProgressDialog(execute: viewModel.save).show(context);
               if (isSuccess) {
                 Navigator.pop(context, isSuccess);
               }

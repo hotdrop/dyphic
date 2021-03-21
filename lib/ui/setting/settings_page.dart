@@ -1,15 +1,13 @@
-import 'package:dyphic/ui/condition/condition_page.dart';
-import 'package:dyphic/ui/medicine/medicine_page.dart';
-import 'package:dyphic/ui/widget/app_icon.dart';
-import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-
-import 'package:dyphic/ui/setting/settings_view_model.dart';
-import 'package:dyphic/ui/widget/app_progress_dialog.dart';
-
 import 'package:dyphic/common/app_strings.dart';
 import 'package:dyphic/model/app_settings.dart';
 import 'package:dyphic/model/page_state.dart';
+import 'package:dyphic/ui/condition/condition_page.dart';
+import 'package:dyphic/ui/medicine/medicine_page.dart';
+import 'package:dyphic/ui/setting/settings_view_model.dart';
+import 'package:dyphic/ui/widget/app_icon.dart';
+import 'package:dyphic/ui/widget/app_progress_dialog.dart';
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class SettingsPage extends StatelessWidget {
   final double _iconSize = 30;
@@ -137,15 +135,8 @@ class SettingsPage extends StatelessWidget {
     final viewModel = Provider.of<SettingsViewModel>(context);
     return OutlinedButton(
       onPressed: () async {
-        await showDialog<void>(
-          context: context,
-          builder: (_) {
-            return AppProgressDialog(
-              execute: viewModel.logout,
-              onSuccess: (bool isSuccess) => Navigator.pop(context),
-            );
-          },
-        );
+        await AppProgressDialog(execute: viewModel.logout).show(context);
+        Navigator.pop(context);
       },
       child: Text(AppStrings.settingsLogoutLabel),
     );

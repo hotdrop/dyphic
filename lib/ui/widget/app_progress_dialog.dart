@@ -1,12 +1,28 @@
+import 'package:dyphic/common/app_strings.dart';
 import 'package:flutter/material.dart';
 
-import 'package:dyphic/common/app_strings.dart';
-
-class AppProgressDialog extends StatefulWidget {
+class AppProgressDialog {
   const AppProgressDialog({
     required this.execute,
-    required this.onSuccess,
   });
+
+  final Future<bool> Function() execute;
+
+  Future<bool> show(BuildContext context) async {
+    return await showDialog<bool>(
+            context: context,
+            builder: (_) {
+              return _AppProgressDialog(
+                execute,
+                (bool isSuccess) => Navigator.pop(context, isSuccess),
+              );
+            }) ??
+        false;
+  }
+}
+
+class _AppProgressDialog extends StatefulWidget {
+  const _AppProgressDialog(this.execute, this.onSuccess);
 
   final Future<bool> Function() execute;
   final Function(bool) onSuccess;
@@ -15,7 +31,7 @@ class AppProgressDialog extends StatefulWidget {
   State<StatefulWidget> createState() => _AppProgressDialogState();
 }
 
-class _AppProgressDialogState extends State<AppProgressDialog> {
+class _AppProgressDialogState extends State<_AppProgressDialog> {
   _ExecState _state = _ExecState.loading;
 
   @override
