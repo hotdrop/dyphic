@@ -13,7 +13,7 @@
 実装したい機能や改善事項がまだ多くあり、UIもコロコロ変更している状況です。
 
 # 画面イメージ
-サンプル画像
+サンプル画像  
 <img src="images/01_calendar.png" width="200" />
 <img src="images/02_note.png" width="200" />
 <img src="images/03_note_edit.png" width="200" />
