@@ -1,18 +1,17 @@
-import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
-import 'package:provider/provider.dart';
-
 import 'package:dyphic/common/app_strings.dart';
 import 'package:dyphic/model/app_settings.dart';
 import 'package:dyphic/model/page_state.dart';
-import 'package:dyphic/ui/widget/app_chips.dart';
+import 'package:dyphic/ui/calender/record/record_view_model.dart';
 import 'package:dyphic/ui/calender/record/widget_meal_card.dart';
 import 'package:dyphic/ui/calender/record/widget_temperature_view.dart';
-import 'package:dyphic/ui/widget/app_text_field.dart';
-import 'package:dyphic/ui/calender/record/record_view_model.dart';
-import 'package:dyphic/ui/widget/app_progress_dialog.dart';
+import 'package:dyphic/ui/widget/app_chips.dart';
 import 'package:dyphic/ui/widget/app_icon.dart';
+import 'package:dyphic/ui/widget/app_progress_dialog.dart';
 import 'package:dyphic/ui/widget/app_simple_dialog.dart';
+import 'package:dyphic/ui/widget/app_text_field.dart';
+import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 
 class RecordPage extends StatelessWidget {
   const RecordPage(this._date);
@@ -112,7 +111,11 @@ class RecordPage extends StatelessWidget {
           _mealViewArea(context),
           _temperatureViewArea(context),
           _medicineViewArea(context),
+          SizedBox(height: 16.0),
           _conditionViewArea(context),
+          SizedBox(height: 16.0),
+          _sideAttributesView(context),
+          SizedBox(height: 16.0),
           _memoView(context),
           SizedBox(height: 36),
         ],
@@ -249,6 +252,51 @@ class RecordPage extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+
+  Widget _sideAttributesView(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      children: [
+        _walkingView(context),
+      ],
+    );
+  }
+
+  Widget _walkingView(BuildContext context) {
+    final viewModel = Provider.of<RecordViewModel>(context);
+    return Stack(
+      children: [
+        Container(
+          padding: const EdgeInsets.only(left: 16.0, top: 8.0),
+          margin: EdgeInsets.only(top: 24.0),
+          decoration: BoxDecoration(
+            shape: BoxShape.rectangle,
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(8.0),
+            boxShadow: [
+              BoxShadow(color: Colors.grey, offset: Offset(0, 1), blurRadius: 1),
+            ],
+          ),
+          child: Row(
+            children: [
+              Text(AppStrings.recordWalkingLabel),
+              Checkbox(
+                value: viewModel.isWalking,
+                onChanged: (bool? isCheck) => viewModel.inputIsWalking(isCheck),
+              ),
+            ],
+          ),
+        ),
+        Positioned(
+          left: 8.0,
+          child: CircleAvatar(
+            backgroundColor: Theme.of(context).primaryColor,
+            child: Icon(Icons.directions_walk_rounded, color: Colors.white),
+          ),
+        ),
+      ],
     );
   }
 

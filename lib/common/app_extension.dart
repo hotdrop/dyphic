@@ -8,3 +8,10 @@ extension StringExtension on String? {
     return this?.isNotEmpty ?? false;
   }
 }
+
+extension IntExtension on int? {
+  bool haveValue() {
+    final a = this;
+    return (a != null) ? a > 0 : false;
+  }
+}

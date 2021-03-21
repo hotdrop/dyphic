@@ -18,7 +18,7 @@ class AppTextField extends StatefulWidget {
   final void Function(String) onChanged;
 
   @override
-  State<AppTextField> createState() => _AppTextFieldState();
+  _AppTextFieldState createState() => _AppTextFieldState();
 }
 
 class _AppTextFieldState extends State<AppTextField> {

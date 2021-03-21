@@ -38,6 +38,7 @@ class RecordViewModel extends NotifierViewModel {
   Set<int> get selectConditionIds => _inputRecord.selectConditionIds;
   String get conditionMemo => _inputRecord.conditionMemo;
   Set<int> get selectMedicineIds => _inputRecord.selectMedicineIds;
+  bool get isWalking => _inputRecord.isWalking;
   String get breakfast => _inputRecord.breakfast;
   String get lunch => _inputRecord.lunch;
   String get dinner => _inputRecord.dinner;
@@ -102,6 +103,14 @@ class RecordViewModel extends NotifierViewModel {
     notifyListeners();
   }
 
+  void inputIsWalking(bool? isWalking) {
+    if (isWalking != null) {
+      _inputRecord.isWalking = isWalking;
+      _isEditNotSaved = true;
+      notifyListeners();
+    }
+  }
+
   void changeSelectedCondition(Set<int> selectedIds) {
     AppLogger.d('選択している症状は $selectedIds 個です');
     _inputRecord.selectConditionIds = selectedIds;
@@ -155,6 +164,7 @@ class InputRecord {
     required this.nightTemperature,
     required this.selectMedicineIds,
     required this.selectConditionIds,
+    required this.isWalking,
     required this.conditionMemo,
     required this.breakfast,
     required this.lunch,
@@ -169,6 +179,7 @@ class InputRecord {
       nightTemperature: record.nightTemperature ?? 0.0,
       selectMedicineIds: record.medicines?.map((e) => e.id).toSet() ?? {},
       selectConditionIds: record.conditions?.map((e) => e.id).toSet() ?? {},
+      isWalking: record.isWalking ?? false,
       conditionMemo: record.conditionMemo ?? '',
       breakfast: record.breakfast ?? '',
       lunch: record.lunch ?? '',
@@ -182,6 +193,7 @@ class InputRecord {
   double nightTemperature;
   Set<int> selectMedicineIds;
   Set<int> selectConditionIds;
+  bool isWalking;
   String conditionMemo;
   String breakfast;
   String lunch;
@@ -196,7 +208,7 @@ class InputRecord {
 
     return Record.create(
       id: id,
-      recordOverview: RecordOverview(recordId: id, conditions: selectConditions, conditionMemo: conditionMemo),
+      recordOverview: RecordOverview(recordId: id, isWalking: isWalking, conditions: selectConditions, conditionMemo: conditionMemo),
       recordTemperature: RecordTemperature(recordId: id, morningTemperature: morningTemperature, nightTemperature: nightTemperature),
       recordDetail: RecordDetail(recordId: id, medicines: selectMedicines, breakfast: breakfast, lunch: lunch, dinner: dinner, memo: memo),
     );

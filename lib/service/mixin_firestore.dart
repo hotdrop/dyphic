@@ -14,6 +14,7 @@ mixin AppFirestoreMixin {
   DocumentReference get _recordRootDoc => FirebaseFirestore.instance.collection(_recordRootCollection).doc(_recordRootDocument);
 
   static final String _recordOverviewCollection = 'overview';
+  static final String _recordOverviewIsWalking = 'isWalking';
   static final String _recordConditionIDsField = 'conditionIDs';
   static final String _recordConditionMemoField = 'conditionMemo';
 
@@ -22,13 +23,14 @@ mixin AppFirestoreMixin {
       final snapshot = await _recordRootDoc.collection(_recordOverviewCollection).doc(id.toString()).get();
       if (snapshot.exists) {
         final allConditions = await findConditions();
-        final dataMap = snapshot.data();
-        final conditionIds = dataMap?[_recordConditionIDsField] as String;
+        final map = snapshot.data();
+        final conditionIds = getString(map, _recordConditionIDsField);
         final conditions = _convertConditions(allConditions, conditionIds);
         return RecordOverview(
           recordId: id,
+          isWalking: getBool(map, _recordOverviewIsWalking),
           conditions: conditions,
-          conditionMemo: dataMap?[_recordConditionMemoField] as String,
+          conditionMemo: getString(map, _recordConditionMemoField),
         );
       } else {
         return null;
@@ -44,12 +46,14 @@ mixin AppFirestoreMixin {
       final snapshot = await _recordRootDoc.collection(_recordOverviewCollection).get();
       final allConditions = await findConditions();
       return snapshot.docs.map((doc) {
-        final conditionIds = doc.get(_recordConditionIDsField) as String;
+        final map = doc.data();
+        final conditionIds = getString(map, _recordConditionIDsField);
         final conditions = _convertConditions(allConditions, conditionIds);
         return RecordOverview(
           recordId: int.parse(doc.id),
+          isWalking: getBool(map, _recordOverviewIsWalking),
           conditions: conditions,
-          conditionMemo: doc.get(_recordConditionMemoField) as String,
+          conditionMemo: getString(map, _recordConditionMemoField),
         );
       }).toList();
     } on FirebaseException catch (e, s) {
@@ -61,6 +65,7 @@ mixin AppFirestoreMixin {
   Future<void> saveOverviewRecord(RecordOverview overview) async {
     final id = overview.recordId.toString();
     final map = <String, dynamic>{
+      _recordOverviewIsWalking: overview.isWalking,
       _recordConditionIDsField: overview.toStringConditionIds(),
       _recordConditionMemoField: overview.conditionMemo,
     };
@@ -140,16 +145,16 @@ mixin AppFirestoreMixin {
       final snapshot = await _recordRootDoc.collection(_recordDetailCollection).doc(id.toString()).get();
       if (snapshot.exists) {
         final allMedicines = await findMedicines();
-        final dataMap = snapshot.data();
-        final medicineIds = dataMap?[_recordMedicineIDsField] as String;
+        final map = snapshot.data();
+        final medicineIds = getString(map, _recordMedicineIDsField);
         final medicines = _convertMedicines(allMedicines, medicineIds);
         return RecordDetail(
           recordId: id,
           medicines: medicines,
-          breakfast: dataMap?[_recordBreakFastField] as String,
-          lunch: dataMap?[_recordLunchField] as String,
-          dinner: dataMap?[_recordDinnerField] as String,
-          memo: dataMap?[_recordMemoField] as String,
+          breakfast: getString(map, _recordBreakFastField),
+          lunch: getString(map, _recordLunchField),
+          dinner: getString(map, _recordDinnerField),
+          memo: getString(map, _recordMemoField),
         );
       } else {
         return null;
@@ -208,14 +213,15 @@ mixin AppFirestoreMixin {
     try {
       final snapshot = await FirebaseFirestore.instance.collection(_medicineRootName).get();
       return snapshot.docs.map((doc) {
+        final map = doc.data();
         return Medicine(
           id: int.parse(doc.id),
-          name: doc.get('name') as String,
-          overview: doc.get('overview') as String,
-          imagePath: doc.get('imagePath') as String,
-          type: Medicine.toType(doc.get('type') as int),
-          memo: (doc.get('memo') as String),
-          order: doc.get('order') as int,
+          name: getString(map, 'name'),
+          overview: getString(map, 'overview'),
+          imagePath: getString(map, 'imagePath'),
+          type: Medicine.toType(getInt(map, 'type')),
+          memo: getString(map, 'memo'),
+          order: getInt(map, 'order'),
         );
       }).toList();
     } on FirebaseException catch (e, s) {
@@ -252,9 +258,10 @@ mixin AppFirestoreMixin {
     try {
       final snapshot = await FirebaseFirestore.instance.collection(_conditionRootName).get();
       return snapshot.docs.map((doc) {
+        final map = doc.data();
         return Condition(
           int.parse(doc.id),
-          doc.get('name') as String,
+          getString(map, 'name'),
         );
       }).toList();
     } on FirebaseException catch (e, s) {
@@ -285,11 +292,12 @@ mixin AppFirestoreMixin {
     try {
       final snapshot = await FirebaseFirestore.instance.collection(_noteRootName).get();
       return snapshot.docs.map((doc) {
+        final map = doc.data();
         return Note(
           id: int.parse(doc.id),
-          typeValue: doc.get('typeValue') as int,
-          title: doc.get('title') as String,
-          detail: doc.get('detail') as String,
+          typeValue: getInt(map, 'typeValue'),
+          title: getString(map, 'title'),
+          detail: getString(map, 'detail'),
         );
       }).toList();
     } on FirebaseException catch (e, s) {
@@ -310,6 +318,35 @@ mixin AppFirestoreMixin {
     } on FirebaseException catch (e, s) {
       await AppLogger.e('Firestore: note(id=$id title=${note.title})の保存に失敗', e, s);
       rethrow;
+    }
+  }
+
+  // ここから下はMapとDocumentSnapshotから型情報ありで取りたい場合の便利メソッド
+
+  int getInt(Map<String, dynamic>? map, String fieldName) {
+    dynamic fieldVal = map?[fieldName] ?? 0;
+    if (fieldVal is int) {
+      return fieldVal;
+    } else {
+      return 0;
+    }
+  }
+
+  String getString(Map<String, dynamic>? map, String fieldName) {
+    dynamic fieldVal = map?[fieldName] ?? 0;
+    if (fieldVal is String) {
+      return fieldVal;
+    } else {
+      return '';
+    }
+  }
+
+  bool getBool(Map<String, dynamic>? map, String fieldName) {
+    dynamic fieldVal = map?[fieldName] ?? 0;
+    if (fieldVal is bool) {
+      return fieldVal;
+    } else {
+      return false;
     }
   }
 }

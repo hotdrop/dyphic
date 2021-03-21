@@ -12,6 +12,7 @@ class AppColors {
   static const Color conditionNight = Color(0xFF28A305);
   static const Color medicine = Color(0xFFFCD894);
   static const Color medicineNight = Color(0xFFC68407);
+  static const Color walking = Color(0xFF365FEF);
 
   static const Color mealBreakFast = Color(0xFFFA6B72);
   static const Color mealLunch = Color(0xFFFCA41F);

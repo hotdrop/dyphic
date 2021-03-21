@@ -8,23 +8,31 @@ class AppStrings {
   static const String calenderUnRegisterLabel = 'この日の記録は未登録です。\nここをタップして記録しましょう。';
   static const String calenderDetailConditionMemoLabel = '【体調メモ】';
 
+  // 記録ページ
   static const String recordPageTitleDateFormat = 'yyyy年MM月dd日';
   static const String recordMorningDialogTitle = '朝食';
   static const String recordLunchDialogTitle = '昼食';
   static const String recordDinnerDialogTitle = '夕食';
   static const String recordMealDialogHint = '食事の内容(簡単に)';
+
   static const String recordTemperatureMorning = '朝の体温';
   static const String recordTemperatureNight = '夜の体温';
   static const String recordTemperatureUnit = '度';
+
   static const String recordTemperatureNonSet = '未登録';
   static const String recordMedicalTitle = '服用した薬';
   static const String recordConditionTitle = '体調';
   static const String recordConditionMemoTitle = '体調メモ';
   static const String recordConditionMemoHint = '細かい体調はこちらに記載しましょう！';
+
+  static const String recordWalkingTitle = '散歩';
+  static const String recordWalkingLabel = '今日は散歩した';
+
   static const String recordMemoTitle = '今日のメモ';
   static const String recordMemoHint = 'その他、残しておきたい記録があったらここに記載してください。';
   static const String recordNotEditSavedWhenCloseScreen = '変更した内容を保存していませんが、画面を閉じてしまっても良いですか？';
 
+  // ノートページ
   static const String notesPageTitle = 'ノート';
   static const String notesNotRegisterLabel = 'ノートが1つも登録されていません。';
   static const String noteEditPageTitle = 'ノート編集';
@@ -33,8 +41,10 @@ class AppStrings {
   static const String noteEditPageLabelDetailHint = 'ここに詳細メモを記載してください。';
   static const String noteEditPageSaveButton = 'この内容で保存する';
 
+  // 体温グラフページ
   static const String temperaturePageTitle = '体温グラフ';
 
+  // お薬ページ
   static const String medicinePageTitle = 'お薬';
   static const String medicinePageNothingItemLabel = 'お薬が登録されていません。\nログインしてお薬を登録しましょう。';
   static const String medicinePageOralName = '内服薬';
@@ -52,6 +62,7 @@ class AppStrings {
   static const String medicineSaveButton = 'この内容で保存する';
   static const String medicineNotSaveAttention = 'お薬の名前が未入力です。';
 
+  // 体調ページ
   static const String conditionPageTitle = '体調管理';
   static const String conditionOverview = 'この画面では体調に関する症状を登録・編集できます。';
   static const String conditionDetail = '「頭痛」や「腹痛」など大まかな症状を登録し、細かい症状は日々の記録画面にある体調メモに書いていくことをオススメします。';
@@ -61,6 +72,7 @@ class AppStrings {
   static const String conditionNewButton = '新しく登録する';
   static const String conditionEditButton = '症状名を修正する';
 
+  // 設定ページ
   static const String settingsPageTitle = '設定';
   static const String settingsNotLoginEmailLabel = '未ログイン';
   static const String settingsNotLoginNameLabel = 'ー';
@@ -76,8 +88,10 @@ class AppStrings {
   static const String settingsEditMedicineSubLabel = 'タップでお薬情報を表示します。';
   static const String settingsAppVersionLabel = 'アプリバージョン';
 
+  // 共通項目
   static const String textFieldRequiredEmptyError = '※必須項目';
 
+  // ダイアログ
   static const String dialogSuccessMessage = '処理が完了しました！';
   static const String dialogErrorMessage = 'エラーが発生しました(´·ω·`)';
   static const String dialogOk = 'OK';
