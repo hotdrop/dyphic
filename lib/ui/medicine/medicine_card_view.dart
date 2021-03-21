@@ -1,8 +1,7 @@
-import 'package:dyphic/ui/widget/app_image.dart';
-import 'package:flutter/material.dart';
-import 'package:expansion_tile_card/expansion_tile_card.dart';
-
 import 'package:dyphic/model/medicine.dart';
+import 'package:dyphic/ui/widget/app_image.dart';
+import 'package:expansion_tile_card/expansion_tile_card.dart';
+import 'package:flutter/material.dart';
 
 class MedicineCardView extends StatelessWidget {
   MedicineCardView({
@@ -45,7 +44,7 @@ class MedicineCardView extends StatelessWidget {
       padding: const EdgeInsets.only(left: 8.0, right: 8.0, bottom: 8.0),
       child: Text(
         medicine.memo,
-        maxLines: 3,
+        maxLines: 5,
         overflow: TextOverflow.ellipsis,
         style: Theme.of(context).textTheme.caption,
       ),
