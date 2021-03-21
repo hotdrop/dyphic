@@ -1,11 +1,11 @@
+import 'package:dyphic/common/app_colors.dart';
+import 'package:dyphic/common/app_integer.dart';
+import 'package:dyphic/common/app_strings.dart';
+import 'package:dyphic/model/calendar_event.dart';
 import 'package:dyphic/model/dyphic_id.dart';
+import 'package:dyphic/ui/calender/record/record_page.dart';
 import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
-
-import 'package:dyphic/ui/calender/record/record_page.dart';
-
-import 'package:dyphic/model/calendar_event.dart';
-import 'package:dyphic/common/app_strings.dart';
 
 class DyphicCalendar extends StatefulWidget {
   const DyphicCalendar({required this.events, required this.onReturnEditPage});
@@ -111,17 +111,24 @@ class _DyphicCalendarState extends State<DyphicCalendar> {
 
     final event = argEvents.first;
     if (event.typeMedical()) {
-      markers.add(Image.asset('res/images/ic_hospital.png', width: 15.0, height: 15.0));
+      markers.add(Image.asset('res/images/ic_hospital.png', width: AppInteger.calendarIconSize, height: AppInteger.calendarIconSize));
     } else if (event.typeInjection()) {
-      markers.add(Image.asset('res/images/ic_inject.png', width: 15.0, height: 15.0));
+      markers.add(Image.asset('res/images/ic_inject.png', width: AppInteger.calendarIconSize, height: AppInteger.calendarIconSize));
     } else {
-      markers.add(SizedBox(width: 15.0));
+      markers.add(SizedBox(width: AppInteger.calendarIconSize));
     }
 
     if (event.haveRecord()) {
-      markers.add(Icon(Icons.check_circle, size: 15.0, color: Colors.green));
+      markers.add(Icon(Icons.note_rounded, size: AppInteger.calendarIconSize, color: Colors.green));
+      final isWalk = event.recordOverview?.isWalking ?? false;
+      if (isWalk) {
+        markers.add(Icon(Icons.directions_walk, size: AppInteger.calendarIconSize, color: AppColors.walking));
+      } else {
+        markers.add(SizedBox(width: AppInteger.calendarIconSize));
+      }
     } else {
-      markers.add(SizedBox(width: 15.0));
+      markers.add(SizedBox(width: AppInteger.calendarIconSize));
+      markers.add(SizedBox(width: AppInteger.calendarIconSize));
     }
 
     return Row(
@@ -187,23 +194,37 @@ class _DyphicCalendarState extends State<DyphicCalendar> {
 
   Widget _labelRecordInfo() {
     final widgets = <Widget>[];
+
     if (_selectedEvent.haveRecord()) {
+      // 体調
       widgets.add(Text(_selectedEvent.toStringConditions()));
       widgets.add(SizedBox(height: 8.0));
-      widgets.add(Text(AppStrings.calenderDetailConditionMemoLabel));
-      widgets.add(_labelMemo());
+
+      // 散歩
+      if (_selectedEvent.isWalking()) {
+        widgets.add(Text(AppStrings.calenderDetailWalkingLabel, style: TextStyle(color: AppColors.walking)));
+        widgets.add(SizedBox(height: 8.0));
+      }
+
+      // 体調メモ
+      final memo = _selectedEvent.getConditionMemo();
+      if (memo.isNotEmpty) {
+        widgets.add(Text(AppStrings.calenderDetailConditionMemoLabel));
+        widgets.add(_labelMemo(memo));
+      }
     } else {
       widgets.add(Text(AppStrings.calenderUnRegisterLabel));
     }
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: widgets,
     );
   }
 
-  Widget _labelMemo() {
+  Widget _labelMemo(String memo) {
     return Text(
-      '${_selectedEvent.getConditionMemo()}',
+      '$memo',
       maxLines: 5,
       overflow: TextOverflow.ellipsis,
     );

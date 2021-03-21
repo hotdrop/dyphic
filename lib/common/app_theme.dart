@@ -9,7 +9,7 @@ class AppTheme {
     primaryColorDark: Colors.pink[700],
     backgroundColor: Colors.white,
     dividerColor: Colors.pinkAccent,
-    toggleableActiveColor: Colors.pinkAccent,
+    toggleableActiveColor: Colors.pink[200],
     outlinedButtonTheme: OutlinedButtonThemeData(
       style: OutlinedButton.styleFrom(
         primary: Colors.pinkAccent,

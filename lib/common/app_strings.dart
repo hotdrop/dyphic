@@ -6,6 +6,7 @@ class AppStrings {
   static const String calenderPageTitle = 'カレンダー';
   static const String calenderNoEvent = '予定なし';
   static const String calenderUnRegisterLabel = 'この日の記録は未登録です。\nここをタップして記録しましょう。';
+  static const String calenderDetailWalkingLabel = '散歩した';
   static const String calenderDetailConditionMemoLabel = '【体調メモ】';
 
   // 記録ページ
