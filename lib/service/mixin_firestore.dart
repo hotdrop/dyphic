@@ -62,20 +62,13 @@ mixin AppFirestoreMixin {
     }
   }
 
-  Future<void> saveOverviewRecord(RecordOverview overview) async {
-    final id = overview.recordId.toString();
+  Future<void> saveOverview(RecordOverview overview) async {
     final map = <String, dynamic>{
-      _recordOverviewIsWalking: overview.isWalking,
       _recordConditionIDsField: overview.toStringConditionIds(),
       _recordConditionMemoField: overview.conditionMemo,
+      _recordOverviewIsWalking: overview.isWalking,
     };
-
-    try {
-      await _recordRootDoc.collection(_recordOverviewCollection).doc(id).set(map);
-    } on FirebaseException catch (e, s) {
-      await AppLogger.e('Firestore: records-overview(id=$id)の保存に失敗', e, s);
-      rethrow;
-    }
+    await _saveField(overview.recordId.toString(), _recordOverviewCollection, map);
   }
 
   static final String _recordTemperatureCollection = 'temperature';
@@ -86,11 +79,11 @@ mixin AppFirestoreMixin {
     try {
       final snapshot = await _recordRootDoc.collection(_recordTemperatureCollection).doc(id.toString()).get();
       if (snapshot.exists) {
-        final dataMap = snapshot.data();
+        final map = snapshot.data();
         return RecordTemperature(
           recordId: id,
-          morningTemperature: dataMap?[_recordMorningTemperatureField] as double,
-          nightTemperature: dataMap?[_recordNightTemperatureField] as double,
+          morningTemperature: getDouble(map, _recordMorningTemperatureField),
+          nightTemperature: getDouble(map, _recordNightTemperatureField),
         );
       } else {
         return null;
@@ -118,19 +111,14 @@ mixin AppFirestoreMixin {
     }
   }
 
-  Future<void> saveTemperatureRecord(RecordTemperature temperature) async {
-    final id = temperature.recordId.toString();
-    final map = <String, dynamic>{
-      _recordMorningTemperatureField: temperature.morningTemperature,
-      _recordNightTemperatureField: temperature.nightTemperature,
-    };
+  Future<void> saveMorningTemperature(int recordId, double temperature) async {
+    final map = <String, dynamic>{_recordMorningTemperatureField: temperature};
+    await _saveField(recordId.toString(), _recordTemperatureCollection, map);
+  }
 
-    try {
-      await _recordRootDoc.collection(_recordTemperatureCollection).doc(id).set(map);
-    } on FirebaseException catch (e, s) {
-      await AppLogger.e('Firestore: records-temperature(id=$id)の保存に失敗', e, s);
-      rethrow;
-    }
+  Future<void> saveNightTemperature(int recordId, double temperature) async {
+    final map = <String, dynamic>{_recordNightTemperatureField: temperature};
+    await _saveField(recordId.toString(), _recordTemperatureCollection, map);
   }
 
   static final String _recordDetailCollection = 'detail';
@@ -165,22 +153,29 @@ mixin AppFirestoreMixin {
     }
   }
 
-  Future<void> saveDetailRecord(RecordDetail detail) async {
-    final id = detail.recordId.toString();
-    final map = <String, dynamic>{
-      _recordMedicineIDsField: detail.toStringMedicineIds(),
-      _recordBreakFastField: detail.breakfast,
-      _recordLunchField: detail.lunch,
-      _recordDinnerField: detail.dinner,
-      _recordMemoField: detail.memo,
-    };
+  Future<void> saveMedicineIds(int recordId, String idsStr) async {
+    final map = <String, dynamic>{_recordMedicineIDsField: idsStr};
+    await _saveField(recordId.toString(), _recordDetailCollection, map);
+  }
 
-    try {
-      await _recordRootDoc.collection(_recordDetailCollection).doc(id).set(map);
-    } on FirebaseException catch (e, s) {
-      await AppLogger.e('Firestore: records-detail(id=$id)の保存に失敗', e, s);
-      rethrow;
-    }
+  Future<void> saveBreakFast(int recordId, String breakFast) async {
+    final map = <String, dynamic>{_recordBreakFastField: breakFast};
+    await _saveField(recordId.toString(), _recordDetailCollection, map);
+  }
+
+  Future<void> saveLunch(int recordId, String lunch) async {
+    final map = <String, dynamic>{_recordLunchField: lunch};
+    await _saveField(recordId.toString(), _recordDetailCollection, map);
+  }
+
+  Future<void> saveDinner(int recordId, String dinner) async {
+    final map = <String, dynamic>{_recordDinnerField: dinner};
+    await _saveField(recordId.toString(), _recordDetailCollection, map);
+  }
+
+  Future<void> saveMemo(int recordId, String memo) async {
+    final map = <String, dynamic>{_recordMemoField: memo};
+    await _saveField(recordId.toString(), _recordDetailCollection, map);
   }
 
   List<Condition> _convertConditions(List<Condition> allConditions, String idsStr) {
@@ -201,6 +196,15 @@ mixin AppFirestoreMixin {
       return nStr.split(Record.listSeparator).map((id) => int.parse(id)).toList();
     } else {
       return [int.parse(nStr)];
+    }
+  }
+
+  Future<void> _saveField(String id, String collectionName, Map<String, dynamic> map) async {
+    try {
+      await _recordRootDoc.collection(collectionName).doc(id).set(map, SetOptions(merge: true));
+    } on FirebaseException catch (e, s) {
+      await AppLogger.e('Firestore: id=$id の $collectionName の保存に失敗', e, s);
+      rethrow;
     }
   }
 
@@ -347,6 +351,15 @@ mixin AppFirestoreMixin {
       return fieldVal;
     } else {
       return false;
+    }
+  }
+
+  double getDouble(Map<String, dynamic>? map, String fieldName) {
+    dynamic fieldVal = map?[fieldName] ?? 0;
+    if (fieldVal is double) {
+      return fieldVal;
+    } else {
+      return 0;
     }
   }
 }

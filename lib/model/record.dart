@@ -140,13 +140,6 @@ class RecordDetail {
   final String dinner;
   final String memo;
 
-  String toStringMedicineIds() {
-    if (medicines.isEmpty) {
-      return '';
-    }
-    return medicines.map((m) => m.id).join(Record.listSeparator);
-  }
-
   @override
   String toString() {
     return '''

@@ -50,9 +50,6 @@ class RecordViewModel extends NotifierViewModel {
   late List<Condition> _allConditions;
   List<Condition> get allConditions => _allConditions;
 
-  bool _isEditNotSaved = false;
-  bool get isEditNotSaved => _isEditNotSaved;
-
   bool _isUpdate = false;
   bool get isUpdate => _isUpdate;
 
@@ -71,86 +68,101 @@ class RecordViewModel extends NotifierViewModel {
     loadSuccess();
   }
 
-  void inputBreakfast(String newVal) {
+  Future<void> inputBreakfast(String newVal) async {
     _inputRecord.breakfast = newVal;
-    _isEditNotSaved = true;
+    await _repository.saveBreakFast(_inputRecord.id, newVal);
+    _isUpdate = true;
     notifyListeners();
   }
 
-  void inputLunch(String newVal) {
+  Future<void> inputLunch(String newVal) async {
     _inputRecord.lunch = newVal;
-    _isEditNotSaved = true;
+    await _repository.saveLunch(_inputRecord.id, newVal);
+    _isUpdate = true;
     notifyListeners();
   }
 
-  void inputDinner(String newVal) {
+  Future<void> inputDinner(String newVal) async {
     _inputRecord.dinner = newVal;
-    _isEditNotSaved = true;
+    await _repository.saveDinner(_inputRecord.id, newVal);
+    _isUpdate = true;
     notifyListeners();
   }
 
-  void inputMorningTemperature(double newVal) {
+  Future<void> inputMorningTemperature(double newVal) async {
     AppLogger.d('入力した値は $newVal です');
     _inputRecord.morningTemperature = newVal;
-    _isEditNotSaved = true;
+    await _repository.saveMorningTemperature(_inputRecord.id, newVal);
+    _isUpdate = true;
     notifyListeners();
   }
 
-  void inputNightTemperature(double newVal) {
+  Future<void> inputNightTemperature(double newVal) async {
     AppLogger.d('入力した値は $newVal です');
     _inputRecord.nightTemperature = newVal;
-    _isEditNotSaved = true;
-    notifyListeners();
-  }
-
-  void inputIsWalking(bool? isWalking) {
-    if (isWalking != null) {
-      _inputRecord.isWalking = isWalking;
-      _isEditNotSaved = true;
-      notifyListeners();
-    }
-  }
-
-  void changeSelectedCondition(Set<int> selectedIds) {
-    AppLogger.d('選択している症状は $selectedIds 個です');
-    _inputRecord.selectConditionIds = selectedIds;
-    _isEditNotSaved = true;
-    notifyListeners();
-  }
-
-  void inputConditionMemo(String newVal) {
-    _inputRecord.conditionMemo = newVal;
-    _isEditNotSaved = true;
+    await _repository.saveNightTemperature(_inputRecord.id, newVal);
+    _isUpdate = true;
     notifyListeners();
   }
 
   void changeSelectedMedicine(Set<int> selectedIds) {
     AppLogger.d('選択しているお薬は $selectedIds です');
     _inputRecord.selectMedicineIds = selectedIds;
-    _isEditNotSaved = true;
+    notifyListeners();
+  }
+
+  Future<bool> saveMedicine() async {
+    try {
+      final idsStr = _inputRecord.toStringMedicineIds();
+      await _repository.saveMedicineIds(_inputRecord.id, idsStr);
+      _isUpdate = true;
+      return true;
+    } catch (e, s) {
+      await AppLogger.e('体調情報の保存に失敗しました。', e, s);
+      return false;
+    }
+  }
+
+  void changeSelectedCondition(Set<int> selectedIds) {
+    AppLogger.d('選択している症状は $selectedIds 個です');
+    _inputRecord.selectConditionIds = selectedIds;
+    notifyListeners();
+  }
+
+  void inputConditionMemo(String newVal) {
+    _inputRecord.conditionMemo = newVal;
+  }
+
+  Future<bool> saveCondition() async {
+    final newRecord = _inputRecord.toRecordOverview(_allConditions);
+    try {
+      await _repository.saveCondition(newRecord);
+      _isUpdate = true;
+      return true;
+    } catch (e, s) {
+      await AppLogger.e('体調情報の保存に失敗しました。', e, s);
+      return false;
+    }
+  }
+
+  Future<void> inputIsWalking(bool? isWalking) async {
+    _inputRecord.isWalking = isWalking ?? false;
     notifyListeners();
   }
 
   void inputMemo(String newVal) {
     _inputRecord.memo = newVal;
-    _isEditNotSaved = true;
-    notifyListeners();
   }
 
-  Future<bool> save() async {
-    final newRecord = _inputRecord.toRecord(_allMedicines, _allConditions);
+  Future<bool> saveMemo() async {
     try {
-      await _repository.save(newRecord);
-      _isEditNotSaved = false;
+      await _repository.saveMemo(_inputRecord.id, _inputRecord.memo);
+      _isUpdate = true;
       return true;
     } catch (e, s) {
-      await AppLogger.e('記録情報の保存に失敗しました。', e, s);
+      await AppLogger.e('体調情報の保存に失敗しました。', e, s);
       return false;
     }
-  }
-
-  void isSuccessSaved() {
-    _isUpdate = true;
   }
 }
 
@@ -159,7 +171,7 @@ class RecordViewModel extends NotifierViewModel {
 ///
 class InputRecord {
   InputRecord._({
-    required this.date,
+    required this.id,
     required this.morningTemperature,
     required this.nightTemperature,
     required this.selectMedicineIds,
@@ -173,8 +185,9 @@ class InputRecord {
   });
 
   factory InputRecord.create(Record record) {
+    final id = DyphicID.makeRecordId(record.date);
     return InputRecord._(
-      date: record.date,
+      id: id,
       morningTemperature: record.morningTemperature ?? 0.0,
       nightTemperature: record.nightTemperature ?? 0.0,
       selectMedicineIds: record.medicines?.map((e) => e.id).toSet() ?? {},
@@ -188,7 +201,7 @@ class InputRecord {
     );
   }
 
-  DateTime date;
+  int id;
   double morningTemperature;
   double nightTemperature;
   Set<int> selectMedicineIds;
@@ -200,9 +213,19 @@ class InputRecord {
   String dinner;
   String memo;
 
-  Record toRecord(List<Medicine> allMedicine, List<Condition> allCondition) {
-    final id = DyphicID.makeRecordId(date);
+  RecordOverview toRecordOverview(List<Condition> allCondition) {
+    final selectConditions = allCondition.where((e) => selectConditionIds.contains(e.id)).toList();
+    return RecordOverview(recordId: id, isWalking: isWalking, conditions: selectConditions, conditionMemo: conditionMemo);
+  }
 
+  String toStringMedicineIds() {
+    if (selectMedicineIds.isEmpty) {
+      return '';
+    }
+    return selectMedicineIds.join(Record.listSeparator);
+  }
+
+  Record toRecord(List<Medicine> allMedicine, List<Condition> allCondition) {
     final selectConditions = allCondition.where((e) => selectConditionIds.contains(e.id)).toList();
     final selectMedicines = allMedicine.where((e) => selectMedicineIds.contains(e.id)).toList();
 

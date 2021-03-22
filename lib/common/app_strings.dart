@@ -19,19 +19,20 @@ class AppStrings {
   static const String recordTemperatureMorning = '朝の体温';
   static const String recordTemperatureNight = '夜の体温';
   static const String recordTemperatureUnit = '度';
-
   static const String recordTemperatureNonSet = '未登録';
+
   static const String recordMedicalTitle = '服用した薬';
+  static const String recordMedicineSaveButton = '選択した薬を保存する';
+
   static const String recordConditionTitle = '体調';
+  static const String recordWalkingLabel = '散歩した';
   static const String recordConditionMemoTitle = '体調メモ';
   static const String recordConditionMemoHint = '細かい体調はこちらに記載しましょう！';
-
-  static const String recordWalkingTitle = '散歩';
-  static const String recordWalkingLabel = '今日は散歩した';
+  static const String recordConditionSaveButton = '体調情報を保存する';
 
   static const String recordMemoTitle = '今日のメモ';
   static const String recordMemoHint = 'その他、残しておきたい記録があったらここに記載してください。';
-  static const String recordNotEditSavedWhenCloseScreen = '変更した内容を保存していませんが、画面を閉じてしまっても良いですか？';
+  static const String recordMemoSaveButton = 'メモを保存する';
 
   // ノートページ
   static const String notesPageTitle = 'ノート';

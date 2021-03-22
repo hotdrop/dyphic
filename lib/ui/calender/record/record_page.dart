@@ -7,7 +7,6 @@ import 'package:dyphic/ui/calender/record/widget_temperature_view.dart';
 import 'package:dyphic/ui/widget/app_chips.dart';
 import 'package:dyphic/ui/widget/app_icon.dart';
 import 'package:dyphic/ui/widget/app_progress_dialog.dart';
-import 'package:dyphic/ui/widget/app_simple_dialog.dart';
 import 'package:dyphic/ui/widget/app_text_field.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -72,22 +71,11 @@ class RecordPage extends StatelessWidget {
   Widget _rootViewAllowEdit(BuildContext context, String headerTitle) {
     return WillPopScope(
       onWillPop: () async {
-        // TODO このダイアログうざいので各項目を編集したら自動で保存するようにしたい。
         final viewModel = context.read<RecordViewModel>();
-        if (viewModel.isEditNotSaved) {
-          AppDialog.okAndCancel(
-            message: AppStrings.recordNotEditSavedWhenCloseScreen,
-            onOk: () {
-              Navigator.pop(context, false);
-            },
-          ).show(context);
-          return false;
-        } else {
-          if (viewModel.isUpdate) {
-            Navigator.pop(context, true);
-          }
-          return true;
+        if (viewModel.isUpdate) {
+          Navigator.pop(context, true);
         }
+        return true;
       },
       child: Scaffold(
         appBar: AppBar(
@@ -98,7 +86,6 @@ class RecordPage extends StatelessWidget {
           onTap: () => FocusScope.of(context).unfocus(),
           child: _contentsView(context),
         ),
-        floatingActionButton: _saveFloatingActionButton(context),
       ),
     );
   }
@@ -113,8 +100,6 @@ class RecordPage extends StatelessWidget {
           _medicineViewArea(context),
           SizedBox(height: 16.0),
           _conditionViewArea(context),
-          SizedBox(height: 16.0),
-          _sideAttributesView(context),
           SizedBox(height: 16.0),
           _memoView(context),
           SizedBox(height: 36),
@@ -216,6 +201,14 @@ class RecordPage extends StatelessWidget {
               allMedicines: viewModel.allMedicines,
               onChange: (Set<int> ids) => viewModel.changeSelectedMedicine(ids),
             ),
+            OutlinedButton(
+              onPressed: () async {
+                // キーボードが出ている場合は閉じる
+                FocusScope.of(context).unfocus();
+                await AppProgressDialog(execute: viewModel.saveMedicine).show(context);
+              },
+              child: Text(AppStrings.recordMedicineSaveButton),
+            ),
           ],
         ),
       ),
@@ -241,7 +234,16 @@ class RecordPage extends StatelessWidget {
               allConditions: viewModel.allConditions,
               onChange: (Set<int> ids) => viewModel.changeSelectedCondition(ids),
             ),
-            SizedBox(height: 8.0),
+            Divider(),
+            Row(
+              children: [
+                Checkbox(
+                  value: viewModel.isWalking,
+                  onChanged: (bool? isCheck) => viewModel.inputIsWalking(isCheck),
+                ),
+                const Text(AppStrings.recordWalkingLabel),
+              ],
+            ),
             MultiLineTextField(
               label: AppStrings.recordConditionMemoTitle,
               initValue: viewModel.conditionMemo,
@@ -249,54 +251,18 @@ class RecordPage extends StatelessWidget {
               hintText: AppStrings.recordConditionMemoHint,
               onChanged: viewModel.inputConditionMemo,
             ),
+            SizedBox(height: 8.0),
+            OutlinedButton(
+              onPressed: () async {
+                // キーボードが出ている場合は閉じる
+                FocusScope.of(context).unfocus();
+                await AppProgressDialog(execute: viewModel.saveCondition).show(context);
+              },
+              child: const Text(AppStrings.recordConditionSaveButton),
+            ),
           ],
         ),
       ),
-    );
-  }
-
-  Widget _sideAttributesView(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      children: [
-        _walkingView(context),
-      ],
-    );
-  }
-
-  Widget _walkingView(BuildContext context) {
-    final viewModel = Provider.of<RecordViewModel>(context);
-    return Stack(
-      children: [
-        Container(
-          padding: const EdgeInsets.only(left: 16.0, top: 8.0),
-          margin: EdgeInsets.only(top: 24.0),
-          decoration: BoxDecoration(
-            shape: BoxShape.rectangle,
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(8.0),
-            boxShadow: [
-              BoxShadow(color: Colors.grey, offset: Offset(0, 1), blurRadius: 1),
-            ],
-          ),
-          child: Row(
-            children: [
-              Text(AppStrings.recordWalkingLabel),
-              Checkbox(
-                value: viewModel.isWalking,
-                onChanged: (bool? isCheck) => viewModel.inputIsWalking(isCheck),
-              ),
-            ],
-          ),
-        ),
-        Positioned(
-          left: 8.0,
-          child: CircleAvatar(
-            backgroundColor: Theme.of(context).primaryColor,
-            child: Icon(Icons.directions_walk_rounded, color: Colors.white),
-          ),
-        ),
-      ],
     );
   }
 
@@ -306,29 +272,27 @@ class RecordPage extends StatelessWidget {
       elevation: 4.0,
       child: Padding(
         padding: const EdgeInsets.all(8.0),
-        child: MultiLineTextField(
-          label: AppStrings.recordMemoTitle,
-          initValue: viewModel.memo,
-          limitLine: 5,
-          hintText: AppStrings.recordMemoHint,
-          onChanged: viewModel.inputMemo,
+        child: Column(
+          children: [
+            MultiLineTextField(
+              label: AppStrings.recordMemoTitle,
+              initValue: viewModel.memo,
+              limitLine: 5,
+              hintText: AppStrings.recordMemoHint,
+              onChanged: viewModel.inputMemo,
+            ),
+            SizedBox(height: 8.0),
+            OutlinedButton(
+              onPressed: () async {
+                // キーボードが出ている場合は閉じる
+                FocusScope.of(context).unfocus();
+                await AppProgressDialog(execute: viewModel.saveMemo).show(context);
+              },
+              child: const Text(AppStrings.recordMemoSaveButton),
+            ),
+          ],
         ),
       ),
-    );
-  }
-
-  Widget _saveFloatingActionButton(BuildContext context) {
-    final viewModel = Provider.of<RecordViewModel>(context);
-    return FloatingActionButton(
-      onPressed: () async {
-        // キーボードが出ている場合は閉じる
-        FocusScope.of(context).unfocus();
-        bool? isSuccess = await AppProgressDialog(execute: viewModel.save).show(context);
-        if (isSuccess) {
-          viewModel.isSuccessSaved();
-        }
-      },
-      child: const Icon(Icons.save),
     );
   }
 
