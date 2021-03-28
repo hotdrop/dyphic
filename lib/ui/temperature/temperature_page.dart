@@ -56,6 +56,7 @@ class TemperaturePage extends StatelessWidget {
 
   Widget _contentsView(BuildContext context) {
     return Center(
+      // TODO syncfusion_flutter_chartsを使いたいのでnull safety対応待ち
       child: Text('未実装です'),
     );
   }
