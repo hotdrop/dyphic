@@ -47,8 +47,8 @@ class RecordPage extends StatelessWidget {
   }
 
   Widget _loadSuccessView(BuildContext context, String headerTitle) {
-    final appSettings = Provider.of<AppSettings>(context);
-    if (appSettings.isLogin) {
+    final isLogin = context.select<AppSettings, bool>((m) => m.isLogin);
+    if (isLogin) {
       return _rootViewAllowEdit(context, headerTitle);
     } else {
       return _rootViewDeniedEdit(context, headerTitle);
@@ -110,7 +110,7 @@ class RecordPage extends StatelessWidget {
 
   Widget _mealViewArea(BuildContext context) {
     final viewModel = Provider.of<RecordViewModel>(context);
-    final isLogin = Provider.of<AppSettings>(context).isLogin;
+    final isLogin = context.select<AppSettings, bool>((m) => m.isLogin);
     return Column(
       children: [
         Container(
@@ -160,7 +160,7 @@ class RecordPage extends StatelessWidget {
 
   Widget _temperatureViewArea(BuildContext context) {
     final viewModel = Provider.of<RecordViewModel>(context);
-    final isLogin = Provider.of<AppSettings>(context).isLogin;
+    final isLogin = context.select<AppSettings, bool>((m) => m.isLogin);
     return Padding(
       padding: const EdgeInsets.only(top: 16.0, bottom: 16.0),
       child: Row(
@@ -191,8 +191,8 @@ class RecordPage extends StatelessWidget {
 
   Widget _medicineViewArea(BuildContext context) {
     final viewModel = Provider.of<RecordViewModel>(context);
-    final isDarkMode = Provider.of<AppSettings>(context).isDarkMode;
-    final isLogin = Provider.of<AppSettings>(context).isLogin;
+    final isDarkMode = context.select<AppSettings, bool>((m) => m.isDarkMode);
+    final isLogin = context.select<AppSettings, bool>((m) => m.isLogin);
     return Card(
       elevation: 4.0,
       child: Padding(
@@ -227,8 +227,8 @@ class RecordPage extends StatelessWidget {
 
   Widget _conditionViewArea(BuildContext context) {
     final viewModel = Provider.of<RecordViewModel>(context);
-    final isDarkMode = Provider.of<AppSettings>(context).isDarkMode;
-    final isLogin = Provider.of<AppSettings>(context).isLogin;
+    final isDarkMode = context.select<AppSettings, bool>((m) => m.isDarkMode);
+    final isLogin = context.select<AppSettings, bool>((m) => m.isLogin);
     return Card(
       elevation: 4.0,
       child: Padding(
@@ -281,7 +281,7 @@ class RecordPage extends StatelessWidget {
 
   Widget _memoView(BuildContext context) {
     final viewModel = Provider.of<RecordViewModel>(context);
-    final isLogin = Provider.of<AppSettings>(context).isLogin;
+    final isLogin = context.select<AppSettings, bool>((m) => m.isLogin);
     return Card(
       elevation: 4.0,
       child: Padding(

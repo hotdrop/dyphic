@@ -1,5 +1,6 @@
 import 'package:dyphic/common/app_logger.dart';
 import 'package:dyphic/common/app_strings.dart';
+import 'package:dyphic/model/app_settings.dart';
 import 'package:dyphic/model/note.dart';
 import 'package:dyphic/model/page_state.dart';
 import 'package:dyphic/ui/note/edit/note_edit_view_model.dart';
@@ -136,11 +137,13 @@ class NoteEditPage extends StatelessWidget {
 
   Widget _saveButton(BuildContext context) {
     final viewModel = Provider.of<NoteEditViewModel>(context);
+    final isLogin = context.select<AppSettings, bool>((m) => m.isLogin);
+
     return ElevatedButton(
       style: ElevatedButton.styleFrom(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.0)),
       ),
-      onPressed: viewModel.canSave
+      onPressed: viewModel.canSave && isLogin
           ? () async {
               // キーボードが出ている場合は閉じる
               FocusScope.of(context).unfocus();
