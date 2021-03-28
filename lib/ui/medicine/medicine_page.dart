@@ -40,7 +40,7 @@ class MedicinePage extends StatelessWidget {
 
   Widget _loadSuccessView(BuildContext context) {
     final viewModel = Provider.of<MedicineViewModel>(context);
-    final isLogin = Provider.of<AppSettings>(context).isLogin;
+    final isLogin = context.select<AppSettings, bool>((m) => m.isLogin);
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
@@ -85,7 +85,9 @@ class MedicinePage extends StatelessWidget {
             medicine: medicines[index],
             isEditable: isEditable,
             onTapEvent: () async {
-              bool isUpdate = await Navigator.of(context).push<bool>(MaterialPageRoute(builder: (_) => MedicineEditPage(medicines[index]))) ?? false;
+              bool isUpdate =
+                  await Navigator.of(context).push<bool>(MaterialPageRoute(builder: (_) => MedicineEditPage(medicines[index]))) ??
+                      false;
               AppLogger.d('戻り値: $isUpdate');
               if (isUpdate) {
                 await viewModel.reload();
