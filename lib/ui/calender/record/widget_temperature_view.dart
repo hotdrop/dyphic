@@ -5,19 +5,34 @@ import 'package:dyphic/ui/widget/app_icon.dart';
 import 'package:flutter/material.dart';
 
 class TemperatureView extends StatelessWidget {
-  const TemperatureView._(this.temperature, this.isMorning, this.onEditValue, this.dialogTitle);
+  const TemperatureView._(
+    this.temperature,
+    this.isMorning,
+    this.isLogin,
+    this.onEditValue,
+    this.dialogTitle,
+  );
 
-  factory TemperatureView.morning({required double temperature, required Function(double?) onEditValue}) {
-    return TemperatureView._(temperature, true, onEditValue, AppStrings.recordTemperatureMorning);
+  factory TemperatureView.morning({
+    required double temperature,
+    required bool isLogin,
+    required Function(double?) onEditValue,
+  }) {
+    return TemperatureView._(temperature, true, isLogin, onEditValue, AppStrings.recordTemperatureMorning);
   }
 
-  factory TemperatureView.night({required double temperature, required Function(double?) onEditValue}) {
-    return TemperatureView._(temperature, false, onEditValue, AppStrings.recordTemperatureNight);
+  factory TemperatureView.night({
+    required double temperature,
+    required bool isLogin,
+    required Function(double?) onEditValue,
+  }) {
+    return TemperatureView._(temperature, false, isLogin, onEditValue, AppStrings.recordTemperatureNight);
   }
 
   final String dialogTitle;
   final double temperature;
   final bool isMorning;
+  final bool isLogin;
   final Function(double?) onEditValue;
 
   @override
@@ -26,19 +41,21 @@ class TemperatureView extends StatelessWidget {
     return Card(
       elevation: 4.0,
       child: InkWell(
-        onTap: () async {
-          final inputValue = await showDialog<double>(
-            context: context,
-            builder: (context) {
-              return TemperatureEditDialog(
-                title: dialogTitle,
-                color: textColor,
-                initValue: temperature,
-              );
-            },
-          );
-          onEditValue(inputValue);
-        },
+        onTap: (isLogin)
+            ? () async {
+                final inputValue = await showDialog<double>(
+                  context: context,
+                  builder: (context) {
+                    return TemperatureEditDialog(
+                      title: dialogTitle,
+                      color: textColor,
+                      initValue: temperature,
+                    );
+                  },
+                );
+                onEditValue(inputValue);
+              }
+            : null,
         child: Row(
           children: <Widget>[
             _verticalLine(),
@@ -91,7 +108,8 @@ class TemperatureView extends StatelessWidget {
   }
 
   Widget _temperatureLabel(BuildContext context) {
-    final temperatureStr = (temperature > 0) ? '$temperature ${AppStrings.recordTemperatureUnit}' : AppStrings.recordTemperatureNonSet;
+    final temperatureStr =
+        (temperature > 0) ? '$temperature ${AppStrings.recordTemperatureUnit}' : AppStrings.recordTemperatureNonSet;
     Color fontColor;
     if ((temperature > 0)) {
       fontColor = isMorning ? AppColors.morningTemperature : AppColors.nightTemperature;

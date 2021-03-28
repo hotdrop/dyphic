@@ -10,11 +10,13 @@ class MealCard extends StatelessWidget {
   const MealCard({
     required this.type,
     required this.detail,
+    required this.isLogin,
     required this.onEditValue,
   });
 
   final MealType type;
   final String detail;
+  final bool isLogin;
   final Function(String?) onEditValue;
 
   @override
@@ -29,7 +31,7 @@ class MealCard extends StatelessWidget {
             String dialogTitle = _dialogTitle();
             final inputValue = await showDialog<String>(
               context: context,
-              builder: (context) => MealEditDialog(title: dialogTitle, initValue: detail),
+              builder: (context) => MealEditDialog(title: dialogTitle, isLogin: isLogin, initValue: detail),
             );
             onEditValue(inputValue);
           },

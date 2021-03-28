@@ -5,10 +5,12 @@ class MealEditDialog extends StatefulWidget {
   const MealEditDialog({
     required this.title,
     required this.initValue,
+    required this.isLogin,
   });
 
   final String title;
   final String initValue;
+  final bool isLogin;
 
   @override
   _MealEditDialogState createState() => _MealEditDialogState();
@@ -30,7 +32,8 @@ class _MealEditDialogState extends State<MealEditDialog> {
       content: TextField(
         autofocus: true,
         controller: _controller,
-        maxLines: 5,
+        enabled: widget.isLogin,
+        maxLines: 7,
         decoration: InputDecoration(
           labelText: AppStrings.recordMealDialogHint,
           border: const OutlineInputBorder(),
@@ -42,7 +45,7 @@ class _MealEditDialogState extends State<MealEditDialog> {
           child: Text(AppStrings.dialogCancel),
         ),
         TextButton(
-          onPressed: () => Navigator.pop<String>(context, _controller.text),
+          onPressed: (widget.isLogin) ? () => Navigator.pop<String>(context, _controller.text) : null,
           child: Text(AppStrings.dialogOk),
         ),
       ],

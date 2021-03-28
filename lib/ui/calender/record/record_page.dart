@@ -110,10 +110,11 @@ class RecordPage extends StatelessWidget {
 
   Widget _mealViewArea(BuildContext context) {
     final viewModel = Provider.of<RecordViewModel>(context);
+    final isLogin = Provider.of<AppSettings>(context).isLogin;
     return Column(
       children: [
         Container(
-          height: 150,
+          height: 170,
           width: double.infinity,
           child: ListView(
             scrollDirection: Axis.horizontal,
@@ -121,6 +122,7 @@ class RecordPage extends StatelessWidget {
               MealCard(
                 type: MealType.morning,
                 detail: viewModel.breakfast,
+                isLogin: isLogin,
                 onEditValue: (String? newVal) {
                   if (newVal != null) {
                     viewModel.inputBreakfast(newVal);
@@ -131,6 +133,7 @@ class RecordPage extends StatelessWidget {
               MealCard(
                 type: MealType.lunch,
                 detail: viewModel.lunch,
+                isLogin: isLogin,
                 onEditValue: (String? newVal) {
                   if (newVal != null) {
                     viewModel.inputLunch(newVal);
@@ -141,6 +144,7 @@ class RecordPage extends StatelessWidget {
               MealCard(
                 type: MealType.dinner,
                 detail: viewModel.dinner,
+                isLogin: isLogin,
                 onEditValue: (String? newVal) {
                   if (newVal != null) {
                     viewModel.inputDinner(newVal);
@@ -156,6 +160,7 @@ class RecordPage extends StatelessWidget {
 
   Widget _temperatureViewArea(BuildContext context) {
     final viewModel = Provider.of<RecordViewModel>(context);
+    final isLogin = Provider.of<AppSettings>(context).isLogin;
     return Padding(
       padding: const EdgeInsets.only(top: 16.0, bottom: 16.0),
       child: Row(
@@ -163,6 +168,7 @@ class RecordPage extends StatelessWidget {
         children: <Widget>[
           TemperatureView.morning(
             temperature: viewModel.morningTemperature,
+            isLogin: isLogin,
             onEditValue: (double? newValue) {
               if (newValue != null) {
                 viewModel.inputMorningTemperature(newValue);
@@ -171,6 +177,7 @@ class RecordPage extends StatelessWidget {
           ),
           TemperatureView.night(
             temperature: viewModel.nightTemperature,
+            isLogin: isLogin,
             onEditValue: (double? newValue) {
               if (newValue != null) {
                 viewModel.inputNightTemperature(newValue);
@@ -185,6 +192,7 @@ class RecordPage extends StatelessWidget {
   Widget _medicineViewArea(BuildContext context) {
     final viewModel = Provider.of<RecordViewModel>(context);
     final isDarkMode = Provider.of<AppSettings>(context).isDarkMode;
+    final isLogin = Provider.of<AppSettings>(context).isLogin;
     return Card(
       elevation: 4.0,
       child: Padding(
@@ -202,11 +210,13 @@ class RecordPage extends StatelessWidget {
               onChange: (Set<int> ids) => viewModel.changeSelectedMedicine(ids),
             ),
             OutlinedButton(
-              onPressed: () async {
-                // キーボードが出ている場合は閉じる
-                FocusScope.of(context).unfocus();
-                await AppProgressDialog(execute: viewModel.saveMedicine).show(context);
-              },
+              onPressed: (isLogin)
+                  ? () async {
+                      // キーボードが出ている場合は閉じる
+                      FocusScope.of(context).unfocus();
+                      await AppProgressDialog(execute: viewModel.saveMedicine).show(context);
+                    }
+                  : null,
               child: Text(AppStrings.recordMedicineSaveButton),
             ),
           ],
@@ -218,6 +228,7 @@ class RecordPage extends StatelessWidget {
   Widget _conditionViewArea(BuildContext context) {
     final viewModel = Provider.of<RecordViewModel>(context);
     final isDarkMode = Provider.of<AppSettings>(context).isDarkMode;
+    final isLogin = Provider.of<AppSettings>(context).isLogin;
     return Card(
       elevation: 4.0,
       child: Padding(
@@ -247,17 +258,19 @@ class RecordPage extends StatelessWidget {
             MultiLineTextField(
               label: AppStrings.recordConditionMemoTitle,
               initValue: viewModel.conditionMemo,
-              limitLine: 5,
+              limitLine: 10,
               hintText: AppStrings.recordConditionMemoHint,
               onChanged: viewModel.inputConditionMemo,
             ),
             SizedBox(height: 8.0),
             OutlinedButton(
-              onPressed: () async {
-                // キーボードが出ている場合は閉じる
-                FocusScope.of(context).unfocus();
-                await AppProgressDialog(execute: viewModel.saveCondition).show(context);
-              },
+              onPressed: (isLogin)
+                  ? () async {
+                      // キーボードが出ている場合は閉じる
+                      FocusScope.of(context).unfocus();
+                      await AppProgressDialog(execute: viewModel.saveCondition).show(context);
+                    }
+                  : null,
               child: const Text(AppStrings.recordConditionSaveButton),
             ),
           ],
@@ -268,6 +281,7 @@ class RecordPage extends StatelessWidget {
 
   Widget _memoView(BuildContext context) {
     final viewModel = Provider.of<RecordViewModel>(context);
+    final isLogin = Provider.of<AppSettings>(context).isLogin;
     return Card(
       elevation: 4.0,
       child: Padding(
@@ -277,17 +291,19 @@ class RecordPage extends StatelessWidget {
             MultiLineTextField(
               label: AppStrings.recordMemoTitle,
               initValue: viewModel.memo,
-              limitLine: 5,
+              limitLine: 10,
               hintText: AppStrings.recordMemoHint,
               onChanged: viewModel.inputMemo,
             ),
             SizedBox(height: 8.0),
             OutlinedButton(
-              onPressed: () async {
-                // キーボードが出ている場合は閉じる
-                FocusScope.of(context).unfocus();
-                await AppProgressDialog(execute: viewModel.saveMemo).show(context);
-              },
+              onPressed: (isLogin)
+                  ? () async {
+                      // キーボードが出ている場合は閉じる
+                      FocusScope.of(context).unfocus();
+                      await AppProgressDialog(execute: viewModel.saveMemo).show(context);
+                    }
+                  : null,
               child: const Text(AppStrings.recordMemoSaveButton),
             ),
           ],
