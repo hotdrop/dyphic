@@ -98,11 +98,11 @@ class RecordPage extends StatelessWidget {
           _mealViewArea(context),
           _temperatureViewArea(context),
           _medicineViewArea(context),
-          SizedBox(height: 16.0),
+          const SizedBox(height: 16.0),
           _conditionViewArea(context),
-          SizedBox(height: 16.0),
+          const SizedBox(height: 16.0),
           _memoView(context),
-          SizedBox(height: 36),
+          const SizedBox(height: 36),
         ],
       ),
     );
@@ -203,7 +203,7 @@ class RecordPage extends StatelessWidget {
               title: AppStrings.recordMedicalTitle,
               icon: AppIcon.medicine(isDarkMode),
             ),
-            Divider(),
+            const Divider(),
             MedicineSelectChips(
               selectIds: viewModel.selectMedicineIds,
               allMedicines: viewModel.allMedicines,
@@ -239,13 +239,13 @@ class RecordPage extends StatelessWidget {
               title: AppStrings.recordConditionTitle,
               icon: AppIcon.condition(isDarkMode),
             ),
-            Divider(),
+            const Divider(),
             ConditionSelectChips(
               selectIds: viewModel.selectConditionIds,
               allConditions: viewModel.allConditions,
               onChange: (Set<int> ids) => viewModel.changeSelectedCondition(ids),
             ),
-            Divider(),
+            const Divider(),
             Row(
               children: [
                 Checkbox(
@@ -262,7 +262,7 @@ class RecordPage extends StatelessWidget {
               hintText: AppStrings.recordConditionMemoHint,
               onChanged: viewModel.inputConditionMemo,
             ),
-            SizedBox(height: 8.0),
+            const SizedBox(height: 8.0),
             OutlinedButton(
               onPressed: (isLogin)
                   ? () async {
@@ -295,7 +295,7 @@ class RecordPage extends StatelessWidget {
               hintText: AppStrings.recordMemoHint,
               onChanged: viewModel.inputMemo,
             ),
-            SizedBox(height: 8.0),
+            const SizedBox(height: 8.0),
             OutlinedButton(
               onPressed: (isLogin)
                   ? () async {

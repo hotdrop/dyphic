@@ -107,7 +107,7 @@ class _AppProgressDialogState extends State<_AppProgressDialog> {
         children: [
           Container(
             padding: const EdgeInsets.only(top: 40.0),
-            margin: EdgeInsets.only(top: 30.0),
+            margin: const EdgeInsets.only(top: 30.0),
             decoration: BoxDecoration(
               shape: BoxShape.rectangle,
               color: Colors.white,

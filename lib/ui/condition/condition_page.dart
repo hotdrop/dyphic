@@ -33,7 +33,7 @@ class ConditionPage extends StatelessWidget {
 
   Widget _nowLoadingView() {
     return Center(
-      child: CircularProgressIndicator(),
+      child: const CircularProgressIndicator(),
     );
   }
 
@@ -56,8 +56,8 @@ class ConditionPage extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(AppStrings.conditionOverview),
-          SizedBox(height: 8),
+          const Text(AppStrings.conditionOverview),
+          const SizedBox(height: 8),
           Text(AppStrings.conditionDetail, style: Theme.of(context).textTheme.caption),
         ],
       ),

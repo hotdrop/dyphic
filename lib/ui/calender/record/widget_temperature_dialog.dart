@@ -84,7 +84,7 @@ class _TemperatureEditDialogState extends State<TemperatureEditDialog> {
               style: TextStyle(fontSize: 32.0, color: widget.color),
             ),
           ),
-          SizedBox(height: 16.0),
+          const SizedBox(height: 16.0),
           _keyboard(context),
         ],
       ),

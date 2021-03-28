@@ -47,7 +47,7 @@ class NoteEditPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        title: Text(AppStrings.noteEditPageTitle),
+        title: const Text(AppStrings.noteEditPageTitle),
       ),
       body: _contentsView(context),
     );
@@ -153,10 +153,7 @@ class NoteEditPage extends StatelessWidget {
               }
             }
           : null,
-      child: const Text(
-        AppStrings.noteEditPageSaveButton,
-        style: TextStyle(color: Colors.white),
-      ),
+      child: const Text(AppStrings.noteEditPageSaveButton, style: TextStyle(color: Colors.white)),
     );
   }
 }

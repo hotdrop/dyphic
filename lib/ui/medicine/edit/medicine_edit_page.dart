@@ -43,7 +43,7 @@ class MedicineEditPage extends StatelessWidget {
 
   Widget _nowLoadingView() {
     return Center(
-      child: CircularProgressIndicator(),
+      child: const CircularProgressIndicator(),
     );
   }
 
@@ -163,10 +163,7 @@ class MedicineEditPage extends StatelessWidget {
           Navigator.pop(context, isSuccess);
         }
       },
-      child: const Text(
-        AppStrings.medicineSaveButton,
-        style: TextStyle(color: Colors.white),
-      ),
+      child: const Text(AppStrings.medicineSaveButton, style: TextStyle(color: Colors.white)),
     );
   }
 }

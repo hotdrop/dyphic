@@ -57,7 +57,7 @@ class _DyphicCalendarState extends State<DyphicCalendar> {
       mainAxisSize: MainAxisSize.max,
       children: [
         _buildCalendar(context),
-        SizedBox(height: 8.0),
+        const SizedBox(height: 8.0),
         _cardDailyRecord(context),
       ],
     );
@@ -111,11 +111,17 @@ class _DyphicCalendarState extends State<DyphicCalendar> {
 
     final event = argEvents.first;
     if (event.typeMedical()) {
-      markers.add(
-          Image.asset('res/images/ic_hospital.png', width: AppInteger.calendarIconSize, height: AppInteger.calendarIconSize));
+      markers.add(Image.asset(
+        'res/images/ic_hospital.png',
+        width: AppInteger.calendarIconSize,
+        height: AppInteger.calendarIconSize,
+      ));
     } else if (event.typeInjection()) {
-      markers
-          .add(Image.asset('res/images/ic_inject.png', width: AppInteger.calendarIconSize, height: AppInteger.calendarIconSize));
+      markers.add(Image.asset(
+        'res/images/ic_inject.png',
+        width: AppInteger.calendarIconSize,
+        height: AppInteger.calendarIconSize,
+      ));
     } else {
       markers.add(SizedBox(width: AppInteger.calendarIconSize));
     }

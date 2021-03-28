@@ -44,7 +44,7 @@ class NotesPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        title: Text(AppStrings.notesPageTitle),
+        title: const Text(AppStrings.notesPageTitle),
       ),
       body: _contentsView(context),
       floatingActionButton: isLogin

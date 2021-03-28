@@ -45,7 +45,7 @@ class _MedicineTypeRadioState extends State<MedicineTypeRadio> {
             });
           },
         ),
-        Text(AppStrings.medicineOralLabel),
+        const Text(AppStrings.medicineOralLabel),
         Radio(
             value: radioNotOral,
             groupValue: selectedRadioValue,
