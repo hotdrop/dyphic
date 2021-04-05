@@ -44,7 +44,7 @@ class MedicinePage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        title: Text(AppStrings.medicinePageTitle),
+        title: const Text(AppStrings.medicinePageTitle),
       ),
       body: Padding(
         padding: const EdgeInsets.only(bottom: 32.0),

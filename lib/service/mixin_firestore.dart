@@ -99,10 +99,11 @@ mixin AppFirestoreMixin {
     try {
       final snapshot = await _recordRootDoc.collection(_recordTemperatureCollection).get();
       return snapshot.docs.map((doc) {
+        final map = doc.data();
         return RecordTemperature(
           recordId: int.parse(doc.id),
-          morningTemperature: doc.get(_recordMorningTemperatureField) as double,
-          nightTemperature: doc.get(_recordNightTemperatureField) as double,
+          morningTemperature: getDouble(map, _recordMorningTemperatureField),
+          nightTemperature: getDouble(map, _recordNightTemperatureField),
         );
       }).toList();
     } on FirebaseException catch (e, s) {

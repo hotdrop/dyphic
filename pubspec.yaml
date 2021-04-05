@@ -7,7 +7,7 @@ publish_to: 'none'
 version: 1.3.1+6
 
 environment:
-  sdk: ">=2.12.0 <3.0.0"
+  sdk: '>=2.12.0 <3.0.0'
 
 dependencies:
   flutter:
@@ -24,6 +24,7 @@ dependencies:
   table_calendar: ^3.0.0-nullsafety.1
   image_picker: ^0.7.2+1
   expansion_tile_card: ^2.0.0
+  syncfusion_flutter_charts: ^19.1.54+1
 
   # network
   http: ^0.13.0
@@ -53,15 +54,14 @@ dev_dependencies:
   pedantic: ^1.11.0
 
 flutter_icons:
-  image_path_android: "res/launcher/ic_launcher.png"
-  image_path_ios: "res/launcher/ic_launcher.png"
+  image_path_android: 'res/launcher/ic_launcher.png'
+  image_path_ios: 'res/launcher/ic_launcher.png'
   android: true
   ios: true
-  adaptive_icon_background: "#000000"
-  adaptive_icon_foreground: "res/launcher/ic_launcher_round.png"
+  adaptive_icon_background: '#000000'
+  adaptive_icon_foreground: 'res/launcher/ic_launcher_round.png'
 
 flutter:
   uses-material-design: true
   assets:
     - res/images/
-

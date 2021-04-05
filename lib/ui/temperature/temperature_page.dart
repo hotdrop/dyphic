@@ -1,6 +1,7 @@
 import 'package:dyphic/common/app_strings.dart';
 import 'package:dyphic/model/app_settings.dart';
 import 'package:dyphic/model/page_state.dart';
+import 'package:dyphic/ui/temperature/temperature_graph.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:dyphic/ui/temperature/temperature_view_model.dart';
@@ -35,7 +36,6 @@ class TemperaturePage extends StatelessWidget {
   }
 
   Widget _loadSuccessView(BuildContext context) {
-    final isLogin = Provider.of<AppSettings>(context).isLogin;
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
@@ -45,19 +45,16 @@ class TemperaturePage extends StatelessWidget {
         padding: const EdgeInsets.only(bottom: 32.0),
         child: _contentsView(context),
       ),
-      floatingActionButton: isLogin
-          ? FloatingActionButton(
-              onPressed: () {},
-              child: Icon(Icons.add),
-            )
-          : null,
     );
   }
 
   Widget _contentsView(BuildContext context) {
-    return Center(
-      // TODO syncfusion_flutter_chartsを使いたいのでnull safety対応待ち
-      child: Text('未実装です'),
-    );
+    final viewModel = Provider.of<TemperatureViewModel>(context);
+    // TODO 昼と夜のグラフの切り替えボタンを作る
+
+    // このtakeをやめて直近30日のグラフを出す。
+    final graphDatas = viewModel.mornings.take(10).toList();
+    final morningTitle = AppStrings.temperaturePageGraphMorningLabel;
+    return TemperatureGraph(morningTitle, graphDatas);
   }
 }

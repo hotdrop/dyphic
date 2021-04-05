@@ -47,7 +47,6 @@ class RecordRepository {
   }
 
   Future<void> saveMedicineIds(int recordId, String idsStr) async {
-    // ここでIDを列挙する？
     await _api.saveMedicineIds(recordId, idsStr);
   }
 

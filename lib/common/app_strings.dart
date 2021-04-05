@@ -45,6 +45,8 @@ class AppStrings {
 
   // 体温グラフページ
   static const String temperaturePageTitle = '体温グラフ';
+  static const String temperaturePageGraphMorningLabel = '朝の体温';
+  static const String temperaturePageGraphNightLabel = '夜の体温';
 
   // お薬ページ
   static const String medicinePageTitle = 'お薬';

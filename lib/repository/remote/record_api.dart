@@ -36,6 +36,10 @@ class RecordApi {
     return record;
   }
 
+  Future<List<RecordTemperature>> findTemperatureRecords() async {
+    return await _appFirebase.findTemperatureRecords();
+  }
+
   Future<void> saveBreakFast(int recordId, String breakFast) async {
     AppLogger.d('$recordId の朝食を保存します。');
     await _appFirebase.saveBreakFast(recordId, breakFast);
