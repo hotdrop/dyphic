@@ -1,5 +1,4 @@
 import 'package:dyphic/common/app_strings.dart';
-import 'package:dyphic/model/app_settings.dart';
 import 'package:dyphic/model/page_state.dart';
 import 'package:dyphic/ui/temperature/temperature_graph.dart';
 import 'package:flutter/material.dart';
