@@ -15,12 +15,13 @@ class TemperatureGraph extends StatelessWidget {
       title: ChartTitle(text: title),
       primaryXAxis: CategoryAxis(
         edgeLabelPlacement: EdgeLabelPlacement.shift,
-        interval: 1,
+        interval: 7,
         majorGridLines: MajorGridLines(width: 0),
       ),
       primaryYAxis: NumericAxis(
         labelFormat: '{value}度',
-        axisLine: AxisLine(width: 1),
+        interval: 0.1,
+        axisLine: AxisLine(width: 0),
         majorTickLines: MajorTickLines(color: Colors.transparent),
       ),
       series: _convertLineSeries(_datas),

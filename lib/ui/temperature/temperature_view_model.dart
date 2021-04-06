@@ -1,3 +1,4 @@
+import 'package:dyphic/common/app_logger.dart';
 import 'package:dyphic/model/graph_temperature_data.dart';
 import 'package:dyphic/model/record.dart';
 import 'package:dyphic/repository/temperature_repository.dart';
@@ -20,10 +21,26 @@ class TemperatureViewModel extends NotifierViewModel {
 
   Future<void> _init() async {
     final List<RecordTemperature> results = await _repository.findAll();
-    _temperatures = results
+
+    final List<GraphTemperatureData> temperatureDatas = results
         .where((t) => t.morningTemperature > 0 || t.nightTemperature > 0)
         .map((t) => GraphTemperatureData.create(t))
         .toList();
+
+    // 直近2ヶ月分だけ保持する
+    final nowDate = DateTime.now();
+    final nowYear = nowDate.year;
+    final nowMonth = nowDate.month;
+
+    final prevDate = DateTime(nowYear, nowMonth - 1, nowDate.day);
+    final prevYear = prevDate.year;
+    final prevMonth = prevDate.month;
+    AppLogger.d('$prevYear年$prevMonth月から$nowYear年$nowMonth月まで取得');
+
+    _temperatures = temperatureDatas
+        .where((t) => (t.year == prevYear && t.month == prevMonth) || (t.year == nowYear && t.month == nowMonth))
+        .toList();
+
     loadSuccess();
   }
 }

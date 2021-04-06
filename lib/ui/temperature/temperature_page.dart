@@ -50,11 +50,11 @@ class TemperaturePage extends StatelessWidget {
 
   Widget _contentsView(BuildContext context) {
     final viewModel = Provider.of<TemperatureViewModel>(context);
-    // TODO 昼と夜のグラフの切り替えボタンを作る
 
-    // このtakeをやめて直近30日のグラフを出す。
-    final graphDatas = viewModel.mornings.take(10).toList();
+    // TODO 昼と夜のグラフの切り替えボタンを作る
+    final graphDatas = viewModel.mornings;
     final morningTitle = AppStrings.temperaturePageGraphMorningLabel;
+
     return TemperatureGraph(morningTitle, graphDatas);
   }
 }
