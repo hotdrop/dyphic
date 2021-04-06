@@ -45,6 +45,10 @@ class AppStrings {
 
   // 体温グラフページ
   static const String temperaturePageTitle = '体温グラフ';
+  static const String temperatureRadioBoth = '朝と夜';
+  static const String temperatureRadioOnlyMoring = '朝のみ';
+  static const String temperatureRadioOnlyNight = '夜のみ';
+  static const String temperaturePageGraphYAxisUnit = '度';
   static const String temperaturePageGraphMorningLabel = '朝の体温';
   static const String temperaturePageGraphNightLabel = '夜の体温';
 

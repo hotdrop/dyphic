@@ -1,4 +1,3 @@
-import 'package:dyphic/common/app_logger.dart';
 import 'package:dyphic/model/record.dart';
 
 class GraphTemperatureData {

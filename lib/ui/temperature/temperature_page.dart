@@ -38,7 +38,7 @@ class TemperaturePage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        title: Text(AppStrings.notesPageTitle),
+        title: Text(AppStrings.temperaturePageTitle),
       ),
       body: Padding(
         padding: const EdgeInsets.only(bottom: 32.0),
@@ -49,11 +49,6 @@ class TemperaturePage extends StatelessWidget {
 
   Widget _contentsView(BuildContext context) {
     final viewModel = Provider.of<TemperatureViewModel>(context);
-
-    // TODO 昼と夜のグラフの切り替えボタンを作る
-    final graphDatas = viewModel.mornings;
-    final morningTitle = AppStrings.temperaturePageGraphMorningLabel;
-
-    return TemperatureGraph(morningTitle, graphDatas);
+    return TemperatureGraph(morningDatas: viewModel.mornings, nightDatas: viewModel.nights);
   }
 }

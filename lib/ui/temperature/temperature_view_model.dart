@@ -27,7 +27,7 @@ class TemperatureViewModel extends NotifierViewModel {
         .map((t) => GraphTemperatureData.create(t))
         .toList();
 
-    // 直近2ヶ月分だけ保持する
+    // 当月と前月だけグラフに出す
     final nowDate = DateTime.now();
     final nowYear = nowDate.year;
     final nowMonth = nowDate.month;
