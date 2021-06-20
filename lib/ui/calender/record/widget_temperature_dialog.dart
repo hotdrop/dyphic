@@ -30,21 +30,24 @@ class _TemperatureEditDialogState extends State<TemperatureEditDialog> {
       inputValues = initVal.split('');
       _controller.text = '$initVal ℃';
     } else {
-      _controller.text = '**.* ℃';
+      _controller.text = '**.** ℃';
     }
   }
 
   void input(int i) {
     setState(() {
       if (inputValues.isEmpty) {
-        _controller.text = '$i*.* ℃';
+        _controller.text = '$i*.** ℃';
         inputValues.add(i.toString());
       } else if (inputValues.length == 1) {
-        _controller.text = '${inputValues.join()}$i.* ℃';
+        _controller.text = '${inputValues.join()}$i.** ℃';
         inputValues.add(i.toString());
       } else if (inputValues.length >= 2 && inputValues.length <= 3) {
-        _controller.text = '${inputValues.join()}.$i ℃';
+        _controller.text = '${inputValues.join()}.$i* ℃';
         inputValues.add('.');
+        inputValues.add(i.toString());
+      } else if (inputValues.length == 4) {
+        _controller.text = '${inputValues.join()}$i ℃';
         inputValues.add(i.toString());
       } else {
         // これ以外は無視
@@ -55,15 +58,18 @@ class _TemperatureEditDialogState extends State<TemperatureEditDialog> {
   void delete() {
     setState(() {
       if (inputValues.length == 1) {
-        _controller.text = '**.* ℃';
+        _controller.text = '**.** ℃';
         inputValues.removeLast();
       } else if (inputValues.length == 2) {
         inputValues.removeLast();
-        _controller.text = '${inputValues.join()}*.* ℃';
+        _controller.text = '${inputValues.join()}*.** ℃';
       } else if (inputValues.length == 4) {
         inputValues.removeLast();
         inputValues.removeLast();
-        _controller.text = '${inputValues.join()}.* ℃';
+        _controller.text = '${inputValues.join()}.** ℃';
+      } else if (inputValues.length == 5) {
+        inputValues.removeLast();
+        _controller.text = '${inputValues.join()}* ℃';
       } else {
         // これ以外は無視
       }
