@@ -98,9 +98,9 @@ class RecordPage extends StatelessWidget {
         children: <Widget>[
           _mealViewArea(context),
           _temperatureViewArea(context),
-          _medicineViewArea(context),
-          const SizedBox(height: 16.0),
           _conditionViewArea(context),
+          const SizedBox(height: 16.0),
+          _medicineViewArea(context),
           const SizedBox(height: 16.0),
           _memoView(context),
           const SizedBox(height: 36),
