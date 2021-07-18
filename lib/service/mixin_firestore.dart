@@ -15,6 +15,7 @@ mixin AppFirestoreMixin {
 
   static final String _recordOverviewCollection = 'overview';
   static final String _recordOverviewIsWalking = 'isWalking';
+  static final String _recordOverviewIsToilet = 'isToilet';
   static final String _recordConditionIDsField = 'conditionIDs';
   static final String _recordConditionMemoField = 'conditionMemo';
 
@@ -29,6 +30,7 @@ mixin AppFirestoreMixin {
         return RecordOverview(
           recordId: id,
           isWalking: getBool(map, _recordOverviewIsWalking),
+          isToilet: getBool(map, _recordOverviewIsToilet),
           conditions: conditions,
           conditionMemo: getString(map, _recordConditionMemoField),
         );
@@ -52,6 +54,7 @@ mixin AppFirestoreMixin {
         return RecordOverview(
           recordId: int.parse(doc.id),
           isWalking: getBool(map, _recordOverviewIsWalking),
+          isToilet: getBool(map, _recordOverviewIsToilet),
           conditions: conditions,
           conditionMemo: getString(map, _recordConditionMemoField),
         );
@@ -67,6 +70,7 @@ mixin AppFirestoreMixin {
       _recordConditionIDsField: overview.toStringConditionIds(),
       _recordConditionMemoField: overview.conditionMemo,
       _recordOverviewIsWalking: overview.isWalking,
+      _recordOverviewIsToilet: overview.isToilet,
     };
     await _saveField(overview.recordId.toString(), _recordOverviewCollection, map);
   }

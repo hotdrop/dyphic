@@ -4,6 +4,7 @@ import 'package:dyphic/model/page_state.dart';
 import 'package:dyphic/ui/calender/record/record_view_model.dart';
 import 'package:dyphic/ui/calender/record/widget_meal_card.dart';
 import 'package:dyphic/ui/calender/record/widget_temperature_view.dart';
+import 'package:dyphic/ui/widget/app_check_box.dart';
 import 'package:dyphic/ui/widget/app_chips.dart';
 import 'package:dyphic/ui/widget/app_icon.dart';
 import 'package:dyphic/ui/widget/app_progress_dialog.dart';
@@ -246,15 +247,7 @@ class RecordPage extends StatelessWidget {
               onChange: (Set<int> ids) => viewModel.changeSelectedCondition(ids),
             ),
             const Divider(),
-            Row(
-              children: [
-                Checkbox(
-                  value: viewModel.isWalking,
-                  onChanged: (bool? isCheck) => viewModel.inputIsWalking(isCheck),
-                ),
-                const Text(AppStrings.recordWalkingLabel),
-              ],
-            ),
+            _viewCheckBoxes(context),
             MultiLineTextField(
               label: AppStrings.recordConditionMemoTitle,
               initValue: viewModel.conditionMemo,
@@ -276,6 +269,23 @@ class RecordPage extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+
+  Widget _viewCheckBoxes(BuildContext context) {
+    final viewModel = Provider.of<RecordViewModel>(context);
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      children: [
+        AppCheckBox.walking(
+          initValue: viewModel.isWalking,
+          onChanged: (bool? isCheck) => viewModel.inputIsWalking(isCheck),
+        ),
+        AppCheckBox.toilet(
+          initValue: viewModel.isToilet,
+          onChanged: (bool? isCheck) => viewModel.inputIsToilet(isCheck),
+        ),
+      ],
     );
   }
 

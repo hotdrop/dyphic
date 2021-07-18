@@ -5,6 +5,7 @@ import 'package:dyphic/model/calendar_event.dart';
 import 'package:dyphic/model/dyphic_id.dart';
 import 'package:dyphic/ui/calender/record/record_page.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 class DyphicCalendar extends StatefulWidget {
@@ -127,7 +128,12 @@ class _DyphicCalendarState extends State<DyphicCalendar> {
     }
 
     if (event.haveRecord()) {
-      markers.add(Icon(Icons.note_rounded, size: AppInteger.calendarIconSize, color: Colors.green));
+      final isToilet = event.recordOverview?.isToilet ?? false;
+      if (isToilet) {
+        markers.add(SizedBox(width: AppInteger.calendarIconSize, child: Text('💩')));
+      } else {
+        markers.add(SizedBox(width: AppInteger.calendarIconSize));
+      }
       final isWalk = event.recordOverview?.isWalking ?? false;
       if (isWalk) {
         markers.add(Icon(Icons.directions_walk, size: AppInteger.calendarIconSize, color: AppColors.walking));
@@ -186,16 +192,17 @@ class _DyphicCalendarState extends State<DyphicCalendar> {
   }
 
   Widget _labelEventInfo(BuildContext context) {
+    final dateStr = DateFormat(AppStrings.calenderPageDateFormat).format(_selectedEvent.date);
     if (_selectedEvent.name != null) {
       return Center(
         child: Text(
-          _selectedEvent.name!,
+          '$dateStr(${_selectedEvent.name!})',
           style: TextStyle(color: Theme.of(context).accentColor),
         ),
       );
     } else {
       return Center(
-        child: Text(AppStrings.calenderNoEvent),
+        child: Text('$dateStr(${AppStrings.calenderNoEvent})'),
       );
     }
   }

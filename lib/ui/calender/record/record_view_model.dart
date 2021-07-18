@@ -39,6 +39,7 @@ class RecordViewModel extends NotifierViewModel {
   String get conditionMemo => _inputRecord.conditionMemo;
   Set<int> get selectMedicineIds => _inputRecord.selectMedicineIds;
   bool get isWalking => _inputRecord.isWalking;
+  bool get isToilet => _inputRecord.isToilet;
   String get breakfast => _inputRecord.breakfast;
   String get lunch => _inputRecord.lunch;
   String get dinner => _inputRecord.dinner;
@@ -150,6 +151,11 @@ class RecordViewModel extends NotifierViewModel {
     notifyListeners();
   }
 
+  Future<void> inputIsToilet(bool? isToilet) async {
+    _inputRecord.isToilet = isToilet ?? false;
+    notifyListeners();
+  }
+
   void inputMemo(String newVal) {
     _inputRecord.memo = newVal;
   }
@@ -177,6 +183,7 @@ class InputRecord {
     required this.selectMedicineIds,
     required this.selectConditionIds,
     required this.isWalking,
+    required this.isToilet,
     required this.conditionMemo,
     required this.breakfast,
     required this.lunch,
@@ -193,6 +200,7 @@ class InputRecord {
       selectMedicineIds: record.medicines?.map((e) => e.id).toSet() ?? {},
       selectConditionIds: record.conditions?.map((e) => e.id).toSet() ?? {},
       isWalking: record.isWalking ?? false,
+      isToilet: record.isToilet ?? false,
       conditionMemo: record.conditionMemo ?? '',
       breakfast: record.breakfast ?? '',
       lunch: record.lunch ?? '',
@@ -207,6 +215,7 @@ class InputRecord {
   Set<int> selectMedicineIds;
   Set<int> selectConditionIds;
   bool isWalking;
+  bool isToilet;
   String conditionMemo;
   String breakfast;
   String lunch;
@@ -215,7 +224,8 @@ class InputRecord {
 
   RecordOverview toRecordOverview(List<Condition> allCondition) {
     final selectConditions = allCondition.where((e) => selectConditionIds.contains(e.id)).toList();
-    return RecordOverview(recordId: id, isWalking: isWalking, conditions: selectConditions, conditionMemo: conditionMemo);
+    return RecordOverview(
+        recordId: id, isWalking: isWalking, isToilet: isToilet, conditions: selectConditions, conditionMemo: conditionMemo);
   }
 
   String toStringMedicineIds() {
@@ -231,9 +241,12 @@ class InputRecord {
 
     return Record.create(
       id: id,
-      recordOverview: RecordOverview(recordId: id, isWalking: isWalking, conditions: selectConditions, conditionMemo: conditionMemo),
-      recordTemperature: RecordTemperature(recordId: id, morningTemperature: morningTemperature, nightTemperature: nightTemperature),
-      recordDetail: RecordDetail(recordId: id, medicines: selectMedicines, breakfast: breakfast, lunch: lunch, dinner: dinner, memo: memo),
+      recordOverview: RecordOverview(
+          recordId: id, isWalking: isWalking, isToilet: isToilet, conditions: selectConditions, conditionMemo: conditionMemo),
+      recordTemperature:
+          RecordTemperature(recordId: id, morningTemperature: morningTemperature, nightTemperature: nightTemperature),
+      recordDetail:
+          RecordDetail(recordId: id, medicines: selectMedicines, breakfast: breakfast, lunch: lunch, dinner: dinner, memo: memo),
     );
   }
 }

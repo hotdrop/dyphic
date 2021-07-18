@@ -4,6 +4,7 @@ class AppStrings {
   static const String appTitle = '体調管理';
 
   static const String calenderPageTitle = 'カレンダー';
+  static const String calenderPageDateFormat = 'yyyy年MM月dd日';
   static const String calenderNoEvent = '予定なし';
   static const String calenderUnRegisterLabel = 'この日の記録は未登録です。\nここをタップして記録しましょう。';
   static const String calenderDetailWalkingLabel = '散歩した';
@@ -26,6 +27,7 @@ class AppStrings {
 
   static const String recordConditionTitle = '体調';
   static const String recordWalkingLabel = '散歩した';
+  static const String recordToiletLabel = '排便した';
   static const String recordConditionMemoTitle = '体調メモ';
   static const String recordConditionMemoHint = '細かい体調はこちらに記載しましょう！';
   static const String recordConditionSaveButton = '体調情報を保存する';

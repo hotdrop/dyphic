@@ -30,6 +30,7 @@ class Record {
   final RecordDetail? detail;
 
   bool? get isWalking => overview?.isWalking;
+  bool? get isToilet => overview?.isToilet;
   List<Condition>? get conditions => overview?.conditions;
   String? get conditionMemo => overview?.conditionMemo;
   double? get morningTemperature => temperature?.morningTemperature;
@@ -62,12 +63,14 @@ class RecordOverview {
   const RecordOverview({
     required this.recordId,
     required this.isWalking,
+    required this.isToilet,
     required this.conditions,
     required this.conditionMemo,
   });
 
   final int recordId;
   final bool isWalking;
+  final bool isToilet;
   final List<Condition> conditions;
   final String conditionMemo;
 
@@ -89,6 +92,7 @@ class RecordOverview {
   String toString() {
     return '''
     walking: $isWalking
+    toilet: $isToilet
     conditions: ${conditions.map((c) => c.name)}
     conditionMemo: $conditionMemo
     ''';
