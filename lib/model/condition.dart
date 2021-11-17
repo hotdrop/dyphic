@@ -2,10 +2,10 @@ class Condition {
   const Condition(this.id, this.name);
 
   factory Condition.empty() {
-    return Condition(nonId, '');
+    return const Condition(nonId, '');
   }
 
-  static final int nonId = 0;
+  static const int nonId = 0;
 
   final int id;
   final String name;

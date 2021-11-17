@@ -6,13 +6,12 @@
 // tree, read text, and verify that the values of widget properties are correct.
 
 import 'package:dyphic/app.dart';
-import 'package:dyphic/main.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   testWidgets('Counter increments smoke test', (tester) async {
     //   // Build our app and trigger a frame.
-    await tester.pumpWidget(App());
+    await tester.pumpWidget(const App());
     //
     //   // Verify that our counter starts at 0.
     //   expect(find.text('0'), findsOneWidget);

@@ -1,7 +1,7 @@
 import 'package:dyphic/model/calendar_event.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-final eventDaoProvider = Provider((ref) => _EventDao());
+final eventDaoProvider = Provider((ref) => const _EventDao());
 
 class _EventDao {
   const _EventDao();

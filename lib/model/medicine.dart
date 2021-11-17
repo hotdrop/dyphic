@@ -12,7 +12,15 @@ class Medicine {
   });
 
   factory Medicine.createEmpty(int id, int order) {
-    return Medicine(id: id, name: '', overview: '', type: MedicineType.oral, memo: '', imagePath: '', order: order);
+    return Medicine(
+      id: id,
+      name: '',
+      overview: '',
+      type: MedicineType.oral,
+      memo: '',
+      imagePath: '',
+      order: order,
+    );
   }
 
   final int id;
@@ -24,7 +32,15 @@ class Medicine {
   final int order;
 
   Medicine copyWith({required String imageUrl}) {
-    return Medicine(id: id, name: name, overview: overview, type: type, order: order, memo: memo, imagePath: imageUrl);
+    return Medicine(
+      id: id,
+      name: name,
+      overview: overview,
+      type: type,
+      order: order,
+      memo: memo,
+      imagePath: imageUrl,
+    );
   }
 
   String toTypeString() {

@@ -56,6 +56,4 @@ class _SharedPrefs {
     final prefs = await _read(_sharefPregerencesProvider);
     prefs.setBool(key, value);
   }
-
-  static const _previousEventGetDate = 'PREVIOUS_EVENT_GET_DATA';
 }

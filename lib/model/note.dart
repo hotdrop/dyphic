@@ -22,7 +22,10 @@ class NoteType {
   const NoteType(this.typeValue, this.iconData, this.color);
 
   factory NoteType.fromValue(int typeValue) {
-    return values.firstWhere((e) => e.typeValue == typeValue, orElse: () => NoteType(1, Icons.lunch_dining, Colors.orange[300]));
+    return values.firstWhere(
+      (e) => e.typeValue == typeValue,
+      orElse: () => NoteType(1, Icons.lunch_dining, Colors.orange[300]),
+    );
   }
 
   final int typeValue;

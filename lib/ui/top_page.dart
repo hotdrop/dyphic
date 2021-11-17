@@ -54,9 +54,9 @@ class _TopPageState extends State<TopPage> {
   Widget _menuView(int index) {
     switch (index) {
       case 0:
-        return CalenderPage();
+        return const CalenderPage();
       case 1:
-        return NotesPage();
+        return const NotesPage();
       default:
         return const SettingsPage();
     }

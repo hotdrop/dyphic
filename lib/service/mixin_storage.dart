@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:path/path.dart';
-
 import 'package:dyphic/common/app_logger.dart';
 
 mixin AppStorageMixin {

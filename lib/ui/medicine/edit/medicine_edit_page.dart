@@ -133,7 +133,7 @@ class MedicineEditPage extends ConsumerWidget {
               label: const Text(AppStrings.medicineStartCameraLabel),
               onPressed: () async {
                 final imagePicker = ImagePicker();
-                PickedFile? image = await imagePicker.getImage(source: ImageSource.camera, imageQuality: 10);
+                final image = await imagePicker.pickImage(source: ImageSource.camera, imageQuality: 10);
                 if (image != null) {
                   AppLogger.d('カメラ撮影しました。 path=${image.path}');
                   ref.read(medicineEditViewModelProvider).inputImagePath(image.path);
