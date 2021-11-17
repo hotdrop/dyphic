@@ -1,3 +1,6 @@
+import 'package:dyphic/model/app_settings.dart';
+import 'package:dyphic/repository/account_repository.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:dyphic/common/app_logger.dart';
 import 'package:dyphic/model/condition.dart';
 import 'package:dyphic/model/dyphic_id.dart';
@@ -6,31 +9,17 @@ import 'package:dyphic/model/record.dart';
 import 'package:dyphic/repository/condition_repository.dart';
 import 'package:dyphic/repository/medicine_repository.dart';
 import 'package:dyphic/repository/record_repository.dart';
-import 'package:dyphic/ui/notifier_view_model.dart';
+import 'package:dyphic/ui/base_view_model.dart';
 
-class RecordViewModel extends NotifierViewModel {
-  RecordViewModel._(
-    this._date,
-    this._repository,
-    this._medicineRepository,
-    this._conditionRepository,
-  ) {
-    _init();
-  }
+final recordViewModelProvider = ChangeNotifierProvider.autoDispose((ref) => _RecordViewModel(ref.read));
 
-  factory RecordViewModel.create(DateTime date) {
-    return RecordViewModel._(
-      date,
-      RecordRepository.create(),
-      MedicineRepository.create(),
-      ConditionRepository.create(),
-    );
-  }
+class _RecordViewModel extends BaseViewModel {
+  _RecordViewModel(this._read);
 
-  final DateTime _date;
-  final RecordRepository _repository;
-  final MedicineRepository _medicineRepository;
-  final ConditionRepository _conditionRepository;
+  final Reader _read;
+
+  bool get isSignIn => _read(accountRepositoryProvider).isSignIn;
+  bool get isDarkMode => _read(appSettingsProvider).isDarkMode;
 
   late InputRecord _inputRecord;
   double get morningTemperature => _inputRecord.morningTemperature;
@@ -54,38 +43,40 @@ class RecordViewModel extends NotifierViewModel {
   bool _isUpdate = false;
   bool get isUpdate => _isUpdate;
 
-  ///
-  /// 初期処理
-  /// コンストラクタでよび、使用元のViewではPageStateでViewModelの利用状態を判断する。
-  ///
-  Future<void> _init() async {
-    final id = DyphicID.makeRecordId(_date);
-    final _record = await _repository.find(id);
+  Future<void> init(DateTime date) async {
+    try {
+      final id = DyphicID.makeRecordId(date);
+      final _record = await _read(recordRepositoryProvider).find(id);
 
-    _inputRecord = InputRecord.create(_record);
+      _inputRecord = InputRecord.create(_record);
 
-    _allMedicines = await _medicineRepository.findAll();
-    _allConditions = await _conditionRepository.findAll();
-    loadSuccess();
+      _allMedicines = await _read(medicineRepositoryProvider).findAll();
+      _allConditions = await _read(conditionRepositoryProvider).findAll();
+
+      onSuccess();
+    } catch (e, s) {
+      await AppLogger.e('$dateの記録情報の取得に失敗しました。', e, s);
+      rethrow;
+    }
   }
 
   Future<void> inputBreakfast(String newVal) async {
     _inputRecord.breakfast = newVal;
-    await _repository.saveBreakFast(_inputRecord.id, newVal);
+    await _read(recordRepositoryProvider).saveBreakFast(_inputRecord.id, newVal);
     _isUpdate = true;
     notifyListeners();
   }
 
   Future<void> inputLunch(String newVal) async {
     _inputRecord.lunch = newVal;
-    await _repository.saveLunch(_inputRecord.id, newVal);
+    await _read(recordRepositoryProvider).saveLunch(_inputRecord.id, newVal);
     _isUpdate = true;
     notifyListeners();
   }
 
   Future<void> inputDinner(String newVal) async {
     _inputRecord.dinner = newVal;
-    await _repository.saveDinner(_inputRecord.id, newVal);
+    await _read(recordRepositoryProvider).saveDinner(_inputRecord.id, newVal);
     _isUpdate = true;
     notifyListeners();
   }
@@ -93,7 +84,7 @@ class RecordViewModel extends NotifierViewModel {
   Future<void> inputMorningTemperature(double newVal) async {
     AppLogger.d('入力した値は $newVal です');
     _inputRecord.morningTemperature = newVal;
-    await _repository.saveMorningTemperature(_inputRecord.id, newVal);
+    await _read(recordRepositoryProvider).saveMorningTemperature(_inputRecord.id, newVal);
     _isUpdate = true;
     notifyListeners();
   }
@@ -101,7 +92,7 @@ class RecordViewModel extends NotifierViewModel {
   Future<void> inputNightTemperature(double newVal) async {
     AppLogger.d('入力した値は $newVal です');
     _inputRecord.nightTemperature = newVal;
-    await _repository.saveNightTemperature(_inputRecord.id, newVal);
+    await _read(recordRepositoryProvider).saveNightTemperature(_inputRecord.id, newVal);
     _isUpdate = true;
     notifyListeners();
   }
@@ -115,7 +106,7 @@ class RecordViewModel extends NotifierViewModel {
   Future<bool> saveMedicine() async {
     try {
       final idsStr = _inputRecord.toStringMedicineIds();
-      await _repository.saveMedicineIds(_inputRecord.id, idsStr);
+      await _read(recordRepositoryProvider).saveMedicineIds(_inputRecord.id, idsStr);
       _isUpdate = true;
       return true;
     } catch (e, s) {
@@ -137,7 +128,7 @@ class RecordViewModel extends NotifierViewModel {
   Future<bool> saveCondition() async {
     final newRecord = _inputRecord.toRecordOverview(_allConditions);
     try {
-      await _repository.saveCondition(newRecord);
+      await _read(recordRepositoryProvider).saveCondition(newRecord);
       _isUpdate = true;
       return true;
     } catch (e, s) {
@@ -162,7 +153,7 @@ class RecordViewModel extends NotifierViewModel {
 
   Future<bool> saveMemo() async {
     try {
-      await _repository.saveMemo(_inputRecord.id, _inputRecord.memo);
+      await _read(recordRepositoryProvider).saveMemo(_inputRecord.id, _inputRecord.memo);
       _isUpdate = true;
       return true;
     } catch (e, s) {
@@ -224,8 +215,7 @@ class InputRecord {
 
   RecordOverview toRecordOverview(List<Condition> allCondition) {
     final selectConditions = allCondition.where((e) => selectConditionIds.contains(e.id)).toList();
-    return RecordOverview(
-        recordId: id, isWalking: isWalking, isToilet: isToilet, conditions: selectConditions, conditionMemo: conditionMemo);
+    return RecordOverview(recordId: id, isWalking: isWalking, isToilet: isToilet, conditions: selectConditions, conditionMemo: conditionMemo);
   }
 
   String toStringMedicineIds() {
@@ -241,12 +231,9 @@ class InputRecord {
 
     return Record.create(
       id: id,
-      recordOverview: RecordOverview(
-          recordId: id, isWalking: isWalking, isToilet: isToilet, conditions: selectConditions, conditionMemo: conditionMemo),
-      recordTemperature:
-          RecordTemperature(recordId: id, morningTemperature: morningTemperature, nightTemperature: nightTemperature),
-      recordDetail:
-          RecordDetail(recordId: id, medicines: selectMedicines, breakfast: breakfast, lunch: lunch, dinner: dinner, memo: memo),
+      recordOverview: RecordOverview(recordId: id, isWalking: isWalking, isToilet: isToilet, conditions: selectConditions, conditionMemo: conditionMemo),
+      recordTemperature: RecordTemperature(recordId: id, morningTemperature: morningTemperature, nightTemperature: nightTemperature),
+      recordDetail: RecordDetail(recordId: id, medicines: selectMedicines, breakfast: breakfast, lunch: lunch, dinner: dinner, memo: memo),
     );
   }
 }

@@ -40,19 +40,11 @@ class AppStrings {
   static const String notesPageTitle = 'ノート';
   static const String notesNotRegisterLabel = 'ノートが1つも登録されていません。';
   static const String noteEditPageTitle = 'ノート編集';
+  static const String noteEditPageSelectIconLabel = 'イメージアイコンを選択してください';
   static const String noteEditPageLabelTitle = 'タイトル';
   static const String noteEditPageLabelDetail = '詳細';
   static const String noteEditPageLabelDetailHint = 'ここに詳細メモを記載してください。';
   static const String noteEditPageSaveButton = 'この内容で保存する';
-
-  // 体温グラフページ
-  static const String temperaturePageTitle = '体温グラフ';
-  static const String temperatureRadioBoth = '朝と夜';
-  static const String temperatureRadioOnlyMoring = '朝のみ';
-  static const String temperatureRadioOnlyNight = '夜のみ';
-  static const String temperaturePageGraphYAxisUnit = '度';
-  static const String temperaturePageGraphMorningLabel = '朝の体温';
-  static const String temperaturePageGraphNightLabel = '夜の体温';
 
   // お薬ページ
   static const String medicinePageTitle = 'お薬';
@@ -84,8 +76,8 @@ class AppStrings {
 
   // 設定ページ
   static const String settingsPageTitle = '設定';
-  static const String settingsNotLoginEmailLabel = '未ログイン';
-  static const String settingsNotLoginNameLabel = 'ー';
+  static const String settingsNotSignInEmailLabel = '未ログイン';
+  static const String settingsNotSignInNameLabel = 'ー';
   static const String settingsLoginInfo = '※Googleアカウントでログインできます。ログインすると各データの登録/編集が可能になります。';
   static const String settingsLoginNameNotSettingLabel = '未設定';
   static const String settingsLoginEmailNotSettingLabel = '未設定';
@@ -96,7 +88,7 @@ class AppStrings {
   static const String settingsEditConditionSubLabel = 'タップで体調情報を表示します。';
   static const String settingsEditMedicineLabel = 'お薬情報';
   static const String settingsEditMedicineSubLabel = 'タップでお薬情報を表示します。';
-  static const String settingsAppVersionLabel = 'アプリバージョン';
+  static const String settingsLicenseLabel = 'ライセンス';
 
   // 共通項目
   static const String textFieldRequiredEmptyError = '※必須項目';

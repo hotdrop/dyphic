@@ -1,14 +1,16 @@
+import 'package:dyphic/res/app_colors.dart';
+import 'package:flutter/material.dart';
+import 'package:expansion_tile_card/expansion_tile_card.dart';
 import 'package:dyphic/model/medicine.dart';
 import 'package:dyphic/ui/widget/app_image.dart';
-import 'package:expansion_tile_card/expansion_tile_card.dart';
-import 'package:flutter/material.dart';
 
 class MedicineCardView extends StatelessWidget {
-  MedicineCardView({
+  const MedicineCardView({
+    Key? key,
     required this.medicine,
     required this.isEditable,
     required this.onTapEvent,
-  });
+  }) : super(key: key);
 
   final Medicine medicine;
   final bool isEditable;
@@ -54,7 +56,7 @@ class MedicineCardView extends StatelessWidget {
   Widget _editButton(BuildContext context) {
     return TextButton(
       onPressed: () => onTapEvent(),
-      child: Icon(Icons.edit, color: Theme.of(context).accentColor),
+      child: const Icon(Icons.edit, color: AppColors.themeColor),
     );
   }
 }

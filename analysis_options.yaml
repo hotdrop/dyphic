@@ -1,33 +1,23 @@
-# https://github.com/google/pedantic/blob/master/lib/analysis_options.1.11.0.yaml
-include: package:pedantic/analysis_options.yaml
+# This file configures the analyzer, which statically analyzes Dart code to
+# check for errors, warnings, and lints.
+#
+# The issues identified by the analyzer are surfaced in the UI of Dart-enabled
+# IDEs (https://dart.dev/tools#ides-and-editors). The analyzer can also be
+# invoked from the command line by running `flutter analyze`.
+
+# The following line activates a set of recommended lints for Flutter apps,
+# packages, and plugins designed to encourage good coding practices.
+include: package:flutter_lints/flutter.yaml
 
 analyzer:
-  strong-mode:
-    implicit-casts: false
-    implicit-dynamic: false
-  errors:
-    # flutterの同ファイルではwarningだが個人開発ではerrorで良いと思った。
-    missing_required_param: error
-    missing_return: error
   exclude:
-    - 'bin/cache/**'
     - '**/*.g.dart'
     - '**/*.freezed.dart'
+  errors:
+    invalid_annotation_target: ignore
 
 linter:
   rules:
-    # Dartではこの書き方に慣れていたので追加
-    sort_constructors_first: true
-    # effective_dartより
-    avoid_shadowing_type_parameters: false
-    camel_case_types: true
-    cancel_subscriptions: true
-    close_sinks: true
-    comment_references: true
-    constant_identifier_names: true
-    control_flow_in_finally: true
-    empty_statements: true
-    # flutterの同ファイルでもコメントアウトしており個人的にも型を明示した方が可読性が上がるケースがあると判断した
-    omit_local_variable_types: false
-    # ウザかった。flutterの同ファイルでも too many false positives とのこと
-    unawaited_futures: false
+    avoid_print: true # Uncomment to disable the `avoid_print` rule
+    prefer_single_quotes: true # Uncomment to enable the `prefer_single_quotes` rule
+    unnecessary_overrides: false # mockitoの自動生成クラスでこれが検出されてしまうので無効にする

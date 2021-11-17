@@ -1,37 +1,50 @@
-import 'package:dyphic/repository/local/app_data_source.dart';
-import 'package:dyphic/service/app_firebase.dart';
+import 'package:dyphic/repository/local/local_data_source.dart';
 import 'package:flutter/material.dart';
 
 import 'package:dyphic/repository/app_settings_repository.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-///
-/// アプリ全体の設定はこのモデルクラスからアクセスする
-/// 起動時に必要な処理も全てここで行う
-///
-class AppSettings extends ChangeNotifier {
-  AppSettings._(this._repository);
+final appSettingsProvider = StateNotifierProvider<_AppSettingsNotifier, AppSettings>((ref) => _AppSettingsNotifier(ref.read));
 
-  static Future<AppSettings> create() async {
-    // ここでアプリで必要な初期化を全て行う
-    final dataSource = AppDataSource.getInstance();
-    await dataSource.init();
+class _AppSettingsNotifier extends StateNotifier<AppSettings> {
+  _AppSettingsNotifier(this._read) : super(const AppSettings());
 
-    await AppFirebase.instance.init();
+  final Reader _read;
 
-    return AppSettings._(AppSettingsRepository.create());
+  ///
+  /// アプリ起動時に一回だけ呼ぶ
+  ///
+  Future<void> init() async {
+    await _read(localDataSourceProvider).init();
+    refresh();
   }
 
-  final AppSettingsRepository _repository;
-
-  bool get isLogin => _repository.isLogIn();
-  bool get isDarkMode => _repository.isDarkMode();
+  Future<void> refresh() async {
+    final isDarkMode = await _read(appSettingsRepositoryProvider).isDarkMode();
+    final mode = isDarkMode ? ThemeMode.dark : ThemeMode.light;
+    state = AppSettings(currentMode: mode);
+  }
 
   Future<void> changeTheme(bool isDark) async {
     if (isDark) {
-      await _repository.changeDarkMode();
+      await _read(appSettingsRepositoryProvider).changeDarkMode();
     } else {
-      await _repository.changeLightMode();
+      await _read(appSettingsRepositoryProvider).changeLightMode();
     }
-    notifyListeners();
+    await refresh();
+  }
+}
+
+class AppSettings {
+  const AppSettings({this.currentMode = ThemeMode.system});
+
+  final ThemeMode currentMode;
+
+  bool get isDarkMode => currentMode == ThemeMode.dark;
+
+  AppSettings copyWith({ThemeMode? currentMode}) {
+    return AppSettings(
+      currentMode: currentMode ?? this.currentMode,
+    );
   }
 }

@@ -1,58 +1,66 @@
-import 'package:dyphic/common/app_strings.dart';
-import 'package:dyphic/model/app_settings.dart';
-import 'package:dyphic/model/page_state.dart';
+import 'package:dyphic/res/app_strings.dart';
 import 'package:dyphic/ui/condition/condition_view_model.dart';
+import 'package:dyphic/ui/widget/app_dialog.dart';
 import 'package:dyphic/ui/widget/app_progress_dialog.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class ConditionPage extends StatelessWidget {
+class ConditionPage extends ConsumerWidget {
+  const ConditionPage._();
+
+  static Future<void> start(BuildContext context) async {
+    await Navigator.push<void>(
+      context,
+      MaterialPageRoute(builder: (_) => const ConditionPage._()),
+    );
+  }
+
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final uiState = ref.watch(conditionViewModelProvider).uiState;
     return Scaffold(
-      appBar: AppBar(centerTitle: true, title: const Text(AppStrings.conditionPageTitle)),
+      appBar: AppBar(
+        title: const Text(AppStrings.conditionPageTitle),
+      ),
       body: GestureDetector(
         onTap: () {
           FocusScope.of(context).unfocus();
         },
-        child: ChangeNotifierProvider<ConditionViewModel>(
-          create: (_) => ConditionViewModel.create(),
-          builder: (context, _) {
-            final pageState = context.select<ConditionViewModel, PageLoadingState>((vm) => vm.pageState);
-            if (pageState.isLoadSuccess) {
-              return _loadSuccessView(context);
-            } else {
-              return _nowLoadingView();
-            }
-          },
-          child: _nowLoadingView(),
+        child: uiState.when(
+          loading: (err) => _onLoading(context, err),
+          success: () => _onSuccess(context, ref),
         ),
       ),
     );
   }
 
-  Widget _nowLoadingView() {
-    return Center(
-      child: const CircularProgressIndicator(),
+  Widget _onLoading(BuildContext context, String? errorMsg) {
+    Future.delayed(Duration.zero).then((_) async {
+      if (errorMsg != null) {
+        await AppDialog.onlyOk(message: errorMsg).show(context);
+      }
+    });
+    return const Center(
+      child: CircularProgressIndicator(),
     );
   }
 
-  Widget _loadSuccessView(BuildContext context) {
+  Widget _onSuccess(BuildContext context, WidgetRef ref) {
     return ListView(
       children: [
         _overview(context),
-        _clearButton(context),
+        _clearButton(ref),
         const Divider(),
-        _conditionArea(context),
+        _conditionArea(ref),
         const Divider(),
-        _inputArea(context),
+        _inputArea(context, ref),
       ],
     );
   }
 
   Widget _overview(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.only(left: 16, right: 16, top: 16),
+      padding: const EdgeInsets.only(left: 16, right: 16, top: 16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -64,8 +72,7 @@ class ConditionPage extends StatelessWidget {
     );
   }
 
-  Widget _clearButton(BuildContext context) {
-    final viewModel = Provider.of<ConditionViewModel>(context);
+  Widget _clearButton(WidgetRef ref) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.end,
       mainAxisSize: MainAxisSize.max,
@@ -73,7 +80,7 @@ class ConditionPage extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.only(right: 16),
           child: OutlinedButton(
-            onPressed: () => viewModel.clear(),
+            onPressed: () => ref.read(conditionViewModelProvider).clear(),
             child: const Text(AppStrings.conditionClearSelectedLabel),
           ),
         ),
@@ -81,79 +88,86 @@ class ConditionPage extends StatelessWidget {
     );
   }
 
-  Widget _conditionArea(BuildContext context) {
-    final viewModel = Provider.of<ConditionViewModel>(context);
+  Widget _conditionArea(WidgetRef ref) {
+    final conditions = ref.watch(conditionViewModelProvider).conditions;
+    final selectName = ref.watch(conditionViewModelProvider).selectedConditionName;
     return Container(
       margin: const EdgeInsets.only(left: 16, right: 16),
       height: 200,
       child: Wrap(
         direction: Axis.horizontal,
         spacing: 8.0,
-        children: viewModel.conditions
-            .map((c) => ChoiceChip(
-                  label: Text(c.name),
-                  selected: viewModel.selectedCondition.name == c.name,
-                  onSelected: (bool isSelected) {
-                    viewModel.selectCondition(c);
-                  },
-                ))
+        children: conditions
+            .map(
+              (c) => ChoiceChip(
+                label: Text(c.name),
+                selected: selectName == c.name,
+                onSelected: (_) {
+                  ref.read(conditionViewModelProvider).selectCondition(c);
+                },
+              ),
+            )
             .toList(),
       ),
     );
   }
 
-  Widget _inputArea(BuildContext context) {
-    final isLogin = context.select<AppSettings, bool>((m) => m.isLogin);
+  Widget _inputArea(BuildContext context, WidgetRef ref) {
+    final isSigniIn = ref.watch(conditionViewModelProvider).isSignIn;
     return Padding(
-      padding: const EdgeInsets.only(left: 36.0, right: 36.0, top: 16.0, bottom: 36.0),
+      padding: const EdgeInsets.symmetric(horizontal: 36.0),
       child: Column(
         children: [
-          _textFieldOnInputArea(context),
           const SizedBox(height: 16),
-          if (isLogin) _saveButtonOnInputArea(context),
+          _textFieldOnInputArea(context, ref),
+          const SizedBox(height: 16),
+          if (isSigniIn) _saveButtonOnInputArea(context, ref),
+          const SizedBox(height: 36),
         ],
       ),
     );
   }
 
-  Widget _textFieldOnInputArea(BuildContext context) {
-    final viewModel = Provider.of<ConditionViewModel>(context);
+  Widget _textFieldOnInputArea(BuildContext context, WidgetRef ref) {
     return TextFormField(
       textCapitalization: TextCapitalization.words,
-      controller: viewModel.editController,
+      controller: ref.watch(conditionViewModelProvider).editController,
       decoration: const InputDecoration(
         labelText: AppStrings.conditionInputLabel,
         border: OutlineInputBorder(),
         filled: true,
       ),
       autovalidateMode: AutovalidateMode.always,
-      validator: (String? inputVal) => viewModel.inputValidator(inputVal),
+      validator: (String? inputVal) => ref.read(conditionViewModelProvider).inputValidator(inputVal),
       onFieldSubmitted: (String value) {
-        viewModel.input(value);
+        ref.read(conditionViewModelProvider).input(value);
       },
     );
   }
 
-  Widget _saveButtonOnInputArea(BuildContext context) {
-    final viewModel = Provider.of<ConditionViewModel>(context);
-
+  Widget _saveButtonOnInputArea(BuildContext context, WidgetRef ref) {
+    final exist = ref.watch(conditionViewModelProvider).exist;
     String buttonName;
-    if (viewModel.exist()) {
+    if (exist) {
       buttonName = AppStrings.conditionEditButton;
     } else {
       buttonName = AppStrings.conditionNewButton;
     }
 
+    final canSaved = ref.watch(conditionViewModelProvider).enableOnSave;
     return ElevatedButton(
-      onPressed: viewModel.enableOnSave
-          ? () async {
-              bool? isSuccess = await AppProgressDialog(execute: viewModel.onSave).show(context);
-              if (isSuccess) {
-                await viewModel.refresh();
-              }
-            }
-          : null,
+      onPressed: canSaved ? () async => _processSave(context, ref) : null,
       child: Text(buttonName),
+    );
+  }
+
+  Future<void> _processSave(BuildContext context, WidgetRef ref) async {
+    const progressDialog = AppProgressDialog<void>();
+    progressDialog.show(
+      context,
+      execute: ref.read(conditionViewModelProvider).save,
+      onSuccess: (_) async => await ref.read(conditionViewModelProvider).refresh(),
+      onError: (err) => AppDialog.onlyOk(message: err).show(context),
     );
   }
 }

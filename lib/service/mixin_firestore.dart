@@ -9,15 +9,15 @@ mixin AppFirestoreMixin {
   ///
   /// 記録情報詳細
   ///
-  static final String _recordRootCollection = 'dyphic';
-  static final String _recordRootDocument = 'records';
+  static const String _recordRootCollection = 'dyphic';
+  static const String _recordRootDocument = 'records';
   DocumentReference get _recordRootDoc => FirebaseFirestore.instance.collection(_recordRootCollection).doc(_recordRootDocument);
 
-  static final String _recordOverviewCollection = 'overview';
-  static final String _recordOverviewIsWalking = 'isWalking';
-  static final String _recordOverviewIsToilet = 'isToilet';
-  static final String _recordConditionIDsField = 'conditionIDs';
-  static final String _recordConditionMemoField = 'conditionMemo';
+  static const String _recordOverviewCollection = 'overview';
+  static const String _recordOverviewIsWalking = 'isWalking';
+  static const String _recordOverviewIsToilet = 'isToilet';
+  static const String _recordConditionIDsField = 'conditionIDs';
+  static const String _recordConditionMemoField = 'conditionMemo';
 
   Future<RecordOverview?> findOverviewRecord(int id) async {
     try {
@@ -75,9 +75,9 @@ mixin AppFirestoreMixin {
     await _saveField(overview.recordId.toString(), _recordOverviewCollection, map);
   }
 
-  static final String _recordTemperatureCollection = 'temperature';
-  static final String _recordMorningTemperatureField = 'morningTemperature';
-  static final String _recordNightTemperatureField = 'nightTemperature';
+  static const String _recordTemperatureCollection = 'temperature';
+  static const String _recordMorningTemperatureField = 'morningTemperature';
+  static const String _recordNightTemperatureField = 'nightTemperature';
 
   Future<RecordTemperature?> findTemperatureRecord(int id) async {
     try {
@@ -98,24 +98,6 @@ mixin AppFirestoreMixin {
     }
   }
 
-  // まだ体温を全件取得してグラフを表示する機能は実装していない。
-  Future<List<RecordTemperature>> findTemperatureRecords() async {
-    try {
-      final snapshot = await _recordRootDoc.collection(_recordTemperatureCollection).get();
-      return snapshot.docs.map((doc) {
-        final map = doc.data();
-        return RecordTemperature(
-          recordId: int.parse(doc.id),
-          morningTemperature: getDouble(map, _recordMorningTemperatureField),
-          nightTemperature: getDouble(map, _recordNightTemperatureField),
-        );
-      }).toList();
-    } on FirebaseException catch (e, s) {
-      await AppLogger.e('Firestore: records-temperatureの全件取得に失敗', e, s);
-      rethrow;
-    }
-  }
-
   Future<void> saveMorningTemperature(int recordId, double temperature) async {
     final map = <String, dynamic>{_recordMorningTemperatureField: temperature};
     await _saveField(recordId.toString(), _recordTemperatureCollection, map);
@@ -126,12 +108,12 @@ mixin AppFirestoreMixin {
     await _saveField(recordId.toString(), _recordTemperatureCollection, map);
   }
 
-  static final String _recordDetailCollection = 'detail';
-  static final String _recordMedicineIDsField = 'medicineIDs';
-  static final String _recordBreakFastField = 'breakfast';
-  static final String _recordLunchField = 'lunch';
-  static final String _recordDinnerField = 'dinner';
-  static final String _recordMemoField = 'memo';
+  static const String _recordDetailCollection = 'detail';
+  static const String _recordMedicineIDsField = 'medicineIDs';
+  static const String _recordBreakFastField = 'breakfast';
+  static const String _recordLunchField = 'lunch';
+  static const String _recordDinnerField = 'dinner';
+  static const String _recordMemoField = 'memo';
 
   Future<RecordDetail?> findDetailRecord(int id) async {
     try {
@@ -216,7 +198,7 @@ mixin AppFirestoreMixin {
   ///
   /// お薬
   ///
-  static final String _medicineRootName = 'medicines';
+  static const String _medicineRootName = 'medicines';
 
   Future<List<Medicine>> findMedicines() async {
     try {
@@ -261,7 +243,7 @@ mixin AppFirestoreMixin {
   ///
   /// 体調
   ///
-  static final String _conditionRootName = 'conditions';
+  static const String _conditionRootName = 'conditions';
 
   Future<List<Condition>> findConditions() async {
     try {
@@ -295,7 +277,7 @@ mixin AppFirestoreMixin {
   ///
   /// ノート
   ///
-  static final String _noteRootName = 'notes';
+  static const String _noteRootName = 'notes';
 
   Future<List<Note>> findNotes() async {
     try {

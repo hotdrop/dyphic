@@ -1,27 +1,24 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:dyphic/common/app_logger.dart';
 import 'package:dyphic/model/medicine.dart';
 import 'package:dyphic/repository/medicine_repository.dart';
-import 'package:dyphic/ui/notifier_view_model.dart';
+import 'package:dyphic/ui/base_view_model.dart';
 
-class MedicineEditViewModel extends NotifierViewModel {
-  MedicineEditViewModel._(this._originalMedicine, this._repository) {
-    _init();
-  }
+final medicineEditViewModelProvider = ChangeNotifierProvider.autoDispose((ref) => _MedicineEditViewModel(ref.read));
 
-  factory MedicineEditViewModel.create(Medicine medicine) {
-    return MedicineEditViewModel._(medicine, MedicineRepository.create());
-  }
+class _MedicineEditViewModel extends BaseViewModel {
+  _MedicineEditViewModel(this._read);
 
-  final MedicineRepository _repository;
-  final Medicine _originalMedicine;
+  final Reader _read;
+
   late _InputItem _inputItem;
 
   String get imageFilePath => _inputItem.localImagePath;
   bool get canSave => _inputItem.isCompletedRequiredFields();
 
-  void _init() {
-    _inputItem = _InputItem.create(_originalMedicine);
-    loadSuccess();
+  void init(Medicine medicine) {
+    _inputItem = _InputItem.create(medicine);
+    onSuccess();
   }
 
   void inputName(String name) {
@@ -45,24 +42,15 @@ class MedicineEditViewModel extends NotifierViewModel {
     _inputItem.memo = memo;
   }
 
-  Future<bool> save() async {
-    final medicine = Medicine(
-      id: _originalMedicine.id,
-      name: _inputItem.name,
-      overview: _inputItem.overview,
-      type: _inputItem.type,
-      memo: _inputItem.memo,
-      imagePath: _inputItem.localImagePath,
-      order: _originalMedicine.order,
-    );
+  Future<void> save() async {
+    final medicine = _inputItem.toMedicine();
+    final isUpdateImage = _inputItem.isChageImagePath();
 
     try {
-      bool isUpdateImage = (_originalMedicine.imagePath != _inputItem.localImagePath);
-      await _repository.save(medicine, isUpdateImage);
-      return true;
+      await _read(medicineRepositoryProvider).save(medicine, isUpdateImage);
     } catch (e, s) {
       await AppLogger.e('お薬情報の保存に失敗しました。', e, s);
-      return false;
+      rethrow;
     }
   }
 }
@@ -71,19 +59,47 @@ class MedicineEditViewModel extends NotifierViewModel {
 /// 入力保持用のクラス
 ///
 class _InputItem {
-  _InputItem._(this.name, this.overview, this.type, this.memo, this.localImagePath);
+  _InputItem._(
+    this.id,
+    this.name,
+    this.overview,
+    this.type,
+    this.memo,
+    this.localImagePath,
+    this.order,
+    this.originalImagePath,
+  );
 
-  factory _InputItem.create(Medicine item) {
-    return _InputItem._(item.name, item.overview, item.type, item.memo, item.imagePath);
+  factory _InputItem.create(Medicine m) {
+    return _InputItem._(m.id, m.name, m.overview, m.type, m.memo, m.imagePath, m.order, m.imagePath);
   }
 
+  int id;
   String name;
   String overview;
   MedicineType type;
   String memo;
   String localImagePath;
+  int order;
+  final String originalImagePath;
 
   bool isCompletedRequiredFields() {
     return name.isNotEmpty;
+  }
+
+  bool isChageImagePath() {
+    return originalImagePath != localImagePath;
+  }
+
+  Medicine toMedicine() {
+    return Medicine(
+      id: id,
+      name: name,
+      overview: overview,
+      type: type,
+      memo: memo,
+      imagePath: localImagePath,
+      order: order,
+    );
   }
 }

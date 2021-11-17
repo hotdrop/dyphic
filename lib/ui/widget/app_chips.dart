@@ -2,20 +2,21 @@ import 'package:dyphic/model/app_settings.dart';
 import 'package:dyphic/ui/widget/app_image.dart';
 import 'package:flutter/material.dart';
 
-import 'package:dyphic/common/app_colors.dart';
+import 'package:dyphic/res/app_colors.dart';
 import 'package:dyphic/model/condition.dart';
 import 'package:dyphic/model/medicine.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 ///
 /// 体調用の選択chips
 ///
-class ConditionSelectChips extends StatefulWidget {
+class ConditionSelectChips extends ConsumerStatefulWidget {
   const ConditionSelectChips({
+    Key? key,
     required this.selectIds,
     required this.allConditions,
     required this.onChange,
-  });
+  }) : super(key: key);
 
   final Set<int> selectIds;
   final List<Condition> allConditions;
@@ -25,7 +26,7 @@ class ConditionSelectChips extends StatefulWidget {
   _ConditionSelectChipsState createState() => _ConditionSelectChipsState();
 }
 
-class _ConditionSelectChipsState extends State<ConditionSelectChips> {
+class _ConditionSelectChipsState extends ConsumerState<ConditionSelectChips> {
   Set<int> _selectedIds = <int>{};
 
   @override
@@ -57,12 +58,12 @@ class _ConditionSelectChipsState extends State<ConditionSelectChips> {
   }
 
   List<Widget> _makeChips(BuildContext context) {
-    final appSettings = Provider.of<AppSettings>(context);
+    final appSettings = ref.read(appSettingsProvider);
     final conditionColor = (appSettings.isDarkMode) ? AppColors.conditionNight : AppColors.condition;
     return widget.allConditions.map((condition) {
       return FilterChip(
         key: ValueKey<String>(condition.name),
-        label: Text(condition.name, style: TextStyle(fontSize: 12.0)),
+        label: Text(condition.name, style: const TextStyle(fontSize: 12.0)),
         selected: _selectedIds.contains(condition.id) ? true : false,
         onSelected: (isSelect) => updateState(isSelect, condition.id),
         selectedColor: conditionColor,
@@ -74,12 +75,13 @@ class _ConditionSelectChipsState extends State<ConditionSelectChips> {
 ///
 /// お薬用の選択chips
 ///
-class MedicineSelectChips extends StatefulWidget {
+class MedicineSelectChips extends ConsumerStatefulWidget {
   const MedicineSelectChips({
+    Key? key,
     required this.selectIds,
     required this.allMedicines,
     required this.onChange,
-  });
+  }) : super(key: key);
 
   final Set<int> selectIds;
   final List<Medicine> allMedicines;
@@ -89,7 +91,7 @@ class MedicineSelectChips extends StatefulWidget {
   _MedicineSelectChipsState createState() => _MedicineSelectChipsState();
 }
 
-class _MedicineSelectChipsState extends State<MedicineSelectChips> {
+class _MedicineSelectChipsState extends ConsumerState<MedicineSelectChips> {
   Set<int> _selectedIds = <int>{};
 
   @override
@@ -121,14 +123,14 @@ class _MedicineSelectChipsState extends State<MedicineSelectChips> {
   }
 
   List<Widget> _makeChips(BuildContext context) {
-    final appSettings = Provider.of<AppSettings>(context);
+    final appSettings = ref.read(appSettingsProvider);
     final medicineColor = (appSettings.isDarkMode) ? AppColors.medicineNight : AppColors.medicine;
     return widget.allMedicines.map((medicine) {
       return Tooltip(
         message: medicine.overview,
         child: FilterChip(
           avatar: ClipOval(
-            child: Container(
+            child: SizedBox(
               width: 30.0,
               height: 30.0,
               child: AppImage.icon(path: medicine.imagePath),
@@ -136,7 +138,7 @@ class _MedicineSelectChipsState extends State<MedicineSelectChips> {
           ),
           showCheckmark: false,
           key: ValueKey<String>(medicine.name),
-          label: Text(medicine.name, style: TextStyle(fontSize: 12.0)),
+          label: Text(medicine.name, style: const TextStyle(fontSize: 12.0)),
           selected: _selectedIds.contains(medicine.id) ? true : false,
           onSelected: (isSelect) => updateState(isSelect, medicine.id),
           selectedColor: medicineColor,

@@ -1,36 +1,36 @@
 import 'package:dyphic/common/app_logger.dart';
 import 'package:dyphic/model/note.dart';
+import 'package:dyphic/repository/account_repository.dart';
 import 'package:dyphic/repository/note_repository.dart';
-import 'package:dyphic/ui/notifier_view_model.dart';
+import 'package:dyphic/ui/base_view_model.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class NoteEditViewModel extends NotifierViewModel {
-  NoteEditViewModel._(this._originalNote, this._repository) {
-    _init();
-  }
+final noteEditViewModelProvider = ChangeNotifierProvider.autoDispose((ref) => _NoteEditViewModel(ref.read));
 
-  factory NoteEditViewModel.create(Note note) {
-    return NoteEditViewModel._(note, NoteRepository.create());
-  }
+class _NoteEditViewModel extends BaseViewModel {
+  _NoteEditViewModel(this._read);
 
-  final NoteRepository _repository;
-  final Note _originalNote;
+  final Reader _read;
 
+  late Note _originalNote;
   late String _inputTitle;
   late String _inputDetail;
+
   late int _inputTypeValue;
   int get inputTypeValue => _inputTypeValue;
 
-  bool get canSave => _inputTitle.isNotEmpty;
+  bool get canSaved => _inputTitle.isNotEmpty;
+  bool get isSignIn => _read(accountRepositoryProvider).isSignIn;
 
-  void _init() {
-    _inputTitle = _originalNote.title;
-    _inputDetail = _originalNote.detail;
-    _inputTypeValue = _originalNote.typeValue;
-    loadSuccess();
+  void init(Note note) {
+    _originalNote = note;
+    _inputTitle = note.title;
+    _inputDetail = note.detail;
+    _inputTypeValue = note.typeValue;
+    onSuccess();
   }
 
   void inputType(int type) {
-    AppLogger.d('選択した値 $type を保存します。');
     _inputTypeValue = type;
     notifyListeners();
   }
@@ -44,14 +44,13 @@ class NoteEditViewModel extends NotifierViewModel {
     _inputDetail = detail;
   }
 
-  Future<bool> save() async {
+  Future<void> save() async {
     final newNote = Note(id: _originalNote.id, typeValue: _inputTypeValue, title: _inputTitle, detail: _inputDetail);
     try {
-      await _repository.save(newNote);
-      return true;
+      await _read(noteRepositoryProvider).save(newNote);
     } catch (e, s) {
       await AppLogger.e('ノートの保存に失敗しました。', e, s);
-      return false;
+      rethrow;
     }
   }
 }

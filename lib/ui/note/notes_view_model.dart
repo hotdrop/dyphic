@@ -1,39 +1,45 @@
 import 'dart:math';
-
+import 'package:dyphic/common/app_logger.dart';
 import 'package:dyphic/model/note.dart';
+import 'package:dyphic/repository/account_repository.dart';
 import 'package:dyphic/repository/note_repository.dart';
-import 'package:dyphic/ui/notifier_view_model.dart';
+import 'package:dyphic/ui/base_view_model.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class NotesViewModel extends NotifierViewModel {
-  NotesViewModel._(this._repository) {
+final notesViewModelProvider = ChangeNotifierProvider.autoDispose((ref) => _NotesViewModel(ref.read));
+
+class _NotesViewModel extends BaseViewModel {
+  _NotesViewModel(this._read) {
     _init();
   }
 
-  factory NotesViewModel.create() {
-    return NotesViewModel._(NoteRepository.create());
-  }
-
-  final NoteRepository _repository;
+  final Reader _read;
+  bool get isSignIn => _read(accountRepositoryProvider).isSignIn;
 
   late List<Note> _notes;
   List<Note> get notes => _notes;
 
   Future<void> _init() async {
-    _notes = await _repository.findAll();
-    loadSuccess();
+    try {
+      _notes = await _read(noteRepositoryProvider).findAll();
+      onSuccess();
+    } catch (e, s) {
+      await AppLogger.e('ノート一覧の取得に失敗しました。', e, s);
+      onError('$e');
+    }
   }
 
   Future<void> reload() async {
-    nowLoading();
-    _notes = await _repository.findAll();
-    loadSuccess();
+    try {
+      _notes = await _read(noteRepositoryProvider).findAll();
+      notifyListeners();
+    } catch (e, s) {
+      await AppLogger.e('ノート一覧の取得に失敗しました。', e, s);
+      onError('$e');
+    }
   }
 
   int createNewId() {
-    if (_notes.isNotEmpty) {
-      return _notes.map((e) => e.id).reduce(max) + 1;
-    } else {
-      return 1;
-    }
+    return (_notes.isNotEmpty) ? _notes.map((e) => e.id).reduce(max) + 1 : 1;
   }
 }

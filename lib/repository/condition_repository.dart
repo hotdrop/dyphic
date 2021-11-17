@@ -1,20 +1,19 @@
 import 'package:dyphic/model/condition.dart';
 import 'package:dyphic/repository/remote/condition_api.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class ConditionRepository {
-  const ConditionRepository._(this._conditionApi);
+final conditionRepositoryProvider = Provider((ref) => _ConditionRepository(ref.read));
 
-  factory ConditionRepository.create() {
-    return ConditionRepository._(ConditionApi.create());
-  }
+class _ConditionRepository {
+  const _ConditionRepository(this._read);
 
-  final ConditionApi _conditionApi;
+  final Reader _read;
 
   Future<List<Condition>> findAll() async {
-    return await _conditionApi.findAll();
+    return await _read(conditionApiProvider).findAll();
   }
 
   Future<void> save(Condition condition) async {
-    return await _conditionApi.save(condition);
+    return await _read(conditionApiProvider).save(condition);
   }
 }

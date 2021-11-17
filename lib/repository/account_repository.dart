@@ -1,22 +1,22 @@
 import 'package:dyphic/service/app_firebase.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class AccountRepository {
-  const AccountRepository._(this._appFirebase);
+final accountRepositoryProvider = Provider((ref) => _AccountRepository(ref.read));
 
-  factory AccountRepository.create() {
-    return AccountRepository._(AppFirebase.instance);
+class _AccountRepository {
+  const _AccountRepository(this._read);
+
+  final Reader _read;
+
+  bool get isSignIn => _read(appFirebaseProvider).isSignIn;
+  String? get userName => _read(appFirebaseProvider).userName;
+  String? get userEmail => _read(appFirebaseProvider).email;
+
+  Future<void> signIn() async {
+    await _read(appFirebaseProvider).signInWithGoogle();
   }
 
-  final AppFirebase _appFirebase;
-  bool get isLogIn => _appFirebase.isLogIn;
-  String? get userName => _appFirebase.userName;
-  String? get userEmail => _appFirebase.email;
-
-  Future<void> login() async {
-    await _appFirebase.login();
-  }
-
-  Future<void> logout() async {
-    await _appFirebase.logout();
+  Future<void> signOut() async {
+    await _read(appFirebaseProvider).logout();
   }
 }

@@ -1,31 +1,23 @@
-import 'package:dyphic/common/app_logger.dart';
 import 'package:dyphic/model/medicine.dart';
 import 'package:dyphic/service/app_firebase.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class MedicineApi {
-  const MedicineApi._(this._appFirebase);
+final medicineApiProvider = Provider((ref) => _MedicineApi(ref.read));
 
-  factory MedicineApi.create() {
-    return MedicineApi._(AppFirebase.instance);
-  }
+class _MedicineApi {
+  const _MedicineApi(this._read);
 
-  final AppFirebase _appFirebase;
+  final Reader _read;
 
   Future<List<Medicine>> findAll() async {
-    final medicines = await _appFirebase.findMedicines();
-    medicines.sort((a, b) => a.order - b.order);
-    AppLogger.d('お薬情報を取得しました。データ数: ${medicines.length}');
-    return medicines;
+    return await _read(appFirebaseProvider).findMedicines();
   }
 
-  Future<void> save(Medicine medicine, bool isUpdateImage) async {
-    Medicine newMedicine = medicine;
-    if (medicine.imagePath.isNotEmpty && isUpdateImage) {
-      final saveUrl = await _appFirebase.saveImage(medicine.imagePath);
-      newMedicine = medicine.copyWith(imageUrl: saveUrl);
-    }
+  Future<void> save(Medicine medicine) async {
+    await _read(appFirebaseProvider).saveMedicine(medicine);
+  }
 
-    AppLogger.d('お薬情報を保存します。\n${newMedicine.toString()}');
-    await _appFirebase.saveMedicine(newMedicine);
+  Future<String> updateImage(String imagePath) async {
+    return await _read(appFirebaseProvider).saveImage(imagePath);
   }
 }

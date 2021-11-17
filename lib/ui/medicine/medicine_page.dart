@@ -1,101 +1,103 @@
 import 'package:dyphic/common/app_logger.dart';
-import 'package:dyphic/common/app_strings.dart';
-import 'package:dyphic/model/app_settings.dart';
+import 'package:dyphic/res/app_strings.dart';
 import 'package:dyphic/model/medicine.dart';
-import 'package:dyphic/model/page_state.dart';
 import 'package:dyphic/ui/medicine/edit/medicine_edit_page.dart';
 import 'package:dyphic/ui/medicine/medicine_card_view.dart';
 import 'package:dyphic/ui/medicine/medicine_view_model.dart';
+import 'package:dyphic/ui/widget/app_dialog.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class MedicinePage extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return ChangeNotifierProvider<MedicineViewModel>(
-      create: (_) => MedicineViewModel.create(),
-      builder: (context, _) {
-        final pageState = context.select<MedicineViewModel, PageLoadingState>((vm) => vm.pageState);
-        if (pageState.isLoadSuccess) {
-          return _loadSuccessView(context);
-        } else {
-          return _nowLoadingView();
-        }
-      },
-      child: _nowLoadingView(),
+class MedicinePage extends ConsumerWidget {
+  const MedicinePage._();
+
+  static Future<void> start(BuildContext context) async {
+    await Navigator.push<void>(
+      context,
+      MaterialPageRoute(builder: (_) => const MedicinePage._()),
     );
   }
 
-  Widget _nowLoadingView() {
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final uiState = ref.watch(medicineViewModelProvider).uiState;
+    return uiState.when(
+      loading: (err) => _onLoading(context, err),
+      success: () => _onSuccess(context, ref),
+    );
+  }
+
+  Widget _onLoading(BuildContext context, String? errorMsg) {
+    Future.delayed(Duration.zero).then((_) async {
+      if (errorMsg != null) {
+        await AppDialog.onlyOk(message: errorMsg).show(context);
+      }
+    });
     return Scaffold(
       appBar: AppBar(
-        centerTitle: true,
         title: const Text(AppStrings.medicinePageTitle),
       ),
-      body: Center(
-        child: const CircularProgressIndicator(),
+      body: const Center(
+        child: CircularProgressIndicator(),
       ),
     );
   }
 
-  Widget _loadSuccessView(BuildContext context) {
-    final viewModel = Provider.of<MedicineViewModel>(context);
-    final isLogin = context.select<AppSettings, bool>((m) => m.isLogin);
+  Widget _onSuccess(BuildContext context, WidgetRef ref) {
+    final isSigniIn = ref.watch(medicineViewModelProvider).isSignIn;
     return Scaffold(
       appBar: AppBar(
-        centerTitle: true,
         title: const Text(AppStrings.medicinePageTitle),
       ),
       body: Padding(
         padding: const EdgeInsets.only(bottom: 32.0),
-        child: _contentsView(context, isEditable: isLogin),
+        child: _viewContents(context, ref),
       ),
-      floatingActionButton: isLogin
+      floatingActionButton: isSigniIn
           ? FloatingActionButton(
-              onPressed: () async {
-                int newId = viewModel.createNewId();
-                int newOrder = viewModel.createNewOrder();
-                bool isUpdate = await Navigator.of(context).push<bool>(
-                      MaterialPageRoute(builder: (_) => MedicineEditPage(Medicine.createEmpty(newId, newOrder))),
-                    ) ??
-                    false;
-                AppLogger.d('戻り値: $isUpdate');
-                if (isUpdate) {
-                  await viewModel.reload();
-                }
-              },
-              child: Icon(Icons.add),
+              onPressed: () async => await _processAdd(context, ref),
+              child: const Icon(Icons.add),
             )
           : null,
     );
   }
 
-  Widget _contentsView(BuildContext context, {required bool isEditable}) {
-    final viewModel = Provider.of<MedicineViewModel>(context);
-    final medicines = viewModel.medicines;
+  Future<void> _processAdd(BuildContext context, WidgetRef ref) async {
+    final newEmptyMeidine = Medicine.createEmpty(
+      ref.read(medicineViewModelProvider).createNewId(),
+      ref.read(medicineViewModelProvider).createNewOrder(),
+    );
+    bool isUpdate = await MedicineEditPage.start(context, newEmptyMeidine);
+    AppLogger.d('戻り値: $isUpdate');
+    if (isUpdate) {
+      await ref.read(medicineViewModelProvider).reload();
+    }
+  }
+
+  Widget _viewContents(BuildContext context, WidgetRef ref) {
+    final medicines = ref.watch(medicineViewModelProvider).medicines;
     if (medicines.isEmpty) {
-      return Center(
-        child: const Text(AppStrings.medicinePageNothingItemLabel),
-      );
-    } else {
-      return ListView.builder(
-        itemCount: medicines.length,
-        itemBuilder: (BuildContext context, int index) {
-          return MedicineCardView(
-            medicine: medicines[index],
-            isEditable: isEditable,
-            onTapEvent: () async {
-              bool isUpdate =
-                  await Navigator.of(context).push<bool>(MaterialPageRoute(builder: (_) => MedicineEditPage(medicines[index]))) ??
-                      false;
-              AppLogger.d('戻り値: $isUpdate');
-              if (isUpdate) {
-                await viewModel.reload();
-              }
-            },
-          );
-        },
+      return const Center(
+        child: Text(AppStrings.medicinePageNothingItemLabel),
       );
     }
+
+    final isEditable = ref.watch(medicineViewModelProvider).isSignIn;
+    return ListView.builder(
+      itemCount: medicines.length,
+      itemBuilder: (BuildContext context, int index) {
+        return MedicineCardView(
+          medicine: medicines[index],
+          isEditable: isEditable,
+          onTapEvent: () async {
+            bool isUpdate = await MedicineEditPage.start(context, medicines[index]);
+            AppLogger.d('戻り値: $isUpdate');
+            if (isUpdate) {
+              await ref.read(medicineViewModelProvider).reload();
+            }
+          },
+        );
+      },
+    );
   }
 }

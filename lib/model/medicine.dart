@@ -1,4 +1,4 @@
-import 'package:dyphic/common/app_strings.dart';
+import 'package:dyphic/res/app_strings.dart';
 
 class Medicine {
   const Medicine({

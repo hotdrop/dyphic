@@ -1,77 +1,69 @@
 import 'package:dyphic/common/app_logger.dart';
-import 'package:dyphic/common/app_strings.dart';
-import 'package:dyphic/model/app_settings.dart';
+import 'package:dyphic/res/app_strings.dart';
 import 'package:dyphic/model/note.dart';
-import 'package:dyphic/model/page_state.dart';
 import 'package:dyphic/ui/note/edit/note_edit_view_model.dart';
 import 'package:dyphic/ui/note/widget_note_type_icon.dart';
+import 'package:dyphic/ui/widget/app_dialog.dart';
 import 'package:dyphic/ui/widget/app_progress_dialog.dart';
 import 'package:dyphic/ui/widget/app_text_field.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class NoteEditPage extends StatelessWidget {
-  const NoteEditPage(this._note);
+class NoteEditPage extends ConsumerWidget {
+  const NoteEditPage._(this._note);
+
+  static Future<bool> start(BuildContext context, Note note) async {
+    return await Navigator.push<bool>(
+          context,
+          MaterialPageRoute(builder: (_) => NoteEditPage._(note)),
+        ) ??
+        false;
+  }
 
   final Note _note;
 
   @override
-  Widget build(BuildContext context) {
-    return ChangeNotifierProvider<NoteEditViewModel>(
-      create: (_) => NoteEditViewModel.create(_note),
-      builder: (context, _) {
-        final pageState = context.select<NoteEditViewModel, PageLoadingState>((vm) => vm.pageState);
-        if (pageState.isLoadSuccess) {
-          return _loadSuccessView(context);
-        } else {
-          return _nowLoadingView();
-        }
-      },
-      child: _nowLoadingView(),
-    );
-  }
-
-  Widget _nowLoadingView() {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final uiState = ref.watch(noteEditViewModelProvider).uiState;
     return Scaffold(
       appBar: AppBar(
-        centerTitle: true,
         title: const Text(AppStrings.noteEditPageTitle),
       ),
-      body: Center(
-        child: const CircularProgressIndicator(),
+      body: uiState.when(
+        loading: (_) => _onLoading(context, ref),
+        success: () => _onSuccess(context, ref),
       ),
     );
   }
 
-  Widget _loadSuccessView(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        centerTitle: true,
-        title: const Text(AppStrings.noteEditPageTitle),
-      ),
-      body: _contentsView(context),
+  Widget _onLoading(BuildContext context, WidgetRef ref) {
+    Future.delayed(Duration.zero).then((_) async {
+      ref.read(noteEditViewModelProvider).init(_note);
+    });
+    return const Center(
+      child: CircularProgressIndicator(),
     );
   }
 
-  Widget _contentsView(BuildContext context) {
+  Widget _onSuccess(BuildContext context, WidgetRef ref) {
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: ListView(
         children: [
-          Text('イメージアイコンを選択してください'),
-          _types(context),
+          const Text(AppStrings.noteEditPageSelectIconLabel),
+          _types(ref),
           const SizedBox(height: 8.0),
-          _editTitle(context),
+          _editTitle(ref),
           const SizedBox(height: 16.0),
-          _editDetail(context),
+          _editDetail(ref),
           const SizedBox(height: 8.0),
-          _saveButton(context),
+          _saveButton(context, ref),
         ],
       ),
     );
   }
 
-  Widget _types(BuildContext context) {
+  Widget _types(WidgetRef ref) {
     return Padding(
       padding: const EdgeInsets.only(top: 8.0, bottom: 8.0),
       child: Row(
@@ -83,7 +75,7 @@ class NoteEditPage extends StatelessWidget {
               direction: Axis.horizontal,
               spacing: 16.0,
               runSpacing: 8.0,
-              children: NoteType.values.map((type) => _typeRadio(context, type)).toList(),
+              children: NoteType.values.map((type) => _typeRadio(ref, type)).toList(),
             ),
           ),
         ],
@@ -91,18 +83,18 @@ class NoteEditPage extends StatelessWidget {
     );
   }
 
-  Widget _typeRadio(BuildContext context, NoteType noteType) {
-    final viewModel = Provider.of<NoteEditViewModel>(context);
+  Widget _typeRadio(WidgetRef ref, NoteType noteType) {
+    // TODO ここはwidgetに切り出した方がいい
     return Column(
       children: [
         NoteTypeIcon(noteType),
         Radio<int>(
           value: noteType.typeValue,
-          groupValue: viewModel.inputTypeValue,
+          groupValue: ref.read(noteEditViewModelProvider).inputTypeValue,
           onChanged: (int? value) {
             AppLogger.d('選択した値は $value');
             if (value != null) {
-              viewModel.inputType(value);
+              ref.read(noteEditViewModelProvider).inputType(value);
             }
           },
         )
@@ -110,50 +102,47 @@ class NoteEditPage extends StatelessWidget {
     );
   }
 
-  Widget _editTitle(BuildContext context) {
-    final viewModel = Provider.of<NoteEditViewModel>(context);
+  Widget _editTitle(WidgetRef ref) {
     return AppTextField(
       label: AppStrings.noteEditPageLabelTitle,
       initValue: _note.title,
       isRequired: true,
       onChanged: (String v) {
-        viewModel.inputTitle(v);
+        ref.read(noteEditViewModelProvider).inputTitle(v);
       },
     );
   }
 
-  Widget _editDetail(BuildContext context) {
-    final viewModel = Provider.of<NoteEditViewModel>(context);
+  Widget _editDetail(WidgetRef ref) {
     return MultiLineTextField(
       label: AppStrings.noteEditPageLabelDetail,
       initValue: _note.detail,
       limitLine: 15,
       hintText: AppStrings.noteEditPageLabelDetailHint,
       onChanged: (String v) {
-        viewModel.inputDetail(v);
+        ref.read(noteEditViewModelProvider).inputDetail(v);
       },
     );
   }
 
-  Widget _saveButton(BuildContext context) {
-    final viewModel = Provider.of<NoteEditViewModel>(context);
-    final isLogin = context.select<AppSettings, bool>((m) => m.isLogin);
-
+  Widget _saveButton(BuildContext context, WidgetRef ref) {
+    final isSignIn = ref.watch(noteEditViewModelProvider).isSignIn;
+    final canSaved = ref.watch(noteEditViewModelProvider).canSaved;
     return ElevatedButton(
-      style: ElevatedButton.styleFrom(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.0)),
-      ),
-      onPressed: viewModel.canSave && isLogin
-          ? () async {
-              // キーボードが出ている場合は閉じる
-              FocusScope.of(context).unfocus();
-              bool? isSuccess = await AppProgressDialog(execute: viewModel.save).show(context);
-              if (isSuccess) {
-                Navigator.pop(context, isSuccess);
-              }
-            }
-          : null,
+      onPressed: (isSignIn && canSaved) ? () async => _processSave(context, ref) : null,
       child: const Text(AppStrings.noteEditPageSaveButton, style: TextStyle(color: Colors.white)),
+    );
+  }
+
+  Future<void> _processSave(BuildContext context, WidgetRef ref) async {
+    // キーボードが出ている場合は閉じる
+    FocusScope.of(context).unfocus();
+    const dialog = AppProgressDialog<void>();
+    dialog.show(
+      context,
+      execute: ref.watch(noteEditViewModelProvider).save,
+      onSuccess: (_) => Navigator.pop(context, true),
+      onError: (err) => AppDialog.onlyOk(message: err).show(context),
     );
   }
 }

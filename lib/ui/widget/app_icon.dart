@@ -1,4 +1,5 @@
-import 'package:dyphic/common/app_colors.dart';
+import 'package:dyphic/res/app_colors.dart';
+import 'package:dyphic/res/app_images.dart';
 import 'package:flutter/material.dart';
 
 class AppIcon extends StatelessWidget {
@@ -42,11 +43,11 @@ class ThermometerIcon extends StatelessWidget {
   const ThermometerIcon._(this.imagePath);
 
   factory ThermometerIcon.morning() {
-    return ThermometerIcon._('res/images/ic_thermometer_morning.png');
+    return const ThermometerIcon._(AppImages.icThermometerMorning);
   }
 
   factory ThermometerIcon.night() {
-    return ThermometerIcon._('res/images/ic_thermometer_night.png');
+    return const ThermometerIcon._(AppImages.icThermometerNight);
   }
 
   final String imagePath;

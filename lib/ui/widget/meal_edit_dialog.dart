@@ -1,19 +1,27 @@
-import 'package:dyphic/common/app_strings.dart';
 import 'package:flutter/material.dart';
+import 'package:dyphic/res/app_strings.dart';
 
 class MealEditDialog extends StatefulWidget {
-  const MealEditDialog({
-    required this.title,
-    required this.initValue,
-    required this.isLogin,
-  });
+  const MealEditDialog._(this.title, this.initValue, this.isEditable);
 
   final String title;
   final String initValue;
-  final bool isLogin;
+  final bool isEditable;
 
   @override
   _MealEditDialogState createState() => _MealEditDialogState();
+
+  static Future<String?> show(
+    BuildContext context, {
+    required String title,
+    required String initValue,
+    required bool isEditable,
+  }) async {
+    return await showDialog<String>(
+      context: context,
+      builder: (ctx) => MealEditDialog._(title, initValue, isEditable),
+    );
+  }
 }
 
 class _MealEditDialogState extends State<MealEditDialog> {
@@ -32,21 +40,21 @@ class _MealEditDialogState extends State<MealEditDialog> {
       content: TextField(
         autofocus: true,
         controller: _controller,
-        enabled: widget.isLogin,
+        enabled: widget.isEditable,
         maxLines: 7,
-        decoration: InputDecoration(
+        decoration: const InputDecoration(
           labelText: AppStrings.recordMealDialogHint,
-          border: const OutlineInputBorder(),
+          border: OutlineInputBorder(),
         ),
       ),
       actions: <Widget>[
         TextButton(
           onPressed: () => Navigator.pop(context),
-          child: Text(AppStrings.dialogCancel),
+          child: const Text(AppStrings.dialogCancel),
         ),
         TextButton(
-          onPressed: (widget.isLogin) ? () => Navigator.pop<String>(context, _controller.text) : null,
-          child: Text(AppStrings.dialogOk),
+          onPressed: (widget.isEditable) ? () => Navigator.pop<String>(context, _controller.text) : null,
+          child: const Text(AppStrings.dialogOk),
         ),
       ],
     );

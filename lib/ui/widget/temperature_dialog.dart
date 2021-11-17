@@ -1,12 +1,8 @@
-import 'package:dyphic/common/app_strings.dart';
 import 'package:flutter/material.dart';
+import 'package:dyphic/res/app_strings.dart';
 
 class TemperatureEditDialog extends StatefulWidget {
-  const TemperatureEditDialog({
-    required this.title,
-    required this.color,
-    this.initValue,
-  });
+  const TemperatureEditDialog._(this.title, this.color, this.initValue);
 
   final String title;
   final Color color;
@@ -14,6 +10,20 @@ class TemperatureEditDialog extends StatefulWidget {
 
   @override
   _TemperatureEditDialogState createState() => _TemperatureEditDialogState();
+
+  static Future<double?> show(
+    BuildContext context, {
+    required String dialogTitle,
+    required Color color,
+    double? initValue,
+  }) async {
+    return await showDialog<double>(
+      context: context,
+      builder: (_) {
+        return TemperatureEditDialog._(dialogTitle, color, initValue);
+      },
+    );
+  }
 }
 
 class _TemperatureEditDialogState extends State<TemperatureEditDialog> {
@@ -86,7 +96,7 @@ class _TemperatureEditDialogState extends State<TemperatureEditDialog> {
           Padding(
             padding: const EdgeInsets.only(left: 32.0),
             child: Text(
-              '${_controller.text}',
+              _controller.text,
               style: TextStyle(fontSize: 32.0, color: widget.color),
             ),
           ),
@@ -97,14 +107,14 @@ class _TemperatureEditDialogState extends State<TemperatureEditDialog> {
       actions: <Widget>[
         TextButton(
           onPressed: () => Navigator.pop(context),
-          child: Text(AppStrings.dialogCancel),
+          child: const Text(AppStrings.dialogCancel),
         ),
         TextButton(
           onPressed: () {
             String v = inputValues.join();
             Navigator.pop<double>(context, double.parse(v));
           },
-          child: Text(AppStrings.dialogOk),
+          child: const Text(AppStrings.dialogOk),
         ),
       ],
     );

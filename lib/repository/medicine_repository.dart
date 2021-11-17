@@ -1,20 +1,30 @@
+import 'package:dyphic/common/app_logger.dart';
 import 'package:dyphic/model/medicine.dart';
 import 'package:dyphic/repository/remote/medicine_api.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class MedicineRepository {
-  const MedicineRepository._(this._medicineApi);
+final medicineRepositoryProvider = Provider((ref) => _MedicineRepository(ref.read));
 
-  factory MedicineRepository.create() {
-    return MedicineRepository._(MedicineApi.create());
-  }
+class _MedicineRepository {
+  const _MedicineRepository(this._read);
 
-  final MedicineApi _medicineApi;
+  final Reader _read;
 
   Future<List<Medicine>> findAll() async {
-    return await _medicineApi.findAll();
+    final medicines = await _read(medicineApiProvider).findAll();
+    medicines.sort((a, b) => a.order - b.order);
+    AppLogger.d('お薬情報を取得しました。データ数: ${medicines.length}');
+    return medicines;
   }
 
   Future<void> save(Medicine medicine, bool isUpdateImage) async {
-    return await _medicineApi.save(medicine, isUpdateImage);
+    Medicine newMedicine = medicine;
+    if (medicine.imagePath.isNotEmpty && isUpdateImage) {
+      final saveUrl = await _read(medicineApiProvider).updateImage(medicine.imagePath);
+      newMedicine = medicine.copyWith(imageUrl: saveUrl);
+    }
+
+    AppLogger.d('お薬情報を保存します。\n${newMedicine.toString()}');
+    await _read(medicineApiProvider).save(newMedicine);
   }
 }

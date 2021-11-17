@@ -1,15 +1,19 @@
-import 'package:dyphic/common/app_colors.dart';
-import 'package:dyphic/common/app_integer.dart';
-import 'package:dyphic/common/app_strings.dart';
+import 'package:dyphic/res/app_colors.dart';
+import 'package:dyphic/res/app_strings.dart';
 import 'package:dyphic/model/calendar_event.dart';
 import 'package:dyphic/model/dyphic_id.dart';
+import 'package:dyphic/res/app_images.dart';
 import 'package:dyphic/ui/calender/record/record_page.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 class DyphicCalendar extends StatefulWidget {
-  const DyphicCalendar({required this.events, required this.onReturnEditPage});
+  const DyphicCalendar({
+    Key? key,
+    required this.events,
+    required this.onReturnEditPage,
+  }) : super(key: key);
 
   final List<CalendarEvent> events;
   final void Function(bool isUpdate, int id) onReturnEditPage;
@@ -25,16 +29,18 @@ class _DyphicCalendarState extends State<DyphicCalendar> {
   DateTime? _selectedDate;
   CalendarEvent _selectedEvent = CalendarEvent.createEmpty(DateTime.now());
 
+  static const double calendarIconSize = 15.0;
+
   @override
   void initState() {
     super.initState();
     final nowDate = DateTime.now();
-    widget.events.forEach((event) {
+    for (var event in widget.events) {
       _events[event.id] = event;
       if (CalendarEvent.isSameDay(nowDate, event.date)) {
         _selectedEvent = event;
       }
-    });
+    }
     _selectedDate = _focusDate;
   }
 
@@ -57,23 +63,23 @@ class _DyphicCalendarState extends State<DyphicCalendar> {
     return Column(
       mainAxisSize: MainAxisSize.max,
       children: [
-        _buildCalendar(context),
+        _buildCalendar(),
         const SizedBox(height: 8.0),
         _cardDailyRecord(context),
       ],
     );
   }
 
-  Widget _buildCalendar(BuildContext context) {
+  Widget _buildCalendar() {
     return TableCalendar<CalendarEvent>(
       firstDay: DateTime(2020, 11, 1),
       lastDay: DateTime(2030, 12, 31),
       focusedDay: _focusDate,
       selectedDayPredicate: (date) => isSameDay(_selectedDate, date),
       rangeSelectionMode: RangeSelectionMode.disabled,
-      headerStyle: HeaderStyle(formatButtonVisible: false),
+      headerStyle: const HeaderStyle(formatButtonVisible: false),
       locale: 'ja_JP',
-      daysOfWeekHeight: 18.0, // デフォルト値の16だと日本語で見切れるのでちょっとふやす
+      daysOfWeekHeight: 20, // デフォルト値の16だと日本語で見切れるのでちょっとふやす
       calendarFormat: CalendarFormat.month,
       eventLoader: _getEventForDay,
       calendarStyle: CalendarStyle(
@@ -81,13 +87,13 @@ class _DyphicCalendarState extends State<DyphicCalendar> {
           color: Colors.deepOrange.withAlpha(70),
           shape: BoxShape.circle,
         ),
-        todayDecoration: BoxDecoration(
-          color: Theme.of(context).primaryColor,
+        todayDecoration: const BoxDecoration(
+          color: AppColors.themeColor,
           shape: BoxShape.circle,
         ),
         outsideDaysVisible: false,
       ),
-      calendarBuilders: CalendarBuilders(markerBuilder: (context, date, events) => _buildMarker(events)),
+      calendarBuilders: CalendarBuilders(markerBuilder: (ctx, date, events) => _buildMarker(events)),
       onDaySelected: (selectDate, focusDate) {
         final id = DyphicID.makeEventId(selectDate);
         if (_events.containsKey(id)) {
@@ -107,42 +113,42 @@ class _DyphicCalendarState extends State<DyphicCalendar> {
     final markers = <Widget>[];
 
     if (argEvents.isEmpty) {
-      return SizedBox();
+      return const SizedBox();
     }
 
     final event = argEvents.first;
     if (event.typeMedical()) {
       markers.add(Image.asset(
-        'res/images/ic_hospital.png',
-        width: AppInteger.calendarIconSize,
-        height: AppInteger.calendarIconSize,
+        AppImages.icHospital,
+        width: calendarIconSize,
+        height: calendarIconSize,
       ));
     } else if (event.typeInjection()) {
       markers.add(Image.asset(
-        'res/images/ic_inject.png',
-        width: AppInteger.calendarIconSize,
-        height: AppInteger.calendarIconSize,
+        AppImages.icInject,
+        width: calendarIconSize,
+        height: calendarIconSize,
       ));
     } else {
-      markers.add(SizedBox(width: AppInteger.calendarIconSize));
+      markers.add(const SizedBox(width: calendarIconSize));
     }
 
     if (event.haveRecord()) {
       final isToilet = event.recordOverview?.isToilet ?? false;
       if (isToilet) {
-        markers.add(SizedBox(width: AppInteger.calendarIconSize, child: Text('💩')));
+        markers.add(const SizedBox(width: calendarIconSize, child: Text('💩')));
       } else {
-        markers.add(SizedBox(width: AppInteger.calendarIconSize));
+        markers.add(const SizedBox(width: calendarIconSize));
       }
       final isWalk = event.recordOverview?.isWalking ?? false;
       if (isWalk) {
-        markers.add(Icon(Icons.directions_walk, size: AppInteger.calendarIconSize, color: AppColors.walking));
+        markers.add(const Icon(Icons.directions_walk, size: calendarIconSize, color: AppColors.walking));
       } else {
-        markers.add(SizedBox(width: AppInteger.calendarIconSize));
+        markers.add(const SizedBox(width: calendarIconSize));
       }
     } else {
-      markers.add(SizedBox(width: AppInteger.calendarIconSize));
-      markers.add(SizedBox(width: AppInteger.calendarIconSize));
+      markers.add(const SizedBox(width: calendarIconSize));
+      markers.add(const SizedBox(width: calendarIconSize));
     }
 
     return Row(
@@ -161,28 +167,24 @@ class _DyphicCalendarState extends State<DyphicCalendar> {
         elevation: 4.0,
         child: InkWell(
           onTap: () async {
-            final selectDate = _selectedEvent.date;
-            final isUpdate = await Navigator.of(context).push<bool>(
-                  MaterialPageRoute(builder: (_) => RecordPage(selectDate)),
-                ) ??
-                false;
-            final recordId = DyphicID.makeRecordId(selectDate);
+            final isUpdate = await RecordPage.start(context, _selectedEvent.date);
+            final recordId = DyphicID.makeRecordId(_selectedEvent.date);
             widget.onReturnEditPage(isUpdate, recordId);
           },
-          child: _detailDailyRecord(context),
+          child: _detailDailyRecord(),
         ),
       ),
     );
   }
 
-  Widget _detailDailyRecord(BuildContext context) {
+  Widget _detailDailyRecord() {
     return SingleChildScrollView(
       child: Padding(
-        padding: EdgeInsets.all(8.0),
+        padding: const EdgeInsets.all(8),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _labelEventInfo(context),
+            _labelEventInfo(),
             const Divider(),
             _labelRecordInfo(),
           ],
@@ -191,13 +193,13 @@ class _DyphicCalendarState extends State<DyphicCalendar> {
     );
   }
 
-  Widget _labelEventInfo(BuildContext context) {
+  Widget _labelEventInfo() {
     final dateStr = DateFormat(AppStrings.calenderPageDateFormat).format(_selectedEvent.date);
     if (_selectedEvent.name != null) {
       return Center(
         child: Text(
           '$dateStr(${_selectedEvent.name!})',
-          style: TextStyle(color: Theme.of(context).accentColor),
+          style: const TextStyle(color: AppColors.themeColor),
         ),
       );
     } else {
@@ -213,35 +215,27 @@ class _DyphicCalendarState extends State<DyphicCalendar> {
     if (_selectedEvent.haveRecord()) {
       // 体調
       widgets.add(Text(_selectedEvent.toStringConditions()));
-      widgets.add(SizedBox(height: 8.0));
+      widgets.add(const SizedBox(height: 8.0));
 
       // 散歩
       if (_selectedEvent.isWalking()) {
-        widgets.add(Text(AppStrings.calenderDetailWalkingLabel, style: TextStyle(color: AppColors.walking)));
-        widgets.add(SizedBox(height: 8.0));
+        widgets.add(const Text(AppStrings.calenderDetailWalkingLabel, style: TextStyle(color: AppColors.walking)));
+        widgets.add(const SizedBox(height: 8.0));
       }
 
       // 体調メモ
       final memo = _selectedEvent.getConditionMemo();
       if (memo.isNotEmpty) {
-        widgets.add(Text(AppStrings.calenderDetailConditionMemoLabel));
-        widgets.add(_labelMemo(memo));
+        widgets.add(const Text(AppStrings.calenderDetailConditionMemoLabel));
+        widgets.add(Text(memo, maxLines: 10, overflow: TextOverflow.ellipsis));
       }
     } else {
-      widgets.add(Text(AppStrings.calenderUnRegisterLabel));
+      widgets.add(const Text(AppStrings.calenderUnRegisterLabel));
     }
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: widgets,
-    );
-  }
-
-  Widget _labelMemo(String memo) {
-    return Text(
-      '$memo',
-      maxLines: 10,
-      overflow: TextOverflow.ellipsis,
     );
   }
 }

@@ -1,26 +1,23 @@
-import 'package:dyphic/common/app_logger.dart';
 import 'package:dyphic/model/calendar_event.dart';
 import 'package:dyphic/repository/json/event_json.dart';
+import 'package:dyphic/repository/local/shared_prefs.dart';
 import 'package:dyphic/service/app_firebase.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class EventApi {
-  const EventApi._(this._appFirebase);
+final eventApiProvider = Provider((ref) => _EventApi(ref.read));
 
-  factory EventApi.create() {
-    return EventApi._(AppFirebase.instance);
+class _EventApi {
+  const _EventApi(this._read);
+
+  final Reader _read;
+
+  Future<bool> isNewEvent() async {
+    final prevSaveEventDate = await _read(sharedPrefsProvider).getPrevSaveEventDate();
+    return await _read(appFirebaseProvider).isUpdateEventJson(prevSaveEventDate);
   }
 
-  final AppFirebase _appFirebase;
-
-  Future<List<Event>> findByLatest(DateTime? prevSaveEventDate) async {
-    final isUpdate = await _appFirebase.isUpdateEventJson(prevSaveEventDate);
-    AppLogger.d('イベント情報更新が必要か？ $isUpdate');
-
-    if (!isUpdate) {
-      return [];
-    }
-
-    String json = await _appFirebase.readEventJson();
+  Future<List<Event>> findAll() async {
+    String json = await _read(appFirebaseProvider).readEventJson();
     return EventJson.parse(json);
   }
 }

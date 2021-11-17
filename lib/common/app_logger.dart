@@ -1,4 +1,4 @@
-import 'package:dyphic/service/app_firebase.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/foundation.dart';
 import 'package:logger/logger.dart';
 
@@ -15,7 +15,8 @@ class AppLogger {
     if (kDebugMode) {
       _logger.e(message, exception);
     } else {
-      await AppFirebase.instance.crashRecord(message, exception, stackTrace);
+      await FirebaseCrashlytics.instance.setCustomKey('message', message);
+      await FirebaseCrashlytics.instance.recordError(exception, stackTrace);
     }
   }
 }

@@ -1,9 +1,13 @@
-import 'package:dyphic/common/app_strings.dart';
+import 'package:dyphic/res/app_strings.dart';
 import 'package:dyphic/model/medicine.dart';
 import 'package:flutter/material.dart';
 
 class MedicineTypeRadio extends StatefulWidget {
-  MedicineTypeRadio({required this.initSelectedType, required this.onChange});
+  const MedicineTypeRadio({
+    Key? key,
+    required this.initSelectedType,
+    required this.onChange,
+  }) : super(key: key);
 
   final MedicineType initSelectedType;
   final Function(MedicineType) onChange;

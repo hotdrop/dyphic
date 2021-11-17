@@ -1,34 +1,47 @@
-import 'package:dyphic/common/app_strings.dart';
+import 'package:dyphic/res/app_strings.dart';
 import 'package:dyphic/ui/calender/calendar_page.dart';
 import 'package:dyphic/ui/note/notes_page.dart';
 import 'package:dyphic/ui/setting/settings_page.dart';
-import 'package:dyphic/ui/temperature/temperature_page.dart';
 import 'package:flutter/material.dart';
 
-class MainPage extends StatefulWidget {
+class TopPage extends StatefulWidget {
+  const TopPage._();
+
+  static Future<void> start(BuildContext context) async {
+    Navigator.popUntil(context, (route) => route.isFirst);
+    await Navigator.pushReplacement<void, void>(
+      context,
+      MaterialPageRoute(
+        settings: const RouteSettings(name: routeName),
+        builder: (_) => const TopPage._(),
+      ),
+    );
+  }
+
+  static const String routeName = '/top';
+
   @override
-  _MainPageState createState() => _MainPageState();
+  _TopPageState createState() => _TopPageState();
 }
 
-class _MainPageState extends State<MainPage> {
+class _TopPageState extends State<TopPage> {
   int _currentIdx = 0;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        child: Center(child: _menuView(_currentIdx)),
-      ),
+      body: Center(child: _menuView(_currentIdx)),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIdx,
-        elevation: 12.0,
+        elevation: 4,
         type: BottomNavigationBarType.fixed,
         showUnselectedLabels: false,
-        items: _allDestinations
-            .map(
-              (item) => BottomNavigationBarItem(label: item.title, icon: Icon(item.icon)),
-            )
-            .toList(),
+        items: _allDestinations.map((menu) {
+          return BottomNavigationBarItem(
+            label: menu.title,
+            icon: Icon(menu.icon),
+          );
+        }).toList(),
         onTap: (i) {
           setState(() {
             _currentIdx = i;
@@ -43,11 +56,9 @@ class _MainPageState extends State<MainPage> {
       case 0:
         return CalenderPage();
       case 1:
-        return TemperaturePage();
-      case 2:
         return NotesPage();
       default:
-        return SettingsPage();
+        return const SettingsPage();
     }
   }
 }
@@ -60,7 +71,6 @@ class Destination {
 
 const _allDestinations = <Destination>[
   Destination(AppStrings.calenderPageTitle, Icons.calendar_today),
-  Destination(AppStrings.temperaturePageTitle, Icons.thermostat_outlined),
   Destination(AppStrings.notesPageTitle, Icons.sticky_note_2),
   Destination(AppStrings.settingsPageTitle, Icons.settings),
 ];

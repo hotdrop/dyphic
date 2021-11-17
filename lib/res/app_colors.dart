@@ -5,6 +5,9 @@ import 'package:flutter/material.dart';
 class AppColors {
   AppColors._();
 
+  static const Color themeColor = Color(0xFFF48FB1);
+  static const Color themeAccent = Colors.pinkAccent;
+
   static const Color morningTemperature = Color(0xFFF892B2);
   static const Color nightTemperature = Color(0xFF5E9FEF);
 
