@@ -19,7 +19,6 @@ class _SettingsViewModel extends BaseViewModel {
   String get appVersion => _packageInfo.version + '-' + _packageInfo.buildNumber;
 
   // サインイン情報
-  bool get isSignIn => _read(accountRepositoryProvider).isSignIn;
   String get userName => _read(accountRepositoryProvider).userName ?? AppStrings.settingsNotSignInNameLabel;
   String get email => _read(accountRepositoryProvider).userEmail ?? AppStrings.settingsNotSignInEmailLabel;
 

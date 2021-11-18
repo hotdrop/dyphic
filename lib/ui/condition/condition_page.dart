@@ -1,3 +1,4 @@
+import 'package:dyphic/model/app_settings.dart';
 import 'package:dyphic/res/app_strings.dart';
 import 'package:dyphic/ui/condition/condition_view_model.dart';
 import 'package:dyphic/ui/widget/app_dialog.dart';
@@ -113,7 +114,7 @@ class ConditionPage extends ConsumerWidget {
   }
 
   Widget _inputArea(BuildContext context, WidgetRef ref) {
-    final isSigniIn = ref.watch(conditionViewModelProvider).isSignIn;
+    final isSigniIn = ref.watch(appSettingsProvider).isSignIn;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 36.0),
       child: Column(

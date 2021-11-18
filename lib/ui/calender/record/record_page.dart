@@ -1,3 +1,4 @@
+import 'package:dyphic/model/app_settings.dart';
 import 'package:dyphic/res/app_strings.dart';
 import 'package:dyphic/ui/calender/record/record_view_model.dart';
 import 'package:dyphic/ui/widget/app_check_box.dart';
@@ -56,7 +57,7 @@ class RecordPage extends ConsumerWidget {
   }
 
   Widget _onSuccess(BuildContext context, WidgetRef ref) {
-    final isSignIn = ref.watch(recordViewModelProvider).isSignIn;
+    final isSignIn = ref.watch(appSettingsProvider).isSignIn;
     if (isSignIn) {
       return WillPopScope(
         onWillPop: () async {
@@ -84,9 +85,9 @@ class RecordPage extends ConsumerWidget {
             children: <Widget>[
               _mealViewArea(context, ref),
               _temperatureViewArea(ref),
-              _conditionViewArea(context, ref),
+              const _ConditionArea(),
               const SizedBox(height: 16.0),
-              _medicineViewArea(context, ref),
+              const _MedicineArea(),
               const SizedBox(height: 16.0),
               _memoView(context, ref),
               const SizedBox(height: 36),
@@ -98,7 +99,7 @@ class RecordPage extends ConsumerWidget {
   }
 
   Widget _mealViewArea(BuildContext context, WidgetRef ref) {
-    final isEditable = ref.watch(recordViewModelProvider).isSignIn;
+    final isSignIn = ref.watch(appSettingsProvider).isSignIn;
     return Column(
       children: [
         SizedBox(
@@ -109,7 +110,7 @@ class RecordPage extends ConsumerWidget {
             children: [
               MealCard.morning(
                 detail: ref.watch(recordViewModelProvider).breakfast,
-                isEditable: isEditable,
+                isEditable: isSignIn,
                 onTap: (String? newVal) {
                   if (newVal != null) {
                     ref.read(recordViewModelProvider).inputBreakfast(newVal);
@@ -119,7 +120,7 @@ class RecordPage extends ConsumerWidget {
               const SizedBox(width: 4),
               MealCard.lunch(
                 detail: ref.watch(recordViewModelProvider).lunch,
-                isEditable: isEditable,
+                isEditable: isSignIn,
                 onTap: (String? newVal) {
                   if (newVal != null) {
                     ref.read(recordViewModelProvider).inputLunch(newVal);
@@ -129,7 +130,7 @@ class RecordPage extends ConsumerWidget {
               const SizedBox(width: 4),
               MealCard.dinner(
                 detail: ref.watch(recordViewModelProvider).dinner,
-                isEditable: isEditable,
+                isEditable: isSignIn,
                 onEdit: (String? newVal) {
                   if (newVal != null) {
                     ref.read(recordViewModelProvider).inputDinner(newVal);
@@ -144,7 +145,7 @@ class RecordPage extends ConsumerWidget {
   }
 
   Widget _temperatureViewArea(WidgetRef ref) {
-    final isEditable = ref.read(recordViewModelProvider).isSignIn;
+    final isSignIn = ref.read(appSettingsProvider).isSignIn;
     return Padding(
       padding: const EdgeInsets.only(top: 16.0, bottom: 16.0),
       child: Row(
@@ -152,7 +153,7 @@ class RecordPage extends ConsumerWidget {
         children: <Widget>[
           TemperatureView.morning(
             temperature: ref.watch(recordViewModelProvider).morningTemperature,
-            isEditable: isEditable,
+            isEditable: isSignIn,
             onEditValue: (double? newValue) {
               if (newValue != null) {
                 ref.read(recordViewModelProvider).inputMorningTemperature(newValue);
@@ -161,7 +162,7 @@ class RecordPage extends ConsumerWidget {
           ),
           TemperatureView.night(
             temperature: ref.watch(recordViewModelProvider).nightTemperature,
-            isEditable: isEditable,
+            isEditable: isSignIn,
             onEditValue: (double? newValue) {
               if (newValue != null) {
                 ref.read(recordViewModelProvider).inputNightTemperature(newValue);
@@ -173,118 +174,8 @@ class RecordPage extends ConsumerWidget {
     );
   }
 
-  Widget _medicineViewArea(BuildContext context, WidgetRef ref) {
-    // TODO ここwidgetに切り出した方がいいのでは
-    final isDarkMode = ref.watch(recordViewModelProvider).isDarkMode;
-    final isSignIn = ref.watch(recordViewModelProvider).isSignIn;
-    return Card(
-      elevation: 4.0,
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Column(
-          children: [
-            _contentsTitle(
-              title: AppStrings.recordMedicalTitle,
-              icon: AppIcon.medicine(isDarkMode),
-            ),
-            const Divider(),
-            MedicineSelectChips(
-              selectIds: ref.read(recordViewModelProvider).selectMedicineIds,
-              allMedicines: ref.read(recordViewModelProvider).allMedicines,
-              onChange: (Set<int> ids) => ref.read(recordViewModelProvider).changeSelectedMedicine(ids),
-            ),
-            OutlinedButton(
-              onPressed: isSignIn ? () async => await _processSaveMedicine(context, ref) : null,
-              child: const Text(AppStrings.recordMedicineSaveButton),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Future<void> _processSaveMedicine(BuildContext context, WidgetRef ref) async {
-    // キーボードが出ている場合は閉じる
-    FocusScope.of(context).unfocus();
-    const progressDialog = AppProgressDialog<void>();
-    await progressDialog.show(
-      context,
-      execute: ref.read(recordViewModelProvider).saveMedicine,
-      onSuccess: (_) {/* 成功時は何もしない */},
-      onError: (err) => AppDialog.onlyOk(message: err).show(context),
-    );
-  }
-
-  Widget _conditionViewArea(BuildContext context, WidgetRef ref) {
-    // TODO ここwidgetに切り出した方がいいのでは
-    final isDarkMode = ref.watch(recordViewModelProvider).isDarkMode;
-    final isSignIn = ref.watch(recordViewModelProvider).isSignIn;
-    return Card(
-      elevation: 4.0,
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Column(
-          children: [
-            _contentsTitle(
-              title: AppStrings.recordConditionTitle,
-              icon: AppIcon.condition(isDarkMode),
-            ),
-            const Divider(),
-            ConditionSelectChips(
-              selectIds: ref.read(recordViewModelProvider).selectConditionIds,
-              allConditions: ref.read(recordViewModelProvider).allConditions,
-              onChange: (Set<int> ids) => ref.read(recordViewModelProvider).changeSelectedCondition(ids),
-            ),
-            const Divider(),
-            _viewCheckBoxes(ref),
-            MultiLineTextField(
-              label: AppStrings.recordConditionMemoTitle,
-              initValue: ref.read(recordViewModelProvider).conditionMemo,
-              limitLine: 10,
-              hintText: AppStrings.recordConditionMemoHint,
-              onChanged: ref.read(recordViewModelProvider).inputConditionMemo,
-            ),
-            const SizedBox(height: 8.0),
-            OutlinedButton(
-              onPressed: isSignIn ? () async => await _processSaveCondition(context, ref) : null,
-              child: const Text(AppStrings.recordConditionSaveButton),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Future<void> _processSaveCondition(BuildContext context, WidgetRef ref) async {
-    // キーボードが出ている場合は閉じる
-    FocusScope.of(context).unfocus();
-    const progressDialog = AppProgressDialog<void>();
-    await progressDialog.show(
-      context,
-      execute: ref.read(recordViewModelProvider).saveCondition,
-      onSuccess: (_) {/* 成功時は何もしない */},
-      onError: (err) => AppDialog.onlyOk(message: err).show(context),
-    );
-  }
-
-  Widget _viewCheckBoxes(WidgetRef ref) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      children: [
-        AppCheckBox.walking(
-          initValue: ref.watch(recordViewModelProvider).isWalking,
-          onChanged: (bool? isCheck) => ref.read(recordViewModelProvider).inputIsWalking(isCheck),
-        ),
-        AppCheckBox.toilet(
-          initValue: ref.watch(recordViewModelProvider).isToilet,
-          onChanged: (bool? isCheck) => ref.read(recordViewModelProvider).inputIsToilet(isCheck),
-        ),
-      ],
-    );
-  }
-
   Widget _memoView(BuildContext context, WidgetRef ref) {
-    final isSignIn = ref.watch(recordViewModelProvider).isSignIn;
+    final isSignIn = ref.watch(appSettingsProvider).isSignIn;
     return Card(
       elevation: 4.0,
       child: Padding(
@@ -320,12 +211,148 @@ class RecordPage extends ConsumerWidget {
       onError: (err) => AppDialog.onlyOk(message: err).show(context),
     );
   }
+}
 
-  Widget _contentsTitle({required String title, required AppIcon icon}) {
+///
+/// 体調情報の編集エリア
+///
+class _ConditionArea extends ConsumerWidget {
+  const _ConditionArea({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final isDarkMode = ref.watch(appSettingsProvider).isDarkMode;
+    final isSignIn = ref.watch(appSettingsProvider).isSignIn;
+    return Card(
+      elevation: 4.0,
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          children: [
+            _ContentsTitle(
+              title: AppStrings.recordConditionTitle,
+              appIcon: AppIcon.condition(isDarkMode),
+            ),
+            const Divider(),
+            ConditionSelectChips(
+              selectIds: ref.read(recordViewModelProvider).selectConditionIds,
+              allConditions: ref.read(recordViewModelProvider).allConditions,
+              onChange: (Set<int> ids) => ref.read(recordViewModelProvider).changeSelectedCondition(ids),
+            ),
+            const Divider(),
+            _viewCheckBoxes(ref),
+            MultiLineTextField(
+              label: AppStrings.recordConditionMemoTitle,
+              initValue: ref.read(recordViewModelProvider).conditionMemo,
+              limitLine: 10,
+              hintText: AppStrings.recordConditionMemoHint,
+              onChanged: ref.read(recordViewModelProvider).inputConditionMemo,
+            ),
+            const SizedBox(height: 8.0),
+            OutlinedButton(
+              onPressed: isSignIn ? () async => await _processSaveCondition(context, ref) : null,
+              child: const Text(AppStrings.recordConditionSaveButton),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _viewCheckBoxes(WidgetRef ref) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      children: [
+        AppCheckBox.walking(
+          initValue: ref.watch(recordViewModelProvider).isWalking,
+          onChanged: (bool? isCheck) => ref.read(recordViewModelProvider).inputIsWalking(isCheck),
+        ),
+        AppCheckBox.toilet(
+          initValue: ref.watch(recordViewModelProvider).isToilet,
+          onChanged: (bool? isCheck) => ref.read(recordViewModelProvider).inputIsToilet(isCheck),
+        ),
+      ],
+    );
+  }
+
+  Future<void> _processSaveCondition(BuildContext context, WidgetRef ref) async {
+    // キーボードが出ている場合は閉じる
+    FocusScope.of(context).unfocus();
+    const progressDialog = AppProgressDialog<void>();
+    await progressDialog.show(
+      context,
+      execute: ref.read(recordViewModelProvider).saveCondition,
+      onSuccess: (_) {/* 成功時は何もしない */},
+      onError: (err) => AppDialog.onlyOk(message: err).show(context),
+    );
+  }
+}
+
+///
+/// お薬情報の編集エリア
+///
+class _MedicineArea extends ConsumerWidget {
+  const _MedicineArea({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final isDarkMode = ref.watch(appSettingsProvider).isDarkMode;
+    final isSignIn = ref.watch(appSettingsProvider).isSignIn;
+    return Card(
+      elevation: 4.0,
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          children: [
+            _ContentsTitle(
+              title: AppStrings.recordMedicalTitle,
+              appIcon: AppIcon.medicine(isDarkMode),
+            ),
+            const Divider(),
+            MedicineSelectChips(
+              selectIds: ref.read(recordViewModelProvider).selectMedicineIds,
+              allMedicines: ref.read(recordViewModelProvider).allMedicines,
+              onChange: (Set<int> ids) => ref.read(recordViewModelProvider).changeSelectedMedicine(ids),
+            ),
+            OutlinedButton(
+              onPressed: isSignIn ? () async => await _processSaveMedicine(context, ref) : null,
+              child: const Text(AppStrings.recordMedicineSaveButton),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<void> _processSaveMedicine(BuildContext context, WidgetRef ref) async {
+    // キーボードが出ている場合は閉じる
+    FocusScope.of(context).unfocus();
+    const progressDialog = AppProgressDialog<void>();
+    await progressDialog.show(
+      context,
+      execute: ref.read(recordViewModelProvider).saveMedicine,
+      onSuccess: (_) {/* 成功時は何もしない */},
+      onError: (err) => AppDialog.onlyOk(message: err).show(context),
+    );
+  }
+}
+
+class _ContentsTitle extends StatelessWidget {
+  const _ContentsTitle({
+    Key? key,
+    required this.title,
+    required this.appIcon,
+  }) : super(key: key);
+
+  final String title;
+  final AppIcon appIcon;
+
+  @override
+  Widget build(BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
-        icon,
+        appIcon,
         const SizedBox(width: 8),
         Text(title),
       ],

@@ -19,13 +19,10 @@ class _ConditionViewModel extends BaseViewModel {
 
   final Reader _read;
 
-  bool get isSignIn => _read(accountRepositoryProvider).isSignIn;
-
   late List<Condition> _conditions;
   List<Condition> get conditions => _conditions;
 
   Condition _selectedCondition = Condition.empty();
-  Condition get selectedCondition => _selectedCondition;
   String get selectedConditionName => _selectedCondition.name;
   bool get exist => _selectedCondition.exist;
 

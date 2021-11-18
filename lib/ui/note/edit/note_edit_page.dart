@@ -1,4 +1,5 @@
-import 'package:dyphic/common/app_logger.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:dyphic/res/app_strings.dart';
 import 'package:dyphic/model/note.dart';
 import 'package:dyphic/ui/note/edit/note_edit_view_model.dart';
@@ -6,8 +7,6 @@ import 'package:dyphic/ui/note/widget_note_type_icon.dart';
 import 'package:dyphic/ui/widget/app_dialog.dart';
 import 'package:dyphic/ui/widget/app_progress_dialog.dart';
 import 'package:dyphic/ui/widget/app_text_field.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class NoteEditPage extends ConsumerWidget {
   const NoteEditPage._(this._note);
@@ -64,41 +63,11 @@ class NoteEditPage extends ConsumerWidget {
   }
 
   Widget _types(WidgetRef ref) {
-    return Padding(
-      padding: const EdgeInsets.only(top: 8.0, bottom: 8.0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: [
-          Expanded(
-            child: Wrap(
-              alignment: WrapAlignment.start,
-              direction: Axis.horizontal,
-              spacing: 16.0,
-              runSpacing: 8.0,
-              children: NoteType.values.map((type) => _typeRadio(ref, type)).toList(),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _typeRadio(WidgetRef ref, NoteType noteType) {
-    // TODO ここはwidgetに切り出した方がいい
-    return Column(
-      children: [
-        NoteTypeIcon(noteType),
-        Radio<int>(
-          value: noteType.typeValue,
-          groupValue: ref.read(noteEditViewModelProvider).inputTypeValue,
-          onChanged: (int? value) {
-            AppLogger.d('選択した値は $value');
-            if (value != null) {
-              ref.read(noteEditViewModelProvider).inputType(value);
-            }
-          },
-        )
-      ],
+    return _TypeRadioGroup(
+      selectedValue: _note.typeValue,
+      onSelected: (int value) {
+        ref.read(noteEditViewModelProvider).inputType(value);
+      },
     );
   }
 
@@ -126,10 +95,9 @@ class NoteEditPage extends ConsumerWidget {
   }
 
   Widget _saveButton(BuildContext context, WidgetRef ref) {
-    final isSignIn = ref.watch(noteEditViewModelProvider).isSignIn;
     final canSaved = ref.watch(noteEditViewModelProvider).canSaved;
     return ElevatedButton(
-      onPressed: (isSignIn && canSaved) ? () async => _processSave(context, ref) : null,
+      onPressed: canSaved ? () async => _processSave(context, ref) : null,
       child: const Text(AppStrings.noteEditPageSaveButton, style: TextStyle(color: Colors.white)),
     );
   }
@@ -143,6 +111,66 @@ class NoteEditPage extends ConsumerWidget {
       execute: ref.watch(noteEditViewModelProvider).save,
       onSuccess: (_) => Navigator.pop(context, true),
       onError: (err) => AppDialog.onlyOk(message: err).show(context),
+    );
+  }
+}
+
+///
+/// ノートのタイプ別アイコン
+/// ラジオボタンでいずれか1つを選択する
+///
+class _TypeRadioGroup extends StatefulWidget {
+  const _TypeRadioGroup({required this.selectedValue, required this.onSelected});
+
+  final int selectedValue;
+  final Function(int) onSelected;
+
+  @override
+  State<StatefulWidget> createState() => _TypeRadioGroupState();
+}
+
+class _TypeRadioGroupState extends State<_TypeRadioGroup> {
+  int _selectedValue = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedValue = widget.selectedValue;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: [
+        Expanded(
+          child: Wrap(
+            alignment: WrapAlignment.start,
+            direction: Axis.horizontal,
+            spacing: 16.0,
+            runSpacing: 8.0,
+            children: NoteType.values.map((type) => _typeItem(type)).toList(),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _typeItem(NoteType type) {
+    return Column(
+      children: [
+        NoteTypeIcon(type),
+        Radio<int>(
+          value: type.typeValue,
+          groupValue: _selectedValue,
+          onChanged: (int? value) {
+            if (value != null) {
+              setState(() => _selectedValue = value);
+              widget.onSelected(value);
+            }
+          },
+        )
+      ],
     );
   }
 }

@@ -1,3 +1,4 @@
+import 'package:dyphic/model/app_settings.dart';
 import 'package:dyphic/service/app_firebase.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -14,9 +15,11 @@ class _AccountRepository {
 
   Future<void> signIn() async {
     await _read(appFirebaseProvider).signInWithGoogle();
+    await _read(appSettingsProvider.notifier).refresh();
   }
 
   Future<void> signOut() async {
     await _read(appFirebaseProvider).logout();
+    await _read(appSettingsProvider.notifier).refresh();
   }
 }

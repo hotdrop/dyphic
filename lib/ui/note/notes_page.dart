@@ -1,4 +1,5 @@
 import 'package:dyphic/common/app_logger.dart';
+import 'package:dyphic/model/app_settings.dart';
 import 'package:dyphic/res/app_strings.dart';
 import 'package:dyphic/model/note.dart';
 import 'package:dyphic/ui/note/edit/note_edit_page.dart';
@@ -37,7 +38,7 @@ class NotesPage extends ConsumerWidget {
   }
 
   Widget _onSuccess(BuildContext context, WidgetRef ref) {
-    final isSignIn = ref.watch(notesViewModelProvider).isSignIn;
+    final isSignIn = ref.watch(appSettingsProvider).isSignIn;
     return Scaffold(
       appBar: AppBar(
         title: const Text(AppStrings.notesPageTitle),

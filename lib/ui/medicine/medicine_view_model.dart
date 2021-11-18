@@ -18,8 +18,6 @@ class _MedicineViewModel extends BaseViewModel {
   late List<Medicine> _medicines;
   List<Medicine> get medicines => _medicines;
 
-  bool get isSignIn => _read(accountRepositoryProvider).isSignIn;
-
   Future<void> _init() async {
     try {
       _medicines = await _read(medicineRepositoryProvider).findAll();

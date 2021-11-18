@@ -1,4 +1,5 @@
 import 'package:dyphic/common/app_logger.dart';
+import 'package:dyphic/model/app_settings.dart';
 import 'package:dyphic/res/app_strings.dart';
 import 'package:dyphic/model/medicine.dart';
 import 'package:dyphic/ui/medicine/edit/medicine_edit_page.dart';
@@ -44,7 +45,7 @@ class MedicinePage extends ConsumerWidget {
   }
 
   Widget _onSuccess(BuildContext context, WidgetRef ref) {
-    final isSigniIn = ref.watch(medicineViewModelProvider).isSignIn;
+    final isSigniIn = ref.watch(appSettingsProvider).isSignIn;
     return Scaffold(
       appBar: AppBar(
         title: const Text(AppStrings.medicinePageTitle),
@@ -82,13 +83,13 @@ class MedicinePage extends ConsumerWidget {
       );
     }
 
-    final isEditable = ref.watch(medicineViewModelProvider).isSignIn;
+    final isSignIn = ref.watch(appSettingsProvider).isSignIn;
     return ListView.builder(
       itemCount: medicines.length,
       itemBuilder: (BuildContext context, int index) {
         return MedicineCardView(
           medicine: medicines[index],
-          isEditable: isEditable,
+          isEditable: isSignIn,
           onTapEvent: () async {
             bool isUpdate = await MedicineEditPage.start(context, medicines[index]);
             AppLogger.d('戻り値: $isUpdate');

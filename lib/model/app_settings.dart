@@ -1,3 +1,4 @@
+import 'package:dyphic/repository/account_repository.dart';
 import 'package:dyphic/repository/local/local_data_source.dart';
 import 'package:flutter/material.dart';
 
@@ -7,7 +8,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 final appSettingsProvider = StateNotifierProvider<_AppSettingsNotifier, AppSettings>((ref) => _AppSettingsNotifier(ref.read));
 
 class _AppSettingsNotifier extends StateNotifier<AppSettings> {
-  _AppSettingsNotifier(this._read) : super(const AppSettings());
+  _AppSettingsNotifier(this._read) : super(AppSettings.create());
 
   final Reader _read;
 
@@ -21,8 +22,10 @@ class _AppSettingsNotifier extends StateNotifier<AppSettings> {
 
   Future<void> refresh() async {
     final isDarkMode = await _read(appSettingsRepositoryProvider).isDarkMode();
-    final mode = isDarkMode ? ThemeMode.dark : ThemeMode.light;
-    state = AppSettings(currentMode: mode);
+    state = AppSettings.create(
+      mode: isDarkMode ? ThemeMode.dark : ThemeMode.light,
+      isSignIn: _read(accountRepositoryProvider).isSignIn,
+    );
   }
 
   Future<void> changeTheme(bool isDark) async {
@@ -36,15 +39,22 @@ class _AppSettingsNotifier extends StateNotifier<AppSettings> {
 }
 
 class AppSettings {
-  const AppSettings({this.currentMode = ThemeMode.system});
+  const AppSettings(this._currentMode, this.isSignIn);
 
-  final ThemeMode currentMode;
+  factory AppSettings.create({ThemeMode? mode, bool? isSignIn}) {
+    final currentMode = mode ?? ThemeMode.system;
+    return AppSettings(currentMode, isSignIn ?? false);
+  }
 
-  bool get isDarkMode => currentMode == ThemeMode.dark;
+  final ThemeMode _currentMode;
+  final bool isSignIn;
 
-  AppSettings copyWith({ThemeMode? currentMode}) {
+  bool get isDarkMode => _currentMode == ThemeMode.dark;
+
+  AppSettings copyWith(ThemeMode currentMode, {bool? isSignIn}) {
     return AppSettings(
-      currentMode: currentMode ?? this.currentMode,
+      currentMode,
+      isSignIn ?? this.isSignIn,
     );
   }
 }

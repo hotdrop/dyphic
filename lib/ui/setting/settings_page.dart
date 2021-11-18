@@ -41,7 +41,7 @@ class SettingsPage extends ConsumerWidget {
   }
 
   Widget _onSuccess(BuildContext context, WidgetRef ref) {
-    final signIn = ref.watch(settingsViewModelProvider).isSignIn;
+    final signIn = ref.watch(appSettingsProvider).isSignIn;
     return ListView(
       children: [
         _rowAccountInfo(context, ref),
@@ -56,7 +56,7 @@ class SettingsPage extends ConsumerWidget {
   }
 
   Widget _rowAccountInfo(BuildContext context, WidgetRef ref) {
-    final isSignIn = ref.watch(settingsViewModelProvider).isSignIn;
+    final isSignIn = ref.watch(appSettingsProvider).isSignIn;
     return ListTile(
       leading: const Icon(Icons.account_circle, size: _iconSize),
       title: Text(ref.watch(settingsViewModelProvider).userName),

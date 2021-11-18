@@ -14,7 +14,6 @@ class _NotesViewModel extends BaseViewModel {
   }
 
   final Reader _read;
-  bool get isSignIn => _read(accountRepositoryProvider).isSignIn;
 
   late List<Note> _notes;
   List<Note> get notes => _notes;

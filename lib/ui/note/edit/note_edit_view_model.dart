@@ -1,4 +1,5 @@
 import 'package:dyphic/common/app_logger.dart';
+import 'package:dyphic/model/app_settings.dart';
 import 'package:dyphic/model/note.dart';
 import 'package:dyphic/repository/account_repository.dart';
 import 'package:dyphic/repository/note_repository.dart';
@@ -13,14 +14,12 @@ class _NoteEditViewModel extends BaseViewModel {
   final Reader _read;
 
   late Note _originalNote;
+
   late String _inputTitle;
   late String _inputDetail;
-
   late int _inputTypeValue;
-  int get inputTypeValue => _inputTypeValue;
 
-  bool get canSaved => _inputTitle.isNotEmpty;
-  bool get isSignIn => _read(accountRepositoryProvider).isSignIn;
+  bool get canSaved => ((_inputTitle.isNotEmpty && _read(appSettingsProvider).isSignIn));
 
   void init(Note note) {
     _originalNote = note;
@@ -32,7 +31,6 @@ class _NoteEditViewModel extends BaseViewModel {
 
   void inputType(int type) {
     _inputTypeValue = type;
-    notifyListeners();
   }
 
   void inputTitle(String title) {
@@ -45,7 +43,12 @@ class _NoteEditViewModel extends BaseViewModel {
   }
 
   Future<void> save() async {
-    final newNote = Note(id: _originalNote.id, typeValue: _inputTypeValue, title: _inputTitle, detail: _inputDetail);
+    final newNote = Note(
+      id: _originalNote.id,
+      typeValue: _inputTypeValue,
+      title: _inputTitle,
+      detail: _inputDetail,
+    );
     try {
       await _read(noteRepositoryProvider).save(newNote);
     } catch (e, s) {

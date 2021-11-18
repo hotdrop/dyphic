@@ -18,9 +18,6 @@ class _RecordViewModel extends BaseViewModel {
 
   final Reader _read;
 
-  bool get isSignIn => _read(accountRepositoryProvider).isSignIn;
-  bool get isDarkMode => _read(appSettingsProvider).isDarkMode;
-
   late InputRecord _inputRecord;
   double get morningTemperature => _inputRecord.morningTemperature;
   double get nightTemperature => _inputRecord.nightTemperature;
