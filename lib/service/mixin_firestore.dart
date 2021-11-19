@@ -221,6 +221,29 @@ mixin AppFirestoreMixin {
     }
   }
 
+  Future<Medicine> findMedicine(int id) async {
+    try {
+      final doc = await FirebaseFirestore.instance //
+          .collection(_conditionRootName)
+          .doc(id.toString())
+          .get();
+
+      final map = doc.data();
+      return Medicine(
+        id: int.parse(doc.id),
+        name: getString(map, 'name'),
+        overview: getString(map, 'overview'),
+        imagePath: getString(map, 'imagePath'),
+        type: Medicine.toType(getInt(map, 'type')),
+        memo: getString(map, 'memo'),
+        order: getInt(map, 'order'),
+      );
+    } on FirebaseException catch (e, s) {
+      await AppLogger.e('Firestore: conditionの取得に失敗', e, s);
+      rethrow;
+    }
+  }
+
   Future<void> saveMedicine(Medicine medicine) async {
     final id = medicine.id.toString();
     final map = <String, dynamic>{
@@ -257,6 +280,24 @@ mixin AppFirestoreMixin {
       }).toList();
     } on FirebaseException catch (e, s) {
       await AppLogger.e('Firestore: conditionsの取得に失敗', e, s);
+      rethrow;
+    }
+  }
+
+  Future<Condition> findCondition(int id) async {
+    try {
+      final doc = await FirebaseFirestore.instance //
+          .collection(_conditionRootName)
+          .doc(id.toString())
+          .get();
+
+      final map = doc.data();
+      return Condition(
+        int.parse(doc.id),
+        getString(map, 'name'),
+      );
+    } on FirebaseException catch (e, s) {
+      await AppLogger.e('Firestore: conditionの取得に失敗', e, s);
       rethrow;
     }
   }

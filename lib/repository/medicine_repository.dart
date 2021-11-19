@@ -1,5 +1,6 @@
 import 'package:dyphic/common/app_logger.dart';
 import 'package:dyphic/model/medicine.dart';
+import 'package:dyphic/repository/local/dao/medicine_dao.dart';
 import 'package:dyphic/repository/remote/medicine_api.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -10,11 +11,23 @@ class _MedicineRepository {
 
   final Reader _read;
 
-  Future<List<Medicine>> findAll() async {
-    final medicines = await _read(medicineApiProvider).findAll();
-    medicines.sort((a, b) => a.order - b.order);
-    AppLogger.d('お薬情報を取得しました。データ数: ${medicines.length}');
-    return medicines;
+  ///
+  /// お薬情報をローカルから取得する。
+  /// データがローカルにない場合はリモートから取得する。
+  /// isForceUpdate がtrueの場合はリモートのデータで最新化する。
+  ///
+  Future<List<Medicine>> findAll(bool isForceUpdate) async {
+    final medicines = await _read(medicineDaoProvider).findAll();
+    if (medicines.isNotEmpty && !isForceUpdate) {
+      medicines.sort((a, b) => a.order - b.order);
+      return medicines;
+    }
+
+    // API経由でデータ取得
+    final newMedicines = await _read(medicineApiProvider).findAll();
+    newMedicines.sort((a, b) => a.order - b.order);
+    await _read(medicineDaoProvider).saveAll(newMedicines);
+    return newMedicines;
   }
 
   Future<void> save(Medicine medicine, bool isUpdateImage) async {
@@ -26,5 +39,6 @@ class _MedicineRepository {
 
     AppLogger.d('お薬情報を保存します。\n${newMedicine.toString()}');
     await _read(medicineApiProvider).save(newMedicine);
+    await _read(medicineDaoProvider).save(newMedicine);
   }
 }

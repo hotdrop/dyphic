@@ -13,6 +13,10 @@ class _ConditionApi {
     return await _read(appFirebaseProvider).findConditions();
   }
 
+  Future<Condition> find(int id) async {
+    return await _read(appFirebaseProvider).findCondition(id);
+  }
+
   Future<void> save(Condition condition) async {
     await _read(appFirebaseProvider).saveCondition(condition);
   }

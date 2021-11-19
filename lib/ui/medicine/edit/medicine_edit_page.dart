@@ -79,9 +79,7 @@ class MedicineEditPage extends ConsumerWidget {
       label: AppStrings.medicineNameLabel,
       initValue: _medicine.name,
       isRequired: true,
-      onChanged: (String v) {
-        ref.read(medicineEditViewModelProvider).inputName(v);
-      },
+      onChanged: (String v) => ref.read(medicineEditViewModelProvider).inputName(v),
     );
   }
 
@@ -90,18 +88,14 @@ class MedicineEditPage extends ConsumerWidget {
       label: AppStrings.medicineOverviewLabel,
       initValue: _medicine.overview,
       isRequired: true,
-      onChanged: (v) {
-        ref.read(medicineEditViewModelProvider).inputOverview(v);
-      },
+      onChanged: (String v) => ref.read(medicineEditViewModelProvider).inputOverview(v),
     );
   }
 
   Widget _selectType(BuildContext context, WidgetRef ref) {
     return MedicineTypeRadio(
       initSelectedType: _medicine.type,
-      onChange: (v) {
-        ref.read(medicineEditViewModelProvider).inputOral(v);
-      },
+      onChange: (MedicineType t) => ref.read(medicineEditViewModelProvider).inputOral(t),
     );
   }
 
@@ -111,7 +105,7 @@ class MedicineEditPage extends ConsumerWidget {
       initValue: _medicine.memo,
       limitLine: 3,
       hintText: AppStrings.medicineMemoHint,
-      onChanged: ref.read(medicineEditViewModelProvider).inputMemo,
+      onChanged: (String v) => ref.read(medicineEditViewModelProvider).inputMemo(v),
     );
   }
 
@@ -148,7 +142,7 @@ class MedicineEditPage extends ConsumerWidget {
 
   Widget _saveButton(BuildContext context, WidgetRef ref) {
     return ElevatedButton(
-      onPressed: () async => _processSave(context, ref),
+      onPressed: () async => await _processSave(context, ref),
       child: const Text(AppStrings.medicineSaveButton, style: TextStyle(color: Colors.white)),
     );
   }
@@ -164,9 +158,7 @@ class MedicineEditPage extends ConsumerWidget {
     await progressDialog.show(
       context,
       execute: ref.read(medicineEditViewModelProvider).save,
-      onSuccess: (_) {
-        Navigator.pop(context, true);
-      },
+      onSuccess: (_) => Navigator.pop(context, true),
       onError: (err) => AppDialog.onlyOk(message: err).show(context),
     );
   }

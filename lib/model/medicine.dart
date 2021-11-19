@@ -1,4 +1,36 @@
+import 'dart:math';
+
+import 'package:dyphic/repository/medicine_repository.dart';
 import 'package:dyphic/res/app_strings.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+final medicineProvider = StateNotifierProvider<_MedicineNotifier, List<Medicine>>((ref) => _MedicineNotifier(ref.read));
+
+class _MedicineNotifier extends StateNotifier<List<Medicine>> {
+  _MedicineNotifier(this._read) : super([]);
+
+  final Reader _read;
+
+  Future<void> refresh({bool isForceUpdate = false}) async {
+    state = await _read(medicineRepositoryProvider).findAll(isForceUpdate);
+  }
+
+  Future<void> save(Medicine medicine, bool isUpdateImage) async {
+    await _read(medicineRepositoryProvider).save(medicine, isUpdateImage);
+  }
+
+  Medicine createNew() {
+    return Medicine.createEmpty(_createNewId(), _createNewOrder());
+  }
+
+  int _createNewId() {
+    return (state.isNotEmpty) ? state.map((e) => e.id).reduce(max) + 1 : 1;
+  }
+
+  int _createNewOrder() {
+    return (state.isNotEmpty) ? state.map((e) => e.order).reduce(max) + 1 : 1;
+  }
+}
 
 class Medicine {
   const Medicine({

@@ -1,7 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:dyphic/common/app_logger.dart';
 import 'package:dyphic/model/medicine.dart';
-import 'package:dyphic/repository/medicine_repository.dart';
 import 'package:dyphic/ui/base_view_model.dart';
 
 final medicineEditViewModelProvider = ChangeNotifierProvider.autoDispose((ref) => _MedicineEditViewModel(ref.read));
@@ -12,7 +11,6 @@ class _MedicineEditViewModel extends BaseViewModel {
   final Reader _read;
 
   late _InputItem _inputItem;
-
   String get imageFilePath => _inputItem.localImagePath;
   bool get canSave => _inputItem.isCompletedRequiredFields();
 
@@ -44,10 +42,8 @@ class _MedicineEditViewModel extends BaseViewModel {
 
   Future<void> save() async {
     final medicine = _inputItem.toMedicine();
-    final isUpdateImage = _inputItem.isChageImagePath();
-
     try {
-      await _read(medicineRepositoryProvider).save(medicine, isUpdateImage);
+      await _read(medicineProvider.notifier).save(medicine, _inputItem.isChageImagePath());
     } catch (e, s) {
       await AppLogger.e('お薬情報の保存に失敗しました。', e, s);
       rethrow;

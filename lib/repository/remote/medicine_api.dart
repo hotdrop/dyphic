@@ -13,6 +13,10 @@ class _MedicineApi {
     return await _read(appFirebaseProvider).findMedicines();
   }
 
+  Future<Medicine> find(int id) async {
+    return await _read(appFirebaseProvider).findMedicine(id);
+  }
+
   Future<void> save(Medicine medicine) async {
     await _read(appFirebaseProvider).saveMedicine(medicine);
   }

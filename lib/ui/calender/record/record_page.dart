@@ -1,3 +1,6 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/intl.dart';
 import 'package:dyphic/model/app_settings.dart';
 import 'package:dyphic/res/app_strings.dart';
 import 'package:dyphic/ui/calender/record/record_view_model.dart';
@@ -9,9 +12,6 @@ import 'package:dyphic/ui/widget/app_progress_dialog.dart';
 import 'package:dyphic/ui/widget/app_text_field.dart';
 import 'package:dyphic/ui/widget/meal_card.dart';
 import 'package:dyphic/ui/widget/temperature_view.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:intl/intl.dart';
 
 class RecordPage extends ConsumerWidget {
   const RecordPage._(this._date);
@@ -99,7 +99,6 @@ class RecordPage extends ConsumerWidget {
   }
 
   Widget _mealViewArea(BuildContext context, WidgetRef ref) {
-    final isSignIn = ref.watch(appSettingsProvider).isSignIn;
     return Column(
       children: [
         SizedBox(
@@ -110,32 +109,17 @@ class RecordPage extends ConsumerWidget {
             children: [
               MealCard.morning(
                 detail: ref.watch(recordViewModelProvider).breakfast,
-                isEditable: isSignIn,
-                onTap: (String? newVal) {
-                  if (newVal != null) {
-                    ref.read(recordViewModelProvider).inputBreakfast(newVal);
-                  }
-                },
+                onSubmitted: (String? v) => ref.read(recordViewModelProvider).inputBreakfast(v),
               ),
               const SizedBox(width: 4),
               MealCard.lunch(
                 detail: ref.watch(recordViewModelProvider).lunch,
-                isEditable: isSignIn,
-                onTap: (String? newVal) {
-                  if (newVal != null) {
-                    ref.read(recordViewModelProvider).inputLunch(newVal);
-                  }
-                },
+                onSubmitted: (String? v) => ref.read(recordViewModelProvider).inputLunch(v),
               ),
               const SizedBox(width: 4),
               MealCard.dinner(
                 detail: ref.watch(recordViewModelProvider).dinner,
-                isEditable: isSignIn,
-                onEdit: (String? newVal) {
-                  if (newVal != null) {
-                    ref.read(recordViewModelProvider).inputDinner(newVal);
-                  }
-                },
+                onSubmitted: (String? v) => ref.read(recordViewModelProvider).inputDinner(v),
               ),
             ],
           ),
@@ -145,7 +129,6 @@ class RecordPage extends ConsumerWidget {
   }
 
   Widget _temperatureViewArea(WidgetRef ref) {
-    final isSignIn = ref.read(appSettingsProvider).isSignIn;
     return Padding(
       padding: const EdgeInsets.only(top: 16.0, bottom: 16.0),
       child: Row(
@@ -153,8 +136,7 @@ class RecordPage extends ConsumerWidget {
         children: <Widget>[
           TemperatureView.morning(
             temperature: ref.watch(recordViewModelProvider).morningTemperature,
-            isEditable: isSignIn,
-            onEditValue: (double? newValue) {
+            onSubmitted: (double? newValue) {
               if (newValue != null) {
                 ref.read(recordViewModelProvider).inputMorningTemperature(newValue);
               }
@@ -162,8 +144,7 @@ class RecordPage extends ConsumerWidget {
           ),
           TemperatureView.night(
             temperature: ref.watch(recordViewModelProvider).nightTemperature,
-            isEditable: isSignIn,
-            onEditValue: (double? newValue) {
+            onSubmitted: (double? newValue) {
               if (newValue != null) {
                 ref.read(recordViewModelProvider).inputNightTemperature(newValue);
               }
@@ -175,7 +156,6 @@ class RecordPage extends ConsumerWidget {
   }
 
   Widget _memoView(BuildContext context, WidgetRef ref) {
-    final isSignIn = ref.watch(appSettingsProvider).isSignIn;
     return Card(
       elevation: 4.0,
       child: Padding(
@@ -191,7 +171,7 @@ class RecordPage extends ConsumerWidget {
             ),
             const SizedBox(height: 8.0),
             OutlinedButton(
-              onPressed: isSignIn ? () async => await _processSaveMemo(context, ref) : null,
+              onPressed: ref.watch(appSettingsProvider).isSignIn ? () async => await _processSaveMemo(context, ref) : null,
               child: const Text(AppStrings.recordMemoSaveButton),
             ),
           ],
@@ -221,41 +201,38 @@ class _ConditionArea extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final isDarkMode = ref.watch(appSettingsProvider).isDarkMode;
-    final isSignIn = ref.watch(appSettingsProvider).isSignIn;
     return Card(
       elevation: 4.0,
       child: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Column(
           children: [
-            _ContentsTitle(
-              title: AppStrings.recordConditionTitle,
-              appIcon: AppIcon.condition(isDarkMode),
-            ),
+            _viewTitle(ref),
             const Divider(),
-            ConditionSelectChips(
-              selectIds: ref.read(recordViewModelProvider).selectConditionIds,
-              allConditions: ref.read(recordViewModelProvider).allConditions,
-              onChange: (Set<int> ids) => ref.read(recordViewModelProvider).changeSelectedCondition(ids),
-            ),
+            _viewSelectChips(ref),
             const Divider(),
             _viewCheckBoxes(ref),
-            MultiLineTextField(
-              label: AppStrings.recordConditionMemoTitle,
-              initValue: ref.read(recordViewModelProvider).conditionMemo,
-              limitLine: 10,
-              hintText: AppStrings.recordConditionMemoHint,
-              onChanged: ref.read(recordViewModelProvider).inputConditionMemo,
-            ),
+            _viewMemo(ref),
             const SizedBox(height: 8.0),
-            OutlinedButton(
-              onPressed: isSignIn ? () async => await _processSaveCondition(context, ref) : null,
-              child: const Text(AppStrings.recordConditionSaveButton),
-            ),
+            _viewSaveButton(context, ref),
           ],
         ),
       ),
+    );
+  }
+
+  Widget _viewTitle(WidgetRef ref) {
+    final isDarkMode = ref.watch(appSettingsProvider).isDarkMode;
+    return _ContentsTitle(
+      title: AppStrings.recordConditionTitle,
+      appIcon: AppIcon.condition(isDarkMode),
+    );
+  }
+
+  Widget _viewSelectChips(WidgetRef ref) {
+    return ConditionSelectChips(
+      selectIds: ref.read(recordViewModelProvider).selectConditionIds,
+      onChange: (Set<int> ids) => ref.read(recordViewModelProvider).changeSelectedCondition(ids),
     );
   }
 
@@ -272,6 +249,24 @@ class _ConditionArea extends ConsumerWidget {
           onChanged: (bool? isCheck) => ref.read(recordViewModelProvider).inputIsToilet(isCheck),
         ),
       ],
+    );
+  }
+
+  Widget _viewMemo(WidgetRef ref) {
+    return MultiLineTextField(
+      label: AppStrings.recordConditionMemoTitle,
+      initValue: ref.read(recordViewModelProvider).conditionMemo,
+      limitLine: 10,
+      hintText: AppStrings.recordConditionMemoHint,
+      onChanged: ref.read(recordViewModelProvider).inputConditionMemo,
+    );
+  }
+
+  Widget _viewSaveButton(BuildContext context, WidgetRef ref) {
+    final isSignIn = ref.watch(appSettingsProvider).isSignIn;
+    return OutlinedButton(
+      onPressed: isSignIn ? () async => await _processSaveCondition(context, ref) : null,
+      child: const Text(AppStrings.recordConditionSaveButton),
     );
   }
 
@@ -296,31 +291,42 @@ class _MedicineArea extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final isDarkMode = ref.watch(appSettingsProvider).isDarkMode;
-    final isSignIn = ref.watch(appSettingsProvider).isSignIn;
     return Card(
       elevation: 4.0,
       child: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Column(
           children: [
-            _ContentsTitle(
-              title: AppStrings.recordMedicalTitle,
-              appIcon: AppIcon.medicine(isDarkMode),
-            ),
+            _viewTitle(ref),
             const Divider(),
-            MedicineSelectChips(
-              selectIds: ref.read(recordViewModelProvider).selectMedicineIds,
-              allMedicines: ref.read(recordViewModelProvider).allMedicines,
-              onChange: (Set<int> ids) => ref.read(recordViewModelProvider).changeSelectedMedicine(ids),
-            ),
-            OutlinedButton(
-              onPressed: isSignIn ? () async => await _processSaveMedicine(context, ref) : null,
-              child: const Text(AppStrings.recordMedicineSaveButton),
-            ),
+            _viewSelectChips(ref),
+            _viewSaveButton(context, ref),
           ],
         ),
       ),
+    );
+  }
+
+  Widget _viewTitle(WidgetRef ref) {
+    final isDarkMode = ref.watch(appSettingsProvider).isDarkMode;
+    return _ContentsTitle(
+      title: AppStrings.recordMedicalTitle,
+      appIcon: AppIcon.medicine(isDarkMode),
+    );
+  }
+
+  Widget _viewSelectChips(WidgetRef ref) {
+    return MedicineSelectChips(
+      selectIds: ref.watch(recordViewModelProvider).selectMedicineIds,
+      onChanged: (Set<int> ids) => ref.read(recordViewModelProvider).changeSelectedMedicine(ids),
+    );
+  }
+
+  Widget _viewSaveButton(BuildContext context, WidgetRef ref) {
+    final isSignIn = ref.watch(appSettingsProvider).isSignIn;
+    return OutlinedButton(
+      onPressed: isSignIn ? () async => await _processSaveMedicine(context, ref) : null,
+      child: const Text(AppStrings.recordMedicineSaveButton),
     );
   }
 
@@ -337,6 +343,9 @@ class _MedicineArea extends ConsumerWidget {
   }
 }
 
+///
+/// 各エリアのタイトル
+///
 class _ContentsTitle extends StatelessWidget {
   const _ContentsTitle({
     Key? key,

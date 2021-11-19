@@ -15,12 +15,9 @@ class _MedicineViewModel extends BaseViewModel {
 
   final Reader _read;
 
-  late List<Medicine> _medicines;
-  List<Medicine> get medicines => _medicines;
-
   Future<void> _init() async {
     try {
-      _medicines = await _read(medicineRepositoryProvider).findAll();
+      await _read(medicineProvider.notifier).refresh(isForceUpdate: true);
       onSuccess();
     } catch (e, s) {
       await AppLogger.e('お薬情報一覧の初回取得に失敗しました。', e, s);
@@ -29,20 +26,6 @@ class _MedicineViewModel extends BaseViewModel {
   }
 
   Future<void> reload() async {
-    try {
-      _medicines = await _read(medicineRepositoryProvider).findAll();
-      notifyListeners();
-    } catch (e, s) {
-      await AppLogger.e('お薬情報一覧の取得に失敗しました。', e, s);
-      onError('$e');
-    }
-  }
-
-  int createNewId() {
-    return (_medicines.isNotEmpty) ? _medicines.map((e) => e.id).reduce(max) + 1 : 1;
-  }
-
-  int createNewOrder() {
-    return (_medicines.isNotEmpty) ? _medicines.map((e) => e.order).reduce(max) + 1 : 1;
+    await _read(medicineProvider.notifier).refresh();
   }
 }

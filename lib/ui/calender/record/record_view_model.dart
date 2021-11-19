@@ -1,13 +1,9 @@
-import 'package:dyphic/model/app_settings.dart';
-import 'package:dyphic/repository/account_repository.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:dyphic/common/app_logger.dart';
 import 'package:dyphic/model/condition.dart';
 import 'package:dyphic/model/dyphic_id.dart';
 import 'package:dyphic/model/medicine.dart';
 import 'package:dyphic/model/record.dart';
-import 'package:dyphic/repository/condition_repository.dart';
-import 'package:dyphic/repository/medicine_repository.dart';
 import 'package:dyphic/repository/record_repository.dart';
 import 'package:dyphic/ui/base_view_model.dart';
 
@@ -18,7 +14,7 @@ class _RecordViewModel extends BaseViewModel {
 
   final Reader _read;
 
-  late InputRecord _inputRecord;
+  late _InputRecord _inputRecord;
   double get morningTemperature => _inputRecord.morningTemperature;
   double get nightTemperature => _inputRecord.nightTemperature;
   Set<int> get selectConditionIds => _inputRecord.selectConditionIds;
@@ -31,12 +27,6 @@ class _RecordViewModel extends BaseViewModel {
   String get dinner => _inputRecord.dinner;
   String get memo => _inputRecord.memo;
 
-  late List<Medicine> _allMedicines;
-  List<Medicine> get allMedicines => _allMedicines;
-
-  late List<Condition> _allConditions;
-  List<Condition> get allConditions => _allConditions;
-
   bool _isUpdate = false;
   bool get isUpdate => _isUpdate;
 
@@ -45,10 +35,10 @@ class _RecordViewModel extends BaseViewModel {
       final id = DyphicID.makeRecordId(date);
       final _record = await _read(recordRepositoryProvider).find(id);
 
-      _inputRecord = InputRecord.create(_record);
+      _inputRecord = _InputRecord.create(_record);
 
-      _allMedicines = await _read(medicineRepositoryProvider).findAll();
-      _allConditions = await _read(conditionRepositoryProvider).findAll();
+      await _read(medicineProvider.notifier).refresh();
+      await _read(conditionsProvider.notifier).refresh();
 
       onSuccess();
     } catch (e, s) {
@@ -57,21 +47,30 @@ class _RecordViewModel extends BaseViewModel {
     }
   }
 
-  Future<void> inputBreakfast(String newVal) async {
+  Future<void> inputBreakfast(String? newVal) async {
+    if (newVal == null) {
+      return;
+    }
     _inputRecord.breakfast = newVal;
     await _read(recordRepositoryProvider).saveBreakFast(_inputRecord.id, newVal);
     _isUpdate = true;
     notifyListeners();
   }
 
-  Future<void> inputLunch(String newVal) async {
+  Future<void> inputLunch(String? newVal) async {
+    if (newVal == null) {
+      return;
+    }
     _inputRecord.lunch = newVal;
     await _read(recordRepositoryProvider).saveLunch(_inputRecord.id, newVal);
     _isUpdate = true;
     notifyListeners();
   }
 
-  Future<void> inputDinner(String newVal) async {
+  Future<void> inputDinner(String? newVal) async {
+    if (newVal == null) {
+      return;
+    }
     _inputRecord.dinner = newVal;
     await _read(recordRepositoryProvider).saveDinner(_inputRecord.id, newVal);
     _isUpdate = true;
@@ -83,7 +82,7 @@ class _RecordViewModel extends BaseViewModel {
     _inputRecord.morningTemperature = newVal;
     await _read(recordRepositoryProvider).saveMorningTemperature(_inputRecord.id, newVal);
     _isUpdate = true;
-    notifyListeners();
+    // notifyListeners();
   }
 
   Future<void> inputNightTemperature(double newVal) async {
@@ -91,71 +90,69 @@ class _RecordViewModel extends BaseViewModel {
     _inputRecord.nightTemperature = newVal;
     await _read(recordRepositoryProvider).saveNightTemperature(_inputRecord.id, newVal);
     _isUpdate = true;
-    notifyListeners();
+    // notifyListeners();
   }
 
   void changeSelectedMedicine(Set<int> selectedIds) {
     AppLogger.d('選択しているお薬は $selectedIds です');
     _inputRecord.selectMedicineIds = selectedIds;
-    notifyListeners();
+    _isUpdate = true;
   }
 
-  Future<bool> saveMedicine() async {
+  Future<void> saveMedicine() async {
     try {
       final idsStr = _inputRecord.toStringMedicineIds();
       await _read(recordRepositoryProvider).saveMedicineIds(_inputRecord.id, idsStr);
       _isUpdate = true;
-      return true;
     } catch (e, s) {
       await AppLogger.e('体調情報の保存に失敗しました。', e, s);
-      return false;
+      rethrow;
     }
   }
 
   void changeSelectedCondition(Set<int> selectedIds) {
     AppLogger.d('選択している症状は $selectedIds 個です');
     _inputRecord.selectConditionIds = selectedIds;
-    notifyListeners();
+    _isUpdate = true;
   }
 
   void inputConditionMemo(String newVal) {
     _inputRecord.conditionMemo = newVal;
+    _isUpdate = true;
   }
 
-  Future<bool> saveCondition() async {
-    final newRecord = _inputRecord.toRecordOverview(_allConditions);
+  Future<void> saveCondition() async {
+    final newRecord = _inputRecord.toRecordOverview(_read(conditionsProvider));
     try {
       await _read(recordRepositoryProvider).saveCondition(newRecord);
       _isUpdate = true;
-      return true;
     } catch (e, s) {
       await AppLogger.e('体調情報の保存に失敗しました。', e, s);
-      return false;
+      rethrow;
     }
   }
 
   Future<void> inputIsWalking(bool? isWalking) async {
     _inputRecord.isWalking = isWalking ?? false;
-    notifyListeners();
+    _isUpdate = true;
   }
 
   Future<void> inputIsToilet(bool? isToilet) async {
     _inputRecord.isToilet = isToilet ?? false;
-    notifyListeners();
+    _isUpdate = true;
   }
 
   void inputMemo(String newVal) {
     _inputRecord.memo = newVal;
   }
 
-  Future<bool> saveMemo() async {
+  Future<void> saveMemo() async {
     try {
       await _read(recordRepositoryProvider).saveMemo(_inputRecord.id, _inputRecord.memo);
       _isUpdate = true;
-      return true;
     } catch (e, s) {
       await AppLogger.e('体調情報の保存に失敗しました。', e, s);
-      return false;
+      rethrow;
     }
   }
 }
@@ -163,8 +160,8 @@ class _RecordViewModel extends BaseViewModel {
 ///
 /// 入力保持用のクラス
 ///
-class InputRecord {
-  InputRecord._({
+class _InputRecord {
+  _InputRecord._({
     required this.id,
     required this.morningTemperature,
     required this.nightTemperature,
@@ -179,9 +176,10 @@ class InputRecord {
     required this.memo,
   });
 
-  factory InputRecord.create(Record record) {
+  factory _InputRecord.create(Record record) {
     final id = DyphicID.makeRecordId(record.date);
-    return InputRecord._(
+
+    return _InputRecord._(
       id: id,
       morningTemperature: record.morningTemperature ?? 0.0,
       nightTemperature: record.nightTemperature ?? 0.0,

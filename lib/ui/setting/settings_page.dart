@@ -87,9 +87,7 @@ class SettingsPage extends ConsumerWidget {
       leading: AppIcon.condition(isDarkMode, size: _iconSize),
       title: const Text(AppStrings.settingsEditConditionLabel),
       subtitle: const Text(AppStrings.settingsEditConditionSubLabel),
-      onTap: () async {
-        await ConditionPage.start(context);
-      },
+      onTap: () async => await ConditionPage.start(context),
     );
   }
 
@@ -99,9 +97,7 @@ class SettingsPage extends ConsumerWidget {
       leading: AppIcon.medicine(isDarkMode, size: _iconSize),
       title: const Text(AppStrings.settingsEditMedicineLabel),
       subtitle: const Text(AppStrings.settingsEditMedicineSubLabel),
-      onTap: () async {
-        await MedicinePage.start(context);
-      },
+      onTap: () async => await MedicinePage.start(context),
     );
   }
 

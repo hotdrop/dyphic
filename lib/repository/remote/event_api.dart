@@ -1,6 +1,6 @@
 import 'package:dyphic/model/calendar_event.dart';
-import 'package:dyphic/repository/json/event_json.dart';
 import 'package:dyphic/repository/local/shared_prefs.dart';
+import 'package:dyphic/repository/remote/response/event_response.dart';
 import 'package:dyphic/service/app_firebase.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -17,7 +17,13 @@ class _EventApi {
   }
 
   Future<List<Event>> findAll() async {
-    String json = await _read(appFirebaseProvider).readEventJson();
-    return EventJson.parse(json);
+    final responseRow = await _read(appFirebaseProvider).readEventJson() as Map<String, dynamic>;
+    final response = EventsResponse.fromJson(responseRow);
+    return response.events.map((r) => _toEvent(r)).toList();
+  }
+
+  Event _toEvent(EventResponse response) {
+    final type = Event.toType(response.typeIdx);
+    return Event(id: response.id, type: type, name: response.name);
   }
 }

@@ -14,12 +14,10 @@ class ConditionSelectChips extends ConsumerStatefulWidget {
   const ConditionSelectChips({
     Key? key,
     required this.selectIds,
-    required this.allConditions,
     required this.onChange,
   }) : super(key: key);
 
   final Set<int> selectIds;
-  final List<Condition> allConditions;
   final void Function(Set<int>) onChange;
 
   @override
@@ -58,9 +56,10 @@ class _ConditionSelectChipsState extends ConsumerState<ConditionSelectChips> {
   }
 
   List<Widget> _makeChips(BuildContext context) {
-    final appSettings = ref.read(appSettingsProvider);
-    final conditionColor = (appSettings.isDarkMode) ? AppColors.conditionNight : AppColors.condition;
-    return widget.allConditions.map((condition) {
+    final isDarkMode = ref.watch(appSettingsProvider).isDarkMode;
+    final conditionColor = isDarkMode ? AppColors.conditionNight : AppColors.condition;
+
+    return ref.watch(conditionsProvider).map((condition) {
       return FilterChip(
         key: ValueKey<String>(condition.name),
         label: Text(condition.name, style: const TextStyle(fontSize: 12.0)),
@@ -79,13 +78,11 @@ class MedicineSelectChips extends ConsumerStatefulWidget {
   const MedicineSelectChips({
     Key? key,
     required this.selectIds,
-    required this.allMedicines,
-    required this.onChange,
+    required this.onChanged,
   }) : super(key: key);
 
   final Set<int> selectIds;
-  final List<Medicine> allMedicines;
-  final void Function(Set<int>) onChange;
+  final void Function(Set<int>) onChanged;
 
   @override
   _MedicineSelectChipsState createState() => _MedicineSelectChipsState();
@@ -109,7 +106,7 @@ class _MedicineSelectChipsState extends ConsumerState<MedicineSelectChips> {
       } else {
         _selectedIds.remove(id);
       }
-      widget.onChange(_selectedIds);
+      widget.onChanged(_selectedIds);
     });
   }
 
@@ -123,9 +120,8 @@ class _MedicineSelectChipsState extends ConsumerState<MedicineSelectChips> {
   }
 
   List<Widget> _makeChips(BuildContext context) {
-    final appSettings = ref.read(appSettingsProvider);
-    final medicineColor = (appSettings.isDarkMode) ? AppColors.medicineNight : AppColors.medicine;
-    return widget.allMedicines.map((medicine) {
+    final medicineColor = ref.watch(appSettingsProvider).isDarkMode ? AppColors.medicineNight : AppColors.medicine;
+    return ref.watch(medicineProvider).map((medicine) {
       return Tooltip(
         message: medicine.overview,
         child: FilterChip(

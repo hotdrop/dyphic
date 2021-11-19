@@ -1,12 +1,13 @@
+import 'package:dyphic/model/app_settings.dart';
 import 'package:flutter/material.dart';
 import 'package:dyphic/res/app_strings.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class MealEditDialog extends StatefulWidget {
-  const MealEditDialog._(this.title, this.initValue, this.isEditable);
+class MealEditDialog extends ConsumerStatefulWidget {
+  const MealEditDialog._(this.title, this.initValue);
 
   final String title;
   final String initValue;
-  final bool isEditable;
 
   @override
   _MealEditDialogState createState() => _MealEditDialogState();
@@ -15,16 +16,15 @@ class MealEditDialog extends StatefulWidget {
     BuildContext context, {
     required String title,
     required String initValue,
-    required bool isEditable,
   }) async {
     return await showDialog<String>(
       context: context,
-      builder: (ctx) => MealEditDialog._(title, initValue, isEditable),
+      builder: (ctx) => MealEditDialog._(title, initValue),
     );
   }
 }
 
-class _MealEditDialogState extends State<MealEditDialog> {
+class _MealEditDialogState extends ConsumerState<MealEditDialog> {
   final _controller = TextEditingController();
 
   @override
@@ -35,12 +35,13 @@ class _MealEditDialogState extends State<MealEditDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final isSignIn = ref.watch(appSettingsProvider).isSignIn;
     return AlertDialog(
       title: Text(widget.title),
       content: TextField(
         autofocus: true,
         controller: _controller,
-        enabled: widget.isEditable,
+        enabled: isSignIn,
         maxLines: 7,
         decoration: const InputDecoration(
           labelText: AppStrings.recordMealDialogHint,
@@ -53,7 +54,7 @@ class _MealEditDialogState extends State<MealEditDialog> {
           child: const Text(AppStrings.dialogCancel),
         ),
         TextButton(
-          onPressed: (widget.isEditable) ? () => Navigator.pop<String>(context, _controller.text) : null,
+          onPressed: isSignIn ? () => Navigator.pop<String>(context, _controller.text) : null,
           child: const Text(AppStrings.dialogOk),
         ),
       ],

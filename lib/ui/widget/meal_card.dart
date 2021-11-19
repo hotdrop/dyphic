@@ -1,72 +1,66 @@
+import 'package:dyphic/model/app_settings.dart';
 import 'package:flutter/material.dart';
 import 'package:dyphic/res/app_images.dart';
 import 'package:dyphic/res/app_colors.dart';
 import 'package:dyphic/res/app_strings.dart';
 import 'package:dyphic/ui/widget/meal_edit_dialog.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class MealCard extends StatelessWidget {
+class MealCard extends ConsumerWidget {
   const MealCard._({
     Key? key,
     required this.color,
     required this.iconImagePath,
     required this.detail,
-    required this.isEditable,
     required this.dialogTitle,
-    required this.onEdit,
+    required this.onSubmitted,
   }) : super(key: key);
 
-  factory MealCard.morning({required String detail, required bool isEditable, required Function(String?) onTap}) {
+  factory MealCard.morning({required String detail, required Function(String?) onSubmitted}) {
     return MealCard._(
       color: AppColors.mealBreakFast,
       iconImagePath: AppImages.mealBreakFast,
       detail: detail,
-      isEditable: isEditable,
       dialogTitle: AppStrings.recordMorningDialogTitle,
-      onEdit: onTap,
+      onSubmitted: onSubmitted,
     );
   }
 
-  factory MealCard.lunch({required String detail, required bool isEditable, required Function(String?) onTap}) {
+  factory MealCard.lunch({required String detail, required Function(String?) onSubmitted}) {
     return MealCard._(
       color: AppColors.mealLunch,
       iconImagePath: AppImages.mealLunch,
       detail: detail,
-      isEditable: isEditable,
       dialogTitle: AppStrings.recordLunchDialogTitle,
-      onEdit: onTap,
+      onSubmitted: onSubmitted,
     );
   }
 
-  factory MealCard.dinner({required String detail, required bool isEditable, required Function(String?) onEdit}) {
+  factory MealCard.dinner({required String detail, required Function(String?) onSubmitted}) {
     return MealCard._(
       color: AppColors.mealDinner,
       iconImagePath: AppImages.mealDinner,
       detail: detail,
-      isEditable: isEditable,
       dialogTitle: AppStrings.recordDinnerDialogTitle,
-      onEdit: onEdit,
+      onSubmitted: onSubmitted,
     );
   }
 
   final Color color;
   final String iconImagePath;
   final String detail;
-  final bool isEditable;
   final String dialogTitle;
-  final Function(String?) onEdit;
+  final Function(String?) onSubmitted;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return SizedBox(
       width: 130,
       child: Card(
         shadowColor: color,
         elevation: 4.0,
         child: InkWell(
-          onTap: () async {
-            final inputValue = await MealEditDialog.show(context, title: dialogTitle, initValue: detail, isEditable: isEditable);
-            onEdit(inputValue);
-          },
+          onTap: () async => await _showEditDialog(context, ref),
           child: Padding(
             padding: const EdgeInsets.all(8.0),
             child: Column(
@@ -80,6 +74,15 @@ class MealCard extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  Future<void> _showEditDialog(BuildContext context, WidgetRef ref) async {
+    final inputValue = await MealEditDialog.show(
+      context,
+      title: dialogTitle,
+      initValue: detail,
+    );
+    onSubmitted(inputValue);
   }
 
   Widget _detailLabel() {

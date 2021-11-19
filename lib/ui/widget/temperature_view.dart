@@ -1,71 +1,63 @@
+import 'package:dyphic/model/app_settings.dart';
 import 'package:flutter/material.dart';
 import 'package:dyphic/res/app_colors.dart';
 import 'package:dyphic/res/app_strings.dart';
 import 'package:dyphic/ui/widget/app_icon.dart';
 import 'package:dyphic/ui/widget/temperature_dialog.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class TemperatureView extends StatelessWidget {
+class TemperatureView extends ConsumerWidget {
   const TemperatureView._(
     this.temperature,
     this.color,
     this.title,
     this.thermometerIcon,
-    this.isEditable,
-    this.onEditValue,
+    this.onSubmitted,
     this.dialogTitle,
   );
 
   factory TemperatureView.morning({
     required double temperature,
-    required bool isEditable,
-    required Function(double?) onEditValue,
+    required Function(double?) onSubmitted,
   }) {
     return TemperatureView._(
       temperature,
       AppColors.morningTemperature,
       AppStrings.recordTemperatureMorning,
       ThermometerIcon.morning(),
-      isEditable,
-      onEditValue,
+      onSubmitted,
       AppStrings.recordTemperatureMorning,
     );
   }
 
   factory TemperatureView.night({
     required double temperature,
-    required bool isEditable,
-    required Function(double?) onEditValue,
+    required Function(double?) onSubmitted,
   }) {
     return TemperatureView._(
       temperature,
       AppColors.nightTemperature,
       AppStrings.recordTemperatureNight,
       ThermometerIcon.night(),
-      isEditable,
-      onEditValue,
+      onSubmitted,
       AppStrings.recordTemperatureNight,
     );
   }
 
   final String dialogTitle;
-  final double temperature;
   final Color color;
   final String title;
   final ThermometerIcon thermometerIcon;
-  final bool isEditable;
-  final Function(double?) onEditValue;
+  final double temperature;
+  final Function(double?) onSubmitted;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final isSignIn = ref.read(appSettingsProvider).isSignIn;
     return Card(
       elevation: 4.0,
       child: InkWell(
-        onTap: (isEditable)
-            ? () async {
-                final inputValue = await TemperatureEditDialog.show(context, dialogTitle: dialogTitle, color: color, initValue: temperature);
-                onEditValue(inputValue);
-              }
-            : null,
+        onTap: isSignIn ? () async => await _showEditDialog(context) : null,
         child: Row(
           children: <Widget>[
             _VerticalLine(color),
@@ -85,6 +77,16 @@ class TemperatureView extends StatelessWidget {
     );
   }
 
+  Future<void> _showEditDialog(BuildContext context) async {
+    final inputValue = await TemperatureEditDialog.show(
+      context,
+      dialogTitle: dialogTitle,
+      color: color,
+      initValue: temperature,
+    );
+    onSubmitted(inputValue);
+  }
+
   Widget _viewTitle(BuildContext context) {
     return Text(
       title,
@@ -94,10 +96,10 @@ class TemperatureView extends StatelessWidget {
 
   Widget _viewTemperatureLabel(BuildContext context) {
     final temperatureStr = (temperature > 0) ? '$temperature ${AppStrings.recordTemperatureUnit}' : AppStrings.recordTemperatureNonSet;
-    Color fontColor = (temperature > 0) ? color : Colors.grey;
+    final fontColor = (temperature > 0) ? color : Colors.grey;
     return Row(
       crossAxisAlignment: CrossAxisAlignment.end,
-      children: <Widget>[
+      children: [
         thermometerIcon,
         const SizedBox(width: 4),
         Text(temperatureStr, style: TextStyle(color: fontColor, fontSize: 24)),

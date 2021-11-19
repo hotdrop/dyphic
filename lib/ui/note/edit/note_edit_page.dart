@@ -65,9 +65,7 @@ class NoteEditPage extends ConsumerWidget {
   Widget _types(WidgetRef ref) {
     return _TypeRadioGroup(
       selectedValue: _note.typeValue,
-      onSelected: (int value) {
-        ref.read(noteEditViewModelProvider).inputType(value);
-      },
+      onSelected: (int value) => ref.read(noteEditViewModelProvider).inputType(value),
     );
   }
 
@@ -76,9 +74,7 @@ class NoteEditPage extends ConsumerWidget {
       label: AppStrings.noteEditPageLabelTitle,
       initValue: _note.title,
       isRequired: true,
-      onChanged: (String v) {
-        ref.read(noteEditViewModelProvider).inputTitle(v);
-      },
+      onChanged: (String v) => ref.read(noteEditViewModelProvider).inputTitle(v),
     );
   }
 
@@ -88,16 +84,14 @@ class NoteEditPage extends ConsumerWidget {
       initValue: _note.detail,
       limitLine: 15,
       hintText: AppStrings.noteEditPageLabelDetailHint,
-      onChanged: (String v) {
-        ref.read(noteEditViewModelProvider).inputDetail(v);
-      },
+      onChanged: (String v) => ref.read(noteEditViewModelProvider).inputDetail(v),
     );
   }
 
   Widget _saveButton(BuildContext context, WidgetRef ref) {
     final canSaved = ref.watch(noteEditViewModelProvider).canSaved;
     return ElevatedButton(
-      onPressed: canSaved ? () async => _processSave(context, ref) : null,
+      onPressed: canSaved ? () async => await _processSave(context, ref) : null,
       child: const Text(AppStrings.noteEditPageSaveButton, style: TextStyle(color: Colors.white)),
     );
   }
@@ -105,8 +99,8 @@ class NoteEditPage extends ConsumerWidget {
   Future<void> _processSave(BuildContext context, WidgetRef ref) async {
     // キーボードが出ている場合は閉じる
     FocusScope.of(context).unfocus();
-    const dialog = AppProgressDialog<void>();
-    dialog.show(
+    const progressDialog = AppProgressDialog<void>();
+    await progressDialog.show(
       context,
       execute: ref.watch(noteEditViewModelProvider).save,
       onSuccess: (_) => Navigator.pop(context, true),

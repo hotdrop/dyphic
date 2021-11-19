@@ -64,10 +64,7 @@ class MedicinePage extends ConsumerWidget {
   }
 
   Future<void> _processAdd(BuildContext context, WidgetRef ref) async {
-    final newEmptyMeidine = Medicine.createEmpty(
-      ref.read(medicineViewModelProvider).createNewId(),
-      ref.read(medicineViewModelProvider).createNewOrder(),
-    );
+    final newEmptyMeidine = ref.read(medicineProvider.notifier).createNew();
     bool isUpdate = await MedicineEditPage.start(context, newEmptyMeidine);
     AppLogger.d('戻り値: $isUpdate');
     if (isUpdate) {
@@ -76,7 +73,7 @@ class MedicinePage extends ConsumerWidget {
   }
 
   Widget _viewContents(BuildContext context, WidgetRef ref) {
-    final medicines = ref.watch(medicineViewModelProvider).medicines;
+    final medicines = ref.watch(medicineProvider);
     if (medicines.isEmpty) {
       return const Center(
         child: Text(AppStrings.medicinePageNothingItemLabel),

@@ -1,4 +1,5 @@
 import 'package:dyphic/model/app_settings.dart';
+import 'package:dyphic/model/condition.dart';
 import 'package:dyphic/res/app_strings.dart';
 import 'package:dyphic/ui/condition/condition_view_model.dart';
 import 'package:dyphic/ui/widget/app_dialog.dart';
@@ -67,7 +68,10 @@ class ConditionPage extends ConsumerWidget {
         children: [
           const Text(AppStrings.conditionOverview),
           const SizedBox(height: 8),
-          Text(AppStrings.conditionDetail, style: Theme.of(context).textTheme.caption),
+          Text(
+            AppStrings.conditionDetail,
+            style: Theme.of(context).textTheme.caption,
+          ),
         ],
       ),
     );
@@ -90,25 +94,21 @@ class ConditionPage extends ConsumerWidget {
   }
 
   Widget _conditionArea(WidgetRef ref) {
-    final conditions = ref.watch(conditionViewModelProvider).conditions;
     final selectName = ref.watch(conditionViewModelProvider).selectedConditionName;
+    final conditions = ref.watch(conditionsProvider);
     return Container(
       margin: const EdgeInsets.only(left: 16, right: 16),
       height: 200,
       child: Wrap(
         direction: Axis.horizontal,
         spacing: 8.0,
-        children: conditions
-            .map(
-              (c) => ChoiceChip(
-                label: Text(c.name),
-                selected: selectName == c.name,
-                onSelected: (_) {
-                  ref.read(conditionViewModelProvider).selectCondition(c);
-                },
-              ),
-            )
-            .toList(),
+        children: conditions.map((c) {
+          return ChoiceChip(
+            label: Text(c.name),
+            selected: selectName == c.name,
+            onSelected: (_) => ref.read(conditionViewModelProvider).selectCondition(c),
+          );
+        }).toList(),
       ),
     );
   }
@@ -140,31 +140,23 @@ class ConditionPage extends ConsumerWidget {
       ),
       autovalidateMode: AutovalidateMode.always,
       validator: (String? inputVal) => ref.read(conditionViewModelProvider).inputValidator(inputVal),
-      onFieldSubmitted: (String value) {
-        ref.read(conditionViewModelProvider).input(value);
-      },
+      onFieldSubmitted: (String value) => ref.read(conditionViewModelProvider).input(value),
     );
   }
 
   Widget _saveButtonOnInputArea(BuildContext context, WidgetRef ref) {
-    final exist = ref.watch(conditionViewModelProvider).exist;
-    String buttonName;
-    if (exist) {
-      buttonName = AppStrings.conditionEditButton;
-    } else {
-      buttonName = AppStrings.conditionNewButton;
-    }
-
+    final buttonName = ref.watch(conditionViewModelProvider).isSelected ? AppStrings.conditionEditButton : AppStrings.conditionNewButton;
     final canSaved = ref.watch(conditionViewModelProvider).enableOnSave;
+
     return ElevatedButton(
-      onPressed: canSaved ? () async => _processSave(context, ref) : null,
+      onPressed: canSaved ? () async => await _processSave(context, ref) : null,
       child: Text(buttonName),
     );
   }
 
   Future<void> _processSave(BuildContext context, WidgetRef ref) async {
     const progressDialog = AppProgressDialog<void>();
-    progressDialog.show(
+    await progressDialog.show(
       context,
       execute: ref.read(conditionViewModelProvider).save,
       onSuccess: (_) async => await ref.read(conditionViewModelProvider).refresh(),
