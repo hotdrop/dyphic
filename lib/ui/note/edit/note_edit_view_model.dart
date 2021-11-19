@@ -1,7 +1,6 @@
 import 'package:dyphic/common/app_logger.dart';
 import 'package:dyphic/model/app_settings.dart';
 import 'package:dyphic/model/note.dart';
-import 'package:dyphic/repository/account_repository.dart';
 import 'package:dyphic/repository/note_repository.dart';
 import 'package:dyphic/ui/base_view_model.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

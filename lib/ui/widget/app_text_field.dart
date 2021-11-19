@@ -1,6 +1,5 @@
-import 'package:dyphic/common/app_extension.dart';
-import 'package:dyphic/res/app_strings.dart';
 import 'package:flutter/material.dart';
+import 'package:dyphic/res/app_strings.dart';
 
 class AppTextField extends StatefulWidget {
   const AppTextField({
@@ -37,7 +36,7 @@ class _AppTextFieldState extends State<AppTextField> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         _createTextFormField(),
-        if (widget.isRequired && _value.haveValue())
+        if (widget.isRequired && _haveValue())
           const Padding(
             padding: EdgeInsets.only(left: 8.0),
             child: Text(
@@ -48,6 +47,8 @@ class _AppTextFieldState extends State<AppTextField> {
       ],
     );
   }
+
+  bool _haveValue() => _value?.isNotEmpty ?? false;
 
   TextFormField _createTextFormField() {
     return TextFormField(

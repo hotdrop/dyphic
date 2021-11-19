@@ -1,10 +1,9 @@
-import 'package:dyphic/model/app_settings.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:dyphic/res/app_images.dart';
 import 'package:dyphic/res/app_colors.dart';
 import 'package:dyphic/res/app_strings.dart';
 import 'package:dyphic/ui/widget/meal_edit_dialog.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class MealCard extends ConsumerWidget {
   const MealCard._({
