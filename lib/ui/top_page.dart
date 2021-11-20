@@ -35,7 +35,6 @@ class _TopPageState extends State<TopPage> {
         currentIndex: _currentIdx,
         elevation: 4,
         type: BottomNavigationBarType.fixed,
-        showUnselectedLabels: false,
         items: _allDestinations.map((menu) {
           return BottomNavigationBarItem(
             label: menu.title,
