@@ -39,38 +39,6 @@ class _RecordsNotifier extends StateNotifier<List<Record>> {
     tmp[tmp.indexWhere((e) => e.id == id)] = newRecord;
     state = tmp;
   }
-
-  Future<void> saveBreakFast(int id, String value) async {
-    await _read(recordRepositoryProvider).saveBreakFast(id, value);
-  }
-
-  Future<void> saveLunch(int id, String value) async {
-    await _read(recordRepositoryProvider).saveLunch(id, value);
-  }
-
-  Future<void> saveDinner(int id, String value) async {
-    await _read(recordRepositoryProvider).saveDinner(id, value);
-  }
-
-  Future<void> saveMorningTemperature(int id, double value) async {
-    await _read(recordRepositoryProvider).saveMorningTemperature(id, value);
-  }
-
-  Future<void> saveNightTemperature(int id, double value) async {
-    await _read(recordRepositoryProvider).saveNightTemperature(id, value);
-  }
-
-  Future<void> saveCondition(Record record) async {
-    await _read(recordRepositoryProvider).saveCondition(record);
-  }
-
-  Future<void> saveMedicineIds(int id, String idsStr) async {
-    await _read(recordRepositoryProvider).saveMedicineIds(id, idsStr);
-  }
-
-  Future<void> saveMemo(int id, String memo) async {
-    await _read(recordRepositoryProvider).saveMemo(id, memo);
-  }
 }
 
 ///

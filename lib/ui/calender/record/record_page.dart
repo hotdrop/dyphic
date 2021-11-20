@@ -62,7 +62,7 @@ class RecordPage extends ConsumerWidget {
     if (isSignIn) {
       return WillPopScope(
         onWillPop: () async {
-          final isUpdate = ref.watch(recordViewModelProvider).isUpdate;
+          final isUpdate = ref.read(recordViewModelProvider).isUpdate();
           if (isUpdate) {
             ref.read(recordViewModelProvider).update();
             Navigator.pop(context, true);
