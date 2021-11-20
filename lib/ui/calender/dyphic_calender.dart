@@ -1,3 +1,4 @@
+import 'package:dyphic/model/record.dart';
 import 'package:dyphic/res/app_colors.dart';
 import 'package:dyphic/res/app_strings.dart';
 import 'package:dyphic/model/calendar_event.dart';
@@ -134,14 +135,12 @@ class _DyphicCalendarState extends State<DyphicCalendar> {
     }
 
     if (event.haveRecord()) {
-      final isToilet = event.recordOverview?.isToilet ?? false;
-      if (isToilet) {
+      if (event.isToilet()) {
         markers.add(const SizedBox(width: calendarIconSize, child: Text('💩')));
       } else {
         markers.add(const SizedBox(width: calendarIconSize));
       }
-      final isWalk = event.recordOverview?.isWalking ?? false;
-      if (isWalk) {
+      if (event.isWalking()) {
         markers.add(const Icon(Icons.directions_walk, size: calendarIconSize, color: AppColors.walking));
       } else {
         markers.add(const SizedBox(width: calendarIconSize));
@@ -167,7 +166,8 @@ class _DyphicCalendarState extends State<DyphicCalendar> {
         elevation: 4.0,
         child: InkWell(
           onTap: () async {
-            final isUpdate = await RecordPage.start(context, _selectedEvent.date);
+            final record = _selectedEvent.record ?? Record.create(id: _selectedEvent.id);
+            final isUpdate = await RecordPage.start(context, record);
             final recordId = DyphicID.makeRecordId(_selectedEvent.date);
             widget.onReturnEditPage(isUpdate, recordId);
           },
@@ -214,7 +214,7 @@ class _DyphicCalendarState extends State<DyphicCalendar> {
 
     if (_selectedEvent.haveRecord()) {
       // 体調
-      widgets.add(Text(_selectedEvent.toStringConditions()));
+      widgets.add(Text(_selectedEvent.toConditionNames()));
       widgets.add(const SizedBox(height: 8.0));
 
       // 散歩

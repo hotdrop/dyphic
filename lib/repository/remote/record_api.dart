@@ -1,7 +1,13 @@
+import 'package:dyphic/model/condition.dart';
+import 'package:dyphic/model/medicine.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:dyphic/common/app_logger.dart';
 import 'package:dyphic/model/record.dart';
+import 'package:dyphic/repository/remote/document/record_detail_doc.dart';
+import 'package:dyphic/repository/remote/document/record_overview_doc.dart';
+import 'package:dyphic/repository/remote/document/record_temperature_doc.dart';
 import 'package:dyphic/service/app_firebase.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:collection/collection.dart';
 
 final recordApiProvider = Provider((ref) => _RecordApi(ref.read));
 
@@ -10,27 +16,76 @@ class _RecordApi {
 
   final Reader _read;
 
-  Future<List<RecordOverview>> findOverviewRecords() async {
-    return await _read(appFirebaseProvider).findOverviewRecords();
+  ///
+  /// 全日の記録情報を取得する
+  ///
+  Future<List<Record>> findAll() async {
+    List<RecordOverviewDoc> overviewResponse = [];
+    List<RecordTemperatureDoc> temperatureResponse = [];
+    List<RecordDetailDoc> detailsResponse = [];
+
+    await Future.wait<void>([
+      _read(appFirebaseProvider).findAllRecordOverview().then((r) => overviewResponse = r),
+      _read(appFirebaseProvider).findAllTemperature().then((r) => temperatureResponse = r),
+      _read(appFirebaseProvider).findAllDetails().then((r) => detailsResponse = r),
+    ]);
+
+    AppLogger.d('記録情報の取得が完了しました。記録概要: ${overviewResponse.length}件');
+    if (overviewResponse.isEmpty) {
+      return [];
+    }
+
+    List<Record> results = [];
+    for (var overview in overviewResponse) {
+      final temp = temperatureResponse.firstWhereOrNull((t) => t.recordId == overview.recordId);
+      final detail = detailsResponse.firstWhereOrNull((d) => d.recordId == overview.recordId);
+      final record = _merge(overview, temp, detail);
+      results.add(record);
+    }
+    AppLogger.d('記録情報をマージしました。${results.length}件');
+
+    return results;
   }
 
-  Future<RecordOverview?> findOverviewRecord(int id) async {
-    return await _read(appFirebaseProvider).findOverviewRecord(id);
-  }
-
-  Future<Record> find(int id) async {
-    AppLogger.d('$id の記録情報を取得します。');
-    final RecordOverview? overview = await _read(appFirebaseProvider).findOverviewRecord(id);
-    final RecordTemperature? temperature = await _read(appFirebaseProvider).findTemperatureRecord(id);
-    final RecordDetail? detail = await _read(appFirebaseProvider).findDetailRecord(id);
-
-    final record = Record.create(
-      id: id,
-      recordOverview: overview,
-      recordTemperature: temperature,
-      recordDetail: detail,
+  Record _merge(RecordOverviewDoc overview, RecordTemperatureDoc? temp, RecordDetailDoc? detail) {
+    final conditions = _read(conditionsProvider);
+    final medicines = _read(medicineProvider);
+    return Record(
+      id: overview.recordId,
+      isWalking: overview.isWalking,
+      isToilet: overview.isToilet,
+      conditions: Record.toConditions(conditions, overview.conditionStringIds),
+      conditionMemo: overview.conditionMemo,
+      morningTemperature: temp?.morningTemperature,
+      nightTemperature: temp?.nightTemperature,
+      medicines: Record.toMedicines(medicines, detail?.medicineStrIds),
+      breakfast: detail?.breakfast,
+      lunch: detail?.lunch,
+      dinner: detail?.dinner,
+      memo: detail?.memo,
     );
-    return record;
+  }
+
+  ///
+  /// 指定したIDの記録情報を取得する
+  ///
+  Future<Record?> find(int id) async {
+    RecordOverviewDoc? overviewDoc;
+    RecordTemperatureDoc? temperatureDoc;
+    RecordDetailDoc? detailsDoc;
+
+    await Future.wait<void>([
+      _read(appFirebaseProvider).findOverviewRecord(id).then((r) => overviewDoc = r),
+      _read(appFirebaseProvider).findTemperatureRecord(id).then((r) => temperatureDoc = r),
+      _read(appFirebaseProvider).findDetailRecord(id).then((r) => detailsDoc = r),
+    ]);
+
+    AppLogger.d('記録情報の取得が完了しました。');
+    if (overviewDoc != null) {
+      return _merge(overviewDoc!, temperatureDoc, detailsDoc);
+    } else {
+      return null;
+    }
   }
 
   Future<void> saveBreakFast(int recordId, String breakFast) async {
@@ -58,9 +113,16 @@ class _RecordApi {
     await _read(appFirebaseProvider).saveNightTemperature(recordId, temperature);
   }
 
-  Future<void> saveCondition(RecordOverview overview) async {
-    AppLogger.d('${overview.recordId} の体調情報を保存します。');
-    await _read(appFirebaseProvider).saveOverview(overview);
+  Future<void> saveCondition(Record record) async {
+    AppLogger.d('${record.id} の体調情報を保存します。');
+    final doc = RecordOverviewDoc(
+      recordId: record.id,
+      isWalking: record.isWalking,
+      isToilet: record.isToilet,
+      conditionStringIds: record.toConditionIdsStr(_read(conditionsProvider)),
+      conditionMemo: record.conditionMemo ?? '',
+    );
+    await _read(appFirebaseProvider).saveOverview(doc);
   }
 
   Future<void> saveMedicineIds(int recordId, String idsStr) async {

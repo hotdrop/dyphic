@@ -1,3 +1,4 @@
+import 'package:dyphic/model/record.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
@@ -14,17 +15,17 @@ import 'package:dyphic/ui/widget/meal_card.dart';
 import 'package:dyphic/ui/widget/temperature_view.dart';
 
 class RecordPage extends ConsumerWidget {
-  const RecordPage._(this._date);
+  const RecordPage._(this._record);
 
-  static Future<bool> start(BuildContext context, DateTime date) async {
+  static Future<bool> start(BuildContext context, Record record) async {
     return await Navigator.push<bool>(
           context,
-          MaterialPageRoute(builder: (_) => RecordPage._(date)),
+          MaterialPageRoute(builder: (_) => RecordPage._(record)),
         ) ??
         false;
   }
 
-  final DateTime _date;
+  final Record _record;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -37,7 +38,7 @@ class RecordPage extends ConsumerWidget {
 
   Widget _onLoading(BuildContext context, WidgetRef ref, String? errorMsg) {
     Future.delayed(Duration.zero).then((_) async {
-      ref.read(recordViewModelProvider).init(_date);
+      ref.read(recordViewModelProvider).init(_record.id);
       if (errorMsg != null) {
         await AppDialog.onlyOk(message: errorMsg).show(context);
       }
@@ -53,7 +54,7 @@ class RecordPage extends ConsumerWidget {
   }
 
   String _pageTitle() {
-    return DateFormat(AppStrings.recordPageTitleDateFormat).format(_date);
+    return DateFormat(AppStrings.recordPageTitleDateFormat).format(_record.date);
   }
 
   Widget _onSuccess(BuildContext context, WidgetRef ref) {
@@ -63,6 +64,7 @@ class RecordPage extends ConsumerWidget {
         onWillPop: () async {
           final isUpdate = ref.watch(recordViewModelProvider).isUpdate;
           if (isUpdate) {
+            ref.read(recordViewModelProvider).update();
             Navigator.pop(context, true);
           }
           return true;
@@ -85,9 +87,9 @@ class RecordPage extends ConsumerWidget {
             children: <Widget>[
               _mealViewArea(context, ref),
               _temperatureViewArea(ref),
-              const _ConditionArea(),
+              _ConditionArea(_record),
               const SizedBox(height: 16.0),
-              const _MedicineArea(),
+              _MedicineArea(_record),
               const SizedBox(height: 16.0),
               _memoView(context, ref),
               const SizedBox(height: 36),
@@ -108,17 +110,17 @@ class RecordPage extends ConsumerWidget {
             scrollDirection: Axis.horizontal,
             children: [
               MealCard.morning(
-                detail: ref.watch(recordViewModelProvider).breakfast,
+                detail: _record.breakfast ?? '',
                 onSubmitted: (String? v) => ref.read(recordViewModelProvider).inputBreakfast(v),
               ),
               const SizedBox(width: 4),
               MealCard.lunch(
-                detail: ref.watch(recordViewModelProvider).lunch,
+                detail: _record.lunch ?? '',
                 onSubmitted: (String? v) => ref.read(recordViewModelProvider).inputLunch(v),
               ),
               const SizedBox(width: 4),
               MealCard.dinner(
-                detail: ref.watch(recordViewModelProvider).dinner,
+                detail: _record.dinner ?? '',
                 onSubmitted: (String? v) => ref.read(recordViewModelProvider).inputDinner(v),
               ),
             ],
@@ -135,7 +137,7 @@ class RecordPage extends ConsumerWidget {
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: <Widget>[
           TemperatureView.morning(
-            temperature: ref.watch(recordViewModelProvider).morningTemperature,
+            temperature: _record.morningTemperature ?? 0,
             onSubmitted: (double? newValue) {
               if (newValue != null) {
                 ref.read(recordViewModelProvider).inputMorningTemperature(newValue);
@@ -143,7 +145,7 @@ class RecordPage extends ConsumerWidget {
             },
           ),
           TemperatureView.night(
-            temperature: ref.watch(recordViewModelProvider).nightTemperature,
+            temperature: _record.nightTemperature ?? 0,
             onSubmitted: (double? newValue) {
               if (newValue != null) {
                 ref.read(recordViewModelProvider).inputNightTemperature(newValue);
@@ -164,7 +166,7 @@ class RecordPage extends ConsumerWidget {
           children: [
             MultiLineTextField(
               label: AppStrings.recordMemoTitle,
-              initValue: ref.watch(recordViewModelProvider).memo,
+              initValue: _record.memo,
               limitLine: 10,
               hintText: AppStrings.recordMemoHint,
               onChanged: ref.read(recordViewModelProvider).inputMemo,
@@ -197,7 +199,9 @@ class RecordPage extends ConsumerWidget {
 /// 体調情報の編集エリア
 ///
 class _ConditionArea extends ConsumerWidget {
-  const _ConditionArea({Key? key}) : super(key: key);
+  const _ConditionArea(this._record);
+
+  final Record _record;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -231,7 +235,7 @@ class _ConditionArea extends ConsumerWidget {
 
   Widget _viewSelectChips(WidgetRef ref) {
     return ConditionSelectChips(
-      selectIds: ref.read(recordViewModelProvider).selectConditionIds,
+      selectIds: _record.conditions.map((e) => e.id).toSet(),
       onChange: (Set<int> ids) => ref.read(recordViewModelProvider).changeSelectedCondition(ids),
     );
   }
@@ -241,11 +245,11 @@ class _ConditionArea extends ConsumerWidget {
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
         AppCheckBox.walking(
-          initValue: ref.watch(recordViewModelProvider).isWalking,
+          initValue: _record.isWalking,
           onChanged: (bool? isCheck) => ref.read(recordViewModelProvider).inputIsWalking(isCheck),
         ),
         AppCheckBox.toilet(
-          initValue: ref.watch(recordViewModelProvider).isToilet,
+          initValue: _record.isToilet,
           onChanged: (bool? isCheck) => ref.read(recordViewModelProvider).inputIsToilet(isCheck),
         ),
       ],
@@ -255,7 +259,7 @@ class _ConditionArea extends ConsumerWidget {
   Widget _viewMemo(WidgetRef ref) {
     return MultiLineTextField(
       label: AppStrings.recordConditionMemoTitle,
-      initValue: ref.read(recordViewModelProvider).conditionMemo,
+      initValue: _record.conditionMemo,
       limitLine: 10,
       hintText: AppStrings.recordConditionMemoHint,
       onChanged: ref.read(recordViewModelProvider).inputConditionMemo,
@@ -287,7 +291,9 @@ class _ConditionArea extends ConsumerWidget {
 /// お薬情報の編集エリア
 ///
 class _MedicineArea extends ConsumerWidget {
-  const _MedicineArea({Key? key}) : super(key: key);
+  const _MedicineArea(this._record);
+
+  final Record _record;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -317,7 +323,7 @@ class _MedicineArea extends ConsumerWidget {
 
   Widget _viewSelectChips(WidgetRef ref) {
     return MedicineSelectChips(
-      selectIds: ref.watch(recordViewModelProvider).selectMedicineIds,
+      selectIds: _record.medicines.map((e) => e.id).toSet(),
       onChanged: (Set<int> ids) => ref.read(recordViewModelProvider).changeSelectedMedicine(ids),
     );
   }

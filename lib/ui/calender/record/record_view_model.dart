@@ -1,10 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:dyphic/common/app_logger.dart';
 import 'package:dyphic/model/condition.dart';
-import 'package:dyphic/model/dyphic_id.dart';
-import 'package:dyphic/model/medicine.dart';
 import 'package:dyphic/model/record.dart';
-import 'package:dyphic/repository/record_repository.dart';
 import 'package:dyphic/ui/base_view_model.dart';
 
 final recordViewModelProvider = ChangeNotifierProvider.autoDispose((ref) => _RecordViewModel(ref.read));
@@ -14,221 +11,253 @@ class _RecordViewModel extends BaseViewModel {
 
   final Reader _read;
 
-  late _InputRecord _inputRecord;
-  double get morningTemperature => _inputRecord.morningTemperature;
-  double get nightTemperature => _inputRecord.nightTemperature;
-  Set<int> get selectConditionIds => _inputRecord.selectConditionIds;
-  String get conditionMemo => _inputRecord.conditionMemo;
-  Set<int> get selectMedicineIds => _inputRecord.selectMedicineIds;
-  bool get isWalking => _inputRecord.isWalking;
-  bool get isToilet => _inputRecord.isToilet;
-  String get breakfast => _inputRecord.breakfast;
-  String get lunch => _inputRecord.lunch;
-  String get dinner => _inputRecord.dinner;
-  String get memo => _inputRecord.memo;
+  late int _id;
+
+  Set<int> _selectConditionIds = {};
+  bool _inputIsWalking = false;
+  bool _inputIsToilet = false;
+  String _inputConditionMemo = '';
+  Set<int> _selectMedicineIds = {};
+  String _memo = '';
 
   bool _isUpdate = false;
   bool get isUpdate => _isUpdate;
 
-  Future<void> init(DateTime date) async {
-    try {
-      final id = DyphicID.makeRecordId(date);
-      final _record = await _read(recordRepositoryProvider).find(id);
+  Future<void> init(int id) async {
+    _id = id;
+    onSuccess();
+  }
 
-      _inputRecord = _InputRecord.create(_record);
-
-      await _read(medicineProvider.notifier).refresh();
-      await _read(conditionsProvider.notifier).refresh();
-
-      onSuccess();
-    } catch (e, s) {
-      await AppLogger.e('$dateの記録情報の取得に失敗しました。', e, s);
-      rethrow;
-    }
+  Future<void> update() async {
+    await _read(recordsProvider.notifier).update(_id);
   }
 
   Future<void> inputBreakfast(String? newVal) async {
     if (newVal == null) {
       return;
     }
-    _inputRecord.breakfast = newVal;
-    await _read(recordRepositoryProvider).saveBreakFast(_inputRecord.id, newVal);
-    _isUpdate = true;
-    notifyListeners();
+    try {
+      await _read(recordsProvider.notifier).saveBreakFast(_id, newVal);
+    } catch (e, s) {
+      await AppLogger.e('朝食の保存に失敗しました。', e, s);
+      onError('朝食の保存に失敗しました。 $e');
+    }
   }
 
   Future<void> inputLunch(String? newVal) async {
     if (newVal == null) {
       return;
     }
-    _inputRecord.lunch = newVal;
-    await _read(recordRepositoryProvider).saveLunch(_inputRecord.id, newVal);
-    _isUpdate = true;
-    notifyListeners();
+    try {
+      await _read(recordsProvider.notifier).saveLunch(_id, newVal);
+      _isUpdate = true;
+    } catch (e, s) {
+      await AppLogger.e('昼食の保存に失敗しました。', e, s);
+      onError('昼食の保存に失敗しました。 $e');
+    }
   }
 
   Future<void> inputDinner(String? newVal) async {
     if (newVal == null) {
       return;
     }
-    _inputRecord.dinner = newVal;
-    await _read(recordRepositoryProvider).saveDinner(_inputRecord.id, newVal);
-    _isUpdate = true;
-    notifyListeners();
+    try {
+      await _read(recordsProvider.notifier).saveDinner(_id, newVal);
+      _isUpdate = true;
+    } catch (e, s) {
+      await AppLogger.e('夕食の保存に失敗しました。', e, s);
+      onError('夕食の保存に失敗しました。 $e');
+    }
   }
 
   Future<void> inputMorningTemperature(double newVal) async {
-    AppLogger.d('入力した値は $newVal です');
-    _inputRecord.morningTemperature = newVal;
-    await _read(recordRepositoryProvider).saveMorningTemperature(_inputRecord.id, newVal);
-    _isUpdate = true;
-    // notifyListeners();
+    try {
+      await _read(recordsProvider.notifier).saveMorningTemperature(_id, newVal);
+      _isUpdate = true;
+    } catch (e, s) {
+      await AppLogger.e('朝の体温の保存に失敗しました。', e, s);
+      onError('朝の体温の保存に失敗しました。 $e');
+    }
   }
 
   Future<void> inputNightTemperature(double newVal) async {
-    AppLogger.d('入力した値は $newVal です');
-    _inputRecord.nightTemperature = newVal;
-    await _read(recordRepositoryProvider).saveNightTemperature(_inputRecord.id, newVal);
-    _isUpdate = true;
-    // notifyListeners();
+    try {
+      await _read(recordsProvider.notifier).saveNightTemperature(_id, newVal);
+      _isUpdate = true;
+    } catch (e, s) {
+      await AppLogger.e('夜の体温の保存に失敗しました。', e, s);
+      onError('夜の体温の保存に失敗しました。 $e');
+    }
   }
+
+  // ここから体調情報
+
+  void changeSelectedCondition(Set<int> selectedIds) {
+    AppLogger.d('選択している症状は $selectedIds 個です');
+    _selectConditionIds = selectedIds;
+  }
+
+  void inputIsWalking(bool? isWalking) {
+    _inputIsWalking = isWalking ?? false;
+  }
+
+  void inputIsToilet(bool? isToilet) {
+    _inputIsToilet = isToilet ?? false;
+  }
+
+  void inputConditionMemo(String newVal) {
+    _inputConditionMemo = newVal;
+  }
+
+  Future<void> saveCondition() async {
+    try {
+      final newRecord = _createOnlyCondition(_id);
+      await _read(recordsProvider.notifier).saveCondition(newRecord);
+      _isUpdate = true;
+    } catch (e, s) {
+      await AppLogger.e('体調情報の保存に失敗しました。', e, s);
+      onError('体調情報の保存に失敗しました。 $e');
+    }
+  }
+
+  Record _createOnlyCondition(int id) {
+    final allConditions = _read(conditionsProvider);
+    final conditions = allConditions.where((e) => _selectConditionIds.contains(e.id)).toList();
+    return Record(
+      id: id,
+      isWalking: _inputIsWalking,
+      isToilet: _inputIsToilet,
+      conditions: conditions,
+      conditionMemo: _inputConditionMemo,
+      morningTemperature: null,
+      nightTemperature: null,
+      medicines: [],
+      breakfast: null,
+      lunch: null,
+      dinner: null,
+      memo: null,
+    );
+  }
+
+  // ここからお薬情報
 
   void changeSelectedMedicine(Set<int> selectedIds) {
     AppLogger.d('選択しているお薬は $selectedIds です');
-    _inputRecord.selectMedicineIds = selectedIds;
-    _isUpdate = true;
+    _selectMedicineIds = selectedIds;
   }
 
   Future<void> saveMedicine() async {
     try {
-      final idsStr = _inputRecord.toStringMedicineIds();
-      await _read(recordRepositoryProvider).saveMedicineIds(_inputRecord.id, idsStr);
+      final idsStr = Record.setToMedicineIdsStr(_selectMedicineIds);
+      await _read(recordsProvider.notifier).saveMedicineIds(_id, idsStr);
       _isUpdate = true;
     } catch (e, s) {
-      await AppLogger.e('体調情報の保存に失敗しました。', e, s);
-      rethrow;
+      await AppLogger.e('選択したお薬の保存に失敗しました。', e, s);
+      onError('選択したお薬の保存に失敗しました。 $e');
     }
   }
 
-  void changeSelectedCondition(Set<int> selectedIds) {
-    AppLogger.d('選択している症状は $selectedIds 個です');
-    _inputRecord.selectConditionIds = selectedIds;
-    _isUpdate = true;
-  }
-
-  void inputConditionMemo(String newVal) {
-    _inputRecord.conditionMemo = newVal;
-    _isUpdate = true;
-  }
-
-  Future<void> saveCondition() async {
-    final newRecord = _inputRecord.toRecordOverview(_read(conditionsProvider));
-    try {
-      await _read(recordRepositoryProvider).saveCondition(newRecord);
-      _isUpdate = true;
-    } catch (e, s) {
-      await AppLogger.e('体調情報の保存に失敗しました。', e, s);
-      rethrow;
-    }
-  }
-
-  Future<void> inputIsWalking(bool? isWalking) async {
-    _inputRecord.isWalking = isWalking ?? false;
-    _isUpdate = true;
-  }
-
-  Future<void> inputIsToilet(bool? isToilet) async {
-    _inputRecord.isToilet = isToilet ?? false;
-    _isUpdate = true;
-  }
-
+  // ここからメモ情報
   void inputMemo(String newVal) {
-    _inputRecord.memo = newVal;
+    _memo = newVal;
   }
 
   Future<void> saveMemo() async {
     try {
-      await _read(recordRepositoryProvider).saveMemo(_inputRecord.id, _inputRecord.memo);
+      await _read(recordsProvider.notifier).saveMemo(_id, _memo);
       _isUpdate = true;
     } catch (e, s) {
-      await AppLogger.e('体調情報の保存に失敗しました。', e, s);
-      rethrow;
+      await AppLogger.e('メモの保存に失敗しました。', e, s);
+      onError('メモの保存に失敗しました。 $e');
     }
   }
 }
 
-///
-/// 入力保持用のクラス
-///
-class _InputRecord {
-  _InputRecord._({
-    required this.id,
-    required this.morningTemperature,
-    required this.nightTemperature,
-    required this.selectMedicineIds,
-    required this.selectConditionIds,
-    required this.isWalking,
-    required this.isToilet,
-    required this.conditionMemo,
-    required this.breakfast,
-    required this.lunch,
-    required this.dinner,
-    required this.memo,
-  });
+// ///
+// /// 入力保持用のクラス
+// ///
+// class _InputRecord {
+//   _InputRecord._({
+//     required this.id,
+//     required this.morningTemperature,
+//     required this.nightTemperature,
+//     required this.selectMedicineIds,
+//     required this.selectConditionIds,
+//     required this.isWalking,
+//     required this.isToilet,
+//     required this.conditionMemo,
+//     required this.breakfast,
+//     required this.lunch,
+//     required this.dinner,
+//     required this.memo,
+//   });
 
-  factory _InputRecord.create(Record record) {
-    final id = DyphicID.makeRecordId(record.date);
+//   factory _InputRecord.create(Record record) {
+//     final id = DyphicID.makeRecordId(record.date);
 
-    return _InputRecord._(
-      id: id,
-      morningTemperature: record.morningTemperature ?? 0.0,
-      nightTemperature: record.nightTemperature ?? 0.0,
-      selectMedicineIds: record.medicines?.map((e) => e.id).toSet() ?? {},
-      selectConditionIds: record.conditions?.map((e) => e.id).toSet() ?? {},
-      isWalking: record.isWalking ?? false,
-      isToilet: record.isToilet ?? false,
-      conditionMemo: record.conditionMemo ?? '',
-      breakfast: record.breakfast ?? '',
-      lunch: record.lunch ?? '',
-      dinner: record.dinner ?? '',
-      memo: record.memo ?? '',
-    );
-  }
+//     return _InputRecord._(
+//       id: id,
+//       morningTemperature: record.morningTemperature ?? 0.0,
+//       nightTemperature: record.nightTemperature ?? 0.0,
+//       selectMedicineIds: record.medicines.map((e) => e.id).toSet(),
+//       selectConditionIds: record.conditions.map((e) => e.id).toSet(),
+//       isWalking: record.isWalking,
+//       isToilet: record.isToilet,
+//       conditionMemo: record.conditionMemo ?? '',
+//       breakfast: record.breakfast ?? '',
+//       lunch: record.lunch ?? '',
+//       dinner: record.dinner ?? '',
+//       memo: record.memo ?? '',
+//     );
+//   }
 
-  int id;
-  double morningTemperature;
-  double nightTemperature;
-  Set<int> selectMedicineIds;
-  Set<int> selectConditionIds;
-  bool isWalking;
-  bool isToilet;
-  String conditionMemo;
-  String breakfast;
-  String lunch;
-  String dinner;
-  String memo;
+//   int id;
+//   double morningTemperature;
+//   double nightTemperature;
+//   Set<int> selectMedicineIds;
+//   Set<int> selectConditionIds;
+//   bool isWalking;
+//   bool isToilet;
+//   String conditionMemo;
+//   String breakfast;
+//   String lunch;
+//   String dinner;
+//   String memo;
 
-  RecordOverview toRecordOverview(List<Condition> allCondition) {
-    final selectConditions = allCondition.where((e) => selectConditionIds.contains(e.id)).toList();
-    return RecordOverview(recordId: id, isWalking: isWalking, isToilet: isToilet, conditions: selectConditions, conditionMemo: conditionMemo);
-  }
+//   Record toRecordOverview(List<Condition> allCondition) {
+//     final selectConditions = allCondition.where((e) => selectConditionIds.contains(e.id)).toList();
+//     return Record(
+//       id: id,
+//       isWalking: isWalking,
+//       isToilet: isToilet,
+//       conditions: selectConditions,
+//       conditionMemo: conditionMemo,
+//       breakfast: '',
+//       dinner: '',
+//       lunch: '',
+//       medicines: [],
+//       memo: '',
+//       morningTemperature: null,
+//       nightTemperature: null,
+//     );
+//   }
 
-  String toStringMedicineIds() {
-    if (selectMedicineIds.isEmpty) {
-      return '';
-    }
-    return selectMedicineIds.join(Record.listSeparator);
-  }
+//   String toStringMedicineIds() {
+//     if (selectMedicineIds.isEmpty) {
+//       return '';
+//     }
+//     return selectMedicineIds.join(Record.listSeparator);
+//   }
 
-  Record toRecord(List<Medicine> allMedicine, List<Condition> allCondition) {
-    final selectConditions = allCondition.where((e) => selectConditionIds.contains(e.id)).toList();
-    final selectMedicines = allMedicine.where((e) => selectMedicineIds.contains(e.id)).toList();
+//   Record toRecord(List<Medicine> allMedicine, List<Condition> allCondition) {
+//     final selectConditions = allCondition.where((e) => selectConditionIds.contains(e.id)).toList();
+//     final selectMedicines = allMedicine.where((e) => selectMedicineIds.contains(e.id)).toList();
 
-    return Record.create(
-      id: id,
-      recordOverview: RecordOverview(recordId: id, isWalking: isWalking, isToilet: isToilet, conditions: selectConditions, conditionMemo: conditionMemo),
-      recordTemperature: RecordTemperature(recordId: id, morningTemperature: morningTemperature, nightTemperature: nightTemperature),
-      recordDetail: RecordDetail(recordId: id, medicines: selectMedicines, breakfast: breakfast, lunch: lunch, dinner: dinner, memo: memo),
-    );
-  }
-}
+//     return Record.create(
+//       id: id,
+//       recordOverview: RecordOverview(recordId: id, isWalking: isWalking, isToilet: isToilet, conditions: selectConditions, conditionMemo: conditionMemo),
+//       recordTemperature: RecordTemperature(recordId: id, morningTemperature: morningTemperature, nightTemperature: nightTemperature),
+//       recordDetail: RecordDetail(recordId: id, medicines: selectMedicines, breakfast: breakfast, lunch: lunch, dinner: dinner, memo: memo),
+//     );
+//   }
+// }

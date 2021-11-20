@@ -1,11 +1,10 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:dyphic/model/app_settings.dart';
 import 'package:dyphic/ui/widget/app_image.dart';
-import 'package:flutter/material.dart';
-
 import 'package:dyphic/res/app_colors.dart';
 import 'package:dyphic/model/condition.dart';
 import 'package:dyphic/model/medicine.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 ///
 /// 体調用の選択chips
@@ -31,7 +30,7 @@ class _ConditionSelectChipsState extends ConsumerState<ConditionSelectChips> {
   void initState() {
     super.initState();
     if (widget.selectIds.isNotEmpty) {
-      _selectedIds = widget.selectIds.toSet();
+      _selectedIds = widget.selectIds;
     }
   }
 

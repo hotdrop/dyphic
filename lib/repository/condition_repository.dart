@@ -15,7 +15,7 @@ class _ConditionRepository {
   /// データがローカルにない場合はリモートから取得する。
   /// isForceUpdate がtrueの場合はリモートのデータで最新化する。
   ///
-  Future<List<Condition>> findAll(bool isForceUpdate) async {
+  Future<List<Condition>> findAll({required bool isForceUpdate}) async {
     final conditions = await _read(conditionDaoProvider).findAll();
     if (conditions.isNotEmpty && !isForceUpdate) {
       return conditions;

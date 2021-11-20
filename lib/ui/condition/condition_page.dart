@@ -159,7 +159,7 @@ class ConditionPage extends ConsumerWidget {
     await progressDialog.show(
       context,
       execute: ref.read(conditionViewModelProvider).save,
-      onSuccess: (_) async => await ref.read(conditionViewModelProvider).refresh(),
+      onSuccess: (_) => ref.read(conditionViewModelProvider).clear(),
       onError: (err) => AppDialog.onlyOk(message: err).show(context),
     );
   }

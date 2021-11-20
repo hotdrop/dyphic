@@ -6,52 +6,52 @@ class CalendarEvent {
     required this.id,
     this.type,
     this.name,
-    this.recordOverview,
+    this.record,
   });
 
-  factory CalendarEvent.create(Event event, RecordOverview overview) {
-    return CalendarEvent._(id: event.id, type: event.type, name: event.name, recordOverview: overview);
+  factory CalendarEvent.create(Event event, Record record) {
+    return CalendarEvent._(id: event.id, type: event.type, name: event.name, record: record);
   }
 
-  factory CalendarEvent.createOnlyRecord(RecordOverview overview) {
-    return CalendarEvent._(id: overview.recordId, type: EventType.none, name: null, recordOverview: overview);
+  factory CalendarEvent.createOnlyRecord(Record record) {
+    return CalendarEvent._(id: record.id, type: EventType.none, name: null, record: record);
   }
 
   factory CalendarEvent.createOnlyEvent(Event event) {
-    return CalendarEvent._(id: event.id, type: event.type, name: event.name, recordOverview: null);
+    return CalendarEvent._(id: event.id, type: event.type, name: event.name, record: null);
   }
 
   factory CalendarEvent.createEmpty(DateTime date) {
     final id = DyphicID.makeEventId(date);
-    return CalendarEvent._(id: id, type: null, name: null, recordOverview: null);
+    return CalendarEvent._(id: id, type: null, name: null, record: null);
   }
 
   final int id;
   final EventType? type;
   final String? name;
-  final RecordOverview? recordOverview;
+  final Record? record;
 
   DateTime get date => DyphicID.idToDate(id);
   bool typeMedical() => type == EventType.hospital;
   bool typeInjection() => type == EventType.injection;
-  bool haveRecord() => recordOverview != null;
-  bool isWalking() => recordOverview?.isWalking ?? false;
-  bool isToilet() => recordOverview?.isToilet ?? false;
+  bool haveRecord() => record != null;
+  bool isWalking() => record?.isWalking ?? false;
+  bool isToilet() => record?.isToilet ?? false;
 
   static bool isSameDay(DateTime date1, DateTime date2) {
     return date1.year == date2.year && date1.month == date2.month && date1.day == date2.day;
   }
 
-  String toStringConditions() {
-    return recordOverview?.toStringConditionNames() ?? '';
+  String toConditionNames() {
+    return record?.toConditionNames() ?? '';
   }
 
   String getConditionMemo() {
-    return recordOverview?.conditionMemo ?? '';
+    return record?.conditionMemo ?? '';
   }
 
-  CalendarEvent updateRecord(RecordOverview newRecord) {
-    return CalendarEvent._(id: id, type: type, name: name, recordOverview: newRecord);
+  CalendarEvent updateRecord(Record newRecord) {
+    return CalendarEvent._(id: id, type: type, name: name, record: newRecord);
   }
 }
 

@@ -10,8 +10,12 @@ class _ConditionNotifier extends StateNotifier<List<Condition>> {
 
   final Reader _read;
 
-  Future<void> refresh({bool isForceUpdate = false}) async {
-    state = await _read(conditionRepositoryProvider).findAll(isForceUpdate);
+  Future<void> onLoad() async {
+    state = await _read(conditionRepositoryProvider).findAll(isForceUpdate: false);
+  }
+
+  Future<void> refresh() async {
+    state = await _read(conditionRepositoryProvider).findAll(isForceUpdate: true);
   }
 
   bool isExist(int? id, String name) {
@@ -30,6 +34,7 @@ class _ConditionNotifier extends StateNotifier<List<Condition>> {
   Future<void> save(String name) async {
     final newId = _createNewId();
     await _read(conditionRepositoryProvider).save(Condition(newId, name));
+    onLoad();
   }
 
   int _createNewId() {

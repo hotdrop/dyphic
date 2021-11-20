@@ -16,7 +16,7 @@ class _MedicineRepository {
   /// データがローカルにない場合はリモートから取得する。
   /// isForceUpdate がtrueの場合はリモートのデータで最新化する。
   ///
-  Future<List<Medicine>> findAll(bool isForceUpdate) async {
+  Future<List<Medicine>> findAll({required bool isForceUpdate}) async {
     final medicines = await _read(medicineDaoProvider).findAll();
     if (medicines.isNotEmpty && !isForceUpdate) {
       medicines.sort((a, b) => a.order - b.order);

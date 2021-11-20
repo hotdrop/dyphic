@@ -11,12 +11,17 @@ class _MedicineNotifier extends StateNotifier<List<Medicine>> {
 
   final Reader _read;
 
-  Future<void> refresh({bool isForceUpdate = false}) async {
-    state = await _read(medicineRepositoryProvider).findAll(isForceUpdate);
+  Future<void> onLoad() async {
+    state = await _read(medicineRepositoryProvider).findAll(isForceUpdate: false);
+  }
+
+  Future<void> refresh() async {
+    state = await _read(medicineRepositoryProvider).findAll(isForceUpdate: true);
   }
 
   Future<void> save(Medicine medicine, bool isUpdateImage) async {
     await _read(medicineRepositoryProvider).save(medicine, isUpdateImage);
+    onLoad();
   }
 
   Medicine createNew() {

@@ -1,3 +1,5 @@
+import 'package:dyphic/model/condition.dart';
+import 'package:dyphic/model/medicine.dart';
 import 'package:dyphic/repository/account_repository.dart';
 import 'package:dyphic/repository/local/local_data_source.dart';
 import 'package:flutter/material.dart';
@@ -17,6 +19,13 @@ class _AppSettingsNotifier extends StateNotifier<AppSettings> {
   ///
   Future<void> init() async {
     await _read(localDataSourceProvider).init();
+    // 必要なデータをロード
+    if (_read(conditionsProvider).isEmpty) {
+      await _read(conditionsProvider.notifier).onLoad();
+    }
+    if (_read(medicineProvider).isEmpty) {
+      await _read(medicineProvider.notifier).onLoad();
+    }
     refresh();
   }
 

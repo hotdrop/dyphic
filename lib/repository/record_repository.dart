@@ -1,7 +1,7 @@
-import 'package:dyphic/common/app_logger.dart';
-import 'package:dyphic/model/record.dart';
-import 'package:dyphic/repository/remote/record_api.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:dyphic/model/record.dart';
+import 'package:dyphic/repository/local/dao/record_dao.dart';
+import 'package:dyphic/repository/remote/record_api.dart';
 
 final recordRepositoryProvider = Provider((ref) => _RecordRepository(ref.read));
 
@@ -10,18 +10,34 @@ class _RecordRepository {
 
   final Reader _read;
 
-  Future<List<RecordOverview>> findEventRecords() async {
-    final overviewRecords = await _read(recordApiProvider).findOverviewRecords();
-    AppLogger.d('記録情報概要を全取得しました。登録数: ${overviewRecords.length}');
-    return overviewRecords;
+  ///
+  /// 記録情報をローカルから取得する。
+  /// データがローカルにない場合はリモートから取得する。
+  /// isForceUpdate がtrueの場合はリモートのデータで最新化する。
+  ///
+  Future<List<Record>> findAll(bool isForceUpdate) async {
+    final records = await _read(recordDaoProvider).findAll();
+    if (records.isNotEmpty && !isForceUpdate) {
+      return records;
+    }
+    // 0件ならリモートから取得
+    final newRecords = await _read(recordApiProvider).findAll();
+    await _read(recordDaoProvider).saveAll(newRecords);
+    return newRecords;
   }
 
-  Future<RecordOverview?> findOverview(int id) async {
-    return await _read(recordApiProvider).findOverviewRecord(id);
+  Future<Record?> find(int id) async {
+    return await _read(recordDaoProvider).find(id);
   }
 
-  Future<Record> find(int id) async {
-    return await _read(recordApiProvider).find(id);
+  ///
+  /// リモートから指定した記録情報を更新する
+  ///
+  Future<void> refresh(int id) async {
+    final record = await _read(recordApiProvider).find(id);
+    if (record != null) {
+      await _read(recordDaoProvider).save(record);
+    }
   }
 
   Future<void> saveBreakFast(int recordId, String breakFast) async {
@@ -44,8 +60,8 @@ class _RecordRepository {
     await _read(recordApiProvider).saveNightTemperature(recordId, temperature);
   }
 
-  Future<void> saveCondition(RecordOverview overview) async {
-    await _read(recordApiProvider).saveCondition(overview);
+  Future<void> saveCondition(Record record) async {
+    await _read(recordApiProvider).saveCondition(record);
   }
 
   Future<void> saveMedicineIds(int recordId, String idsStr) async {
