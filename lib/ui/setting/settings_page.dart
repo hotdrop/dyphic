@@ -155,8 +155,8 @@ class SettingsPage extends ConsumerWidget {
         const progressDialog = AppProgressDialog<void>();
         await progressDialog.show(
           context,
-          execute: ref.read(settingsViewModelProvider).onLoadEvent,
-          onSuccess: (_) => ref.read(settingsViewModelProvider).refresh(),
+          execute: ref.read(settingsViewModelProvider).onLoadRecord,
+          onSuccess: (_) => {/* 成功時は何もしない */},
           onError: (err) => AppDialog.onlyOk(message: err).show(context),
         );
       },

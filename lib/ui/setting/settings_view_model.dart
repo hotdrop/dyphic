@@ -1,4 +1,5 @@
 import 'package:dyphic/common/app_logger.dart';
+import 'package:dyphic/model/record.dart';
 import 'package:dyphic/repository/account_repository.dart';
 import 'package:dyphic/repository/event_repository.dart';
 import 'package:dyphic/res/app_strings.dart';
@@ -55,6 +56,15 @@ class _SettingsViewModel extends BaseViewModel {
       await _read(eventRepositoryProvider).refresh();
     } catch (e, s) {
       await AppLogger.e('イベント情報の取得に失敗しました。', e, s);
+      rethrow;
+    }
+  }
+
+  Future<void> onLoadRecord() async {
+    try {
+      await _read(recordsProvider.notifier).refresh();
+    } catch (e, s) {
+      await AppLogger.e('記録情報の取得に失敗しました。', e, s);
       rethrow;
     }
   }
