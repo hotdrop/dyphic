@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:dyphic/model/app_settings.dart';
 import 'package:dyphic/ui/widget/app_image.dart';
 import 'package:dyphic/res/app_colors.dart';
 import 'package:dyphic/model/condition.dart';
@@ -55,16 +54,13 @@ class _ConditionSelectChipsState extends ConsumerState<ConditionSelectChips> {
   }
 
   List<Widget> _makeChips(BuildContext context) {
-    final isDarkMode = ref.watch(appSettingsProvider).isDarkMode;
-    final conditionColor = isDarkMode ? AppColors.conditionNight : AppColors.condition;
-
     return ref.watch(conditionsProvider).map((condition) {
       return FilterChip(
         key: ValueKey<String>(condition.name),
         label: Text(condition.name, style: const TextStyle(fontSize: 12.0)),
         selected: _selectedIds.contains(condition.id) ? true : false,
         onSelected: (isSelect) => updateState(isSelect, condition.id),
-        selectedColor: conditionColor,
+        selectedColor: AppColors.condition,
       );
     }).toList();
   }
@@ -119,7 +115,6 @@ class _MedicineSelectChipsState extends ConsumerState<MedicineSelectChips> {
   }
 
   List<Widget> _makeChips(BuildContext context) {
-    final medicineColor = ref.watch(appSettingsProvider).isDarkMode ? AppColors.medicineNight : AppColors.medicine;
     return ref.watch(medicineProvider).map((medicine) {
       return Tooltip(
         message: medicine.overview,
@@ -136,7 +131,7 @@ class _MedicineSelectChipsState extends ConsumerState<MedicineSelectChips> {
           label: Text(medicine.name, style: const TextStyle(fontSize: 12.0)),
           selected: _selectedIds.contains(medicine.id) ? true : false,
           onSelected: (isSelect) => updateState(isSelect, medicine.id),
-          selectedColor: medicineColor,
+          selectedColor: AppColors.medicine,
         ),
       );
     }).toList();

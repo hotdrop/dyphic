@@ -1,3 +1,4 @@
+import 'package:dyphic/model/record.dart';
 import 'package:dyphic/ui/widget/app_dialog.dart';
 import 'package:flutter/material.dart';
 
@@ -36,11 +37,11 @@ class CalenderPage extends ConsumerWidget {
 
   Widget _onSuccess(BuildContext context, WidgetRef ref) {
     return DyphicCalendar(
-      events: ref.watch(calendarViewModelProvider).calendarEvents,
+      records: ref.watch(recordsProvider),
       onReturnEditPage: (isUpdate, targetId) {
-        if (isUpdate) {
-          ref.read(calendarViewModelProvider).refresh(targetId);
-        }
+        // if (isUpdate) {
+        //   ref.read(calendarViewModelProvider).refresh(targetId);
+        // }
       },
     );
   }

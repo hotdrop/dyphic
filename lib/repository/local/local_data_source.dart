@@ -1,6 +1,7 @@
 import 'package:dyphic/repository/local/entity/condition_entity.dart';
 import 'package:dyphic/repository/local/entity/event_entity.dart';
 import 'package:dyphic/repository/local/entity/medicine_entity.dart';
+import 'package:dyphic/repository/local/entity/record_entity.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -18,5 +19,6 @@ class _LocalDataSource {
     Hive.registerAdapter(ConditionEntityAdapter());
     Hive.registerAdapter(EventEntityAdapter());
     Hive.registerAdapter(MedicineEntityAdapter());
+    Hive.registerAdapter(RecordEntityAdapter());
   }
 }

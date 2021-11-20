@@ -211,7 +211,7 @@ class _ConditionArea extends ConsumerWidget {
         padding: const EdgeInsets.all(8.0),
         child: Column(
           children: [
-            _viewTitle(ref),
+            _viewTitle(),
             const Divider(),
             _viewSelectChips(ref),
             const Divider(),
@@ -225,11 +225,10 @@ class _ConditionArea extends ConsumerWidget {
     );
   }
 
-  Widget _viewTitle(WidgetRef ref) {
-    final isDarkMode = ref.watch(appSettingsProvider).isDarkMode;
+  Widget _viewTitle() {
     return _ContentsTitle(
       title: AppStrings.recordConditionTitle,
-      appIcon: AppIcon.condition(isDarkMode),
+      appIcon: AppIcon.condition(),
     );
   }
 
@@ -303,7 +302,7 @@ class _MedicineArea extends ConsumerWidget {
         padding: const EdgeInsets.all(8.0),
         child: Column(
           children: [
-            _viewTitle(ref),
+            _viewTitle(),
             const Divider(),
             _viewSelectChips(ref),
             _viewSaveButton(context, ref),
@@ -313,11 +312,10 @@ class _MedicineArea extends ConsumerWidget {
     );
   }
 
-  Widget _viewTitle(WidgetRef ref) {
-    final isDarkMode = ref.watch(appSettingsProvider).isDarkMode;
+  Widget _viewTitle() {
     return _ContentsTitle(
       title: AppStrings.recordMedicalTitle,
-      appIcon: AppIcon.medicine(isDarkMode),
+      appIcon: AppIcon.medicine(),
     );
   }
 

@@ -65,9 +65,6 @@ class _RecordDao {
   }
 
   RecordEntity _toEntity(Record record) {
-    final conditions = _read(conditionsProvider);
-    final medicines = _read(medicineProvider);
-
     return RecordEntity(
       id: record.id,
       breakfast: record.breakfast,
@@ -75,11 +72,11 @@ class _RecordDao {
       dinner: record.dinner,
       isWalking: record.isWalking,
       isToilet: record.isToilet,
-      conditionIdsStr: record.toConditionIdsStr(conditions),
+      conditionIdsStr: record.toConditionIdsStr(),
       conditionMemo: record.conditionMemo,
       morningTemperature: record.morningTemperature,
       nightTemperature: record.nightTemperature,
-      medicineIdsStr: record.toMedicineIdsStr(medicines),
+      medicineIdsStr: record.toMedicineIdsStr(),
       memo: record.memo,
     );
   }

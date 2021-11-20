@@ -1,3 +1,4 @@
+import 'package:dyphic/model/record.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:dyphic/common/app_logger.dart';
 import 'package:dyphic/model/calendar_event.dart';
@@ -12,18 +13,25 @@ class _EventRepository {
 
   final Reader _read;
 
-  Future<List<Event>> findAll() async {
-    final isNewEvent = await _read(eventApiProvider).isNewEvent();
-    AppLogger.d('イベント情報更新が必要か？ $isNewEvent');
+  Future<DateTime?> getPreviousLoadEventDate() async {
+    return await _read(sharedPrefsProvider).getPrevSaveEventDate();
+  }
 
-    if (isNewEvent) {
-      AppLogger.d('新しいイベント情報があるので更新する');
-      final events = await _read(eventApiProvider).findAll();
-      await _read(eventDaoProvider).saveAll(events);
-      await _read(sharedPrefsProvider).savePreviousGetEventDate(DateTime.now());
+  Future<List<Event>> findAll() async {
+    final events = await _read(eventDaoProvider).findAll();
+    if (events.isNotEmpty) {
+      return events;
     }
 
-    final events = await _read(eventDaoProvider).findAll();
-    return events;
+    AppLogger.d('イベント数が0件なのでリモートから取得する');
+    await refresh();
+    return await _read(eventDaoProvider).findAll();
+  }
+
+  Future<void> refresh() async {
+    final events = await _read(eventApiProvider).findAll();
+    await _read(eventDaoProvider).saveAll(events);
+    await _read(sharedPrefsProvider).savePreviousGetEventDate(DateTime.now());
+    await _read(recordsProvider.notifier).onLoad();
   }
 }

@@ -1,9 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:dyphic/common/app_logger.dart';
 import 'package:dyphic/model/condition.dart';
 import 'package:dyphic/model/medicine.dart';
 import 'package:dyphic/model/note.dart';
-import 'package:dyphic/model/record.dart';
 import 'package:dyphic/repository/remote/document/record_detail_doc.dart';
 import 'package:dyphic/repository/remote/document/record_overview_doc.dart';
 import 'package:dyphic/repository/remote/document/record_temperature_doc.dart';

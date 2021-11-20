@@ -20,6 +20,7 @@ class _RecordApi {
   /// 全日の記録情報を取得する
   ///
   Future<List<Record>> findAll() async {
+    AppLogger.d('サーバーから記録情報を全取得します。');
     List<RecordOverviewDoc> overviewResponse = [];
     List<RecordTemperatureDoc> temperatureResponse = [];
     List<RecordDetailDoc> detailsResponse = [];
@@ -70,6 +71,7 @@ class _RecordApi {
   /// 指定したIDの記録情報を取得する
   ///
   Future<Record?> find(int id) async {
+    AppLogger.d('サーバーからID=$idの記録情報を取得します。');
     RecordOverviewDoc? overviewDoc;
     RecordTemperatureDoc? temperatureDoc;
     RecordDetailDoc? detailsDoc;
@@ -119,7 +121,7 @@ class _RecordApi {
       recordId: record.id,
       isWalking: record.isWalking,
       isToilet: record.isToilet,
-      conditionStringIds: record.toConditionIdsStr(_read(conditionsProvider)),
+      conditionStringIds: record.toConditionIdsStr(),
       conditionMemo: record.conditionMemo ?? '',
     );
     await _read(appFirebaseProvider).saveOverview(doc);

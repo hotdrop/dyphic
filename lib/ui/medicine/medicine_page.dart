@@ -1,4 +1,3 @@
-import 'package:dyphic/common/app_logger.dart';
 import 'package:dyphic/model/app_settings.dart';
 import 'package:dyphic/res/app_strings.dart';
 import 'package:dyphic/model/medicine.dart';

@@ -2,6 +2,7 @@ import 'package:dyphic/model/condition.dart';
 import 'package:dyphic/model/medicine.dart';
 import 'package:dyphic/repository/account_repository.dart';
 import 'package:dyphic/repository/local/local_data_source.dart';
+import 'package:dyphic/service/app_firebase.dart';
 import 'package:flutter/material.dart';
 
 import 'package:dyphic/repository/app_settings_repository.dart';
@@ -18,6 +19,7 @@ class _AppSettingsNotifier extends StateNotifier<AppSettings> {
   /// アプリ起動時に一回だけ呼ぶ
   ///
   Future<void> init() async {
+    await _read(appFirebaseProvider).init();
     await _read(localDataSourceProvider).init();
     // 必要なデータをロード
     if (_read(conditionsProvider).isEmpty) {

@@ -88,6 +88,12 @@ class AppStrings {
   static const String settingsEditConditionSubLabel = 'タップで体調情報を表示します。';
   static const String settingsEditMedicineLabel = 'お薬情報';
   static const String settingsEditMedicineSubLabel = 'タップでお薬情報を表示します。';
+  static const String settingsLoadEventLabel = 'イベント情報を再取得';
+  static const String settingsLoadEventSubLabel = '前回取得日:';
+  static const String settingsLoadEventConfirmMessage = 'サーバーから最新のイベント情報を取得します。よろしいですか？';
+  static const String settingsLoadRecordLabel = '記録情報を再取得';
+  static const String settingsLoadRecordSubLabel = 'タップで日々の記録情報を最新化します。';
+  static const String settingsLoadRecordConfirmMessage = 'サーバーから最新の記録情報を取得します。\nよろしいですか？\n\n※注意！\nこの操作は通常行う必要はありません。他の人がデータを更新した場合に実行してください。';
   static const String settingsLicenseLabel = 'ライセンス';
 
   // 共通項目

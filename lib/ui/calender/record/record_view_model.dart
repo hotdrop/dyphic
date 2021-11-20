@@ -29,7 +29,7 @@ class _RecordViewModel extends BaseViewModel {
   }
 
   Future<void> update() async {
-    await _read(recordsProvider.notifier).update(_id);
+    await _read(recordsProvider.notifier).onLoad();
   }
 
   bool isUpdate() {

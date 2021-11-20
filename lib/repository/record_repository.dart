@@ -26,10 +26,6 @@ class _RecordRepository {
     return newRecords;
   }
 
-  Future<Record?> find(int id) async {
-    return await _read(recordDaoProvider).find(id);
-  }
-
   ///
   /// リモートから指定した記録情報を更新する
   ///

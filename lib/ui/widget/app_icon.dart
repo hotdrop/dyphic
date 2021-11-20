@@ -5,14 +5,20 @@ import 'package:flutter/material.dart';
 class AppIcon extends StatelessWidget {
   const AppIcon._(this._iconData, this._iconColor, this.size);
 
-  factory AppIcon.condition(bool isDarkMode, {double? size}) {
-    Color c = (isDarkMode) ? AppColors.conditionNight : AppColors.condition;
-    return AppIcon._(Icons.sentiment_satisfied_rounded, c, size);
+  factory AppIcon.condition({double? size}) {
+    return AppIcon._(Icons.sentiment_satisfied_rounded, AppColors.condition, size);
   }
 
-  factory AppIcon.medicine(bool isDarkMode, {double? size}) {
-    Color c = (isDarkMode) ? AppColors.medicineNight : AppColors.medicine;
-    return AppIcon._(Icons.medical_services, c, size);
+  factory AppIcon.medicine({double? size}) {
+    return AppIcon._(Icons.medical_services, AppColors.medicine, size);
+  }
+
+  factory AppIcon.record({double? size}) {
+    return AppIcon._(Icons.calendar_today, Colors.blueAccent, size);
+  }
+
+  factory AppIcon.event({double? size}) {
+    return AppIcon._(Icons.event, Colors.purple, size);
   }
 
   factory AppIcon.changeTheme(bool isDarkMode, {double? size}) {

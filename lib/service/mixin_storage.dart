@@ -25,21 +25,4 @@ mixin AppStorageMixin {
     final bodyDecode = convert.utf8.decode(response.bodyBytes);
     return convert.jsonDecode(bodyDecode);
   }
-
-  Future<bool> isUpdateEventJson(DateTime? previousReadDate) async {
-    if (previousReadDate == null) {
-      return true;
-    }
-
-    final metadata = await FirebaseStorage.instance.ref(_eventJsonFileName).getMetadata();
-    final updateAt = metadata.updated;
-    AppLogger.d('event.jsonの更新日時: $updateAt');
-    if (updateAt != null) {
-      final updateDate = DateTime(updateAt.year, updateAt.month, updateAt.day);
-      return previousReadDate.isBefore(updateDate);
-    } else {
-      // updateAtが取れない場合はファイルが存在しないので無条件でfalseにする
-      return false;
-    }
-  }
 }

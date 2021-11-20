@@ -49,8 +49,11 @@ class SettingsPage extends ConsumerWidget {
         _rowAppLicense(context, ref),
         _rowSwitchTheme(context, ref),
         const Divider(),
-        _rowConditionEdit(context, ref),
-        _rowMedicineEdit(context, ref),
+        _rowConditionEdit(context),
+        _rowMedicineEdit(context),
+        const Divider(),
+        _rowLoadRecord(context, ref),
+        _rowLoadEvent(context, ref),
       ],
     );
   }
@@ -81,26 +84,6 @@ class SettingsPage extends ConsumerWidget {
     );
   }
 
-  Widget _rowConditionEdit(BuildContext context, WidgetRef ref) {
-    final isDarkMode = ref.watch(appSettingsProvider).isDarkMode;
-    return ListTile(
-      leading: AppIcon.condition(isDarkMode, size: _iconSize),
-      title: const Text(AppStrings.settingsEditConditionLabel),
-      subtitle: const Text(AppStrings.settingsEditConditionSubLabel),
-      onTap: () async => await ConditionPage.start(context),
-    );
-  }
-
-  Widget _rowMedicineEdit(BuildContext context, WidgetRef ref) {
-    final isDarkMode = ref.watch(appSettingsProvider).isDarkMode;
-    return ListTile(
-      leading: AppIcon.medicine(isDarkMode, size: _iconSize),
-      title: const Text(AppStrings.settingsEditMedicineLabel),
-      subtitle: const Text(AppStrings.settingsEditMedicineSubLabel),
-      onTap: () async => await MedicinePage.start(context),
-    );
-  }
-
   Widget _rowSwitchTheme(BuildContext context, WidgetRef ref) {
     final isDarkMode = ref.watch(appSettingsProvider).isDarkMode;
     return ListTile(
@@ -111,6 +94,73 @@ class SettingsPage extends ConsumerWidget {
         value: isDarkMode,
       ),
     );
+  }
+
+  Widget _rowConditionEdit(BuildContext context) {
+    return ListTile(
+      leading: AppIcon.condition(size: _iconSize),
+      title: const Text(AppStrings.settingsEditConditionLabel),
+      subtitle: const Text(AppStrings.settingsEditConditionSubLabel),
+      onTap: () async => await ConditionPage.start(context),
+    );
+  }
+
+  Widget _rowMedicineEdit(BuildContext context) {
+    return ListTile(
+      leading: AppIcon.medicine(size: _iconSize),
+      title: const Text(AppStrings.settingsEditMedicineLabel),
+      subtitle: const Text(AppStrings.settingsEditMedicineSubLabel),
+      onTap: () async => await MedicinePage.start(context),
+    );
+  }
+
+  Widget _rowLoadEvent(BuildContext context, WidgetRef ref) {
+    final prevDateStr = ref.read(settingsViewModelProvider).prevLoadEventStr;
+    return ListTile(
+      leading: AppIcon.event(size: _iconSize),
+      title: const Text(AppStrings.settingsLoadEventLabel),
+      subtitle: Text('${AppStrings.settingsLoadEventSubLabel} $prevDateStr'),
+      onTap: () async => await _showLoadEventDialog(context, ref),
+    );
+  }
+
+  Future<void> _showLoadEventDialog(BuildContext context, WidgetRef ref) async {
+    await AppDialog.okAndCancel(
+      message: AppStrings.settingsLoadEventConfirmMessage,
+      onOk: () async {
+        const progressDialog = AppProgressDialog<void>();
+        await progressDialog.show(
+          context,
+          execute: ref.read(settingsViewModelProvider).onLoadEvent,
+          onSuccess: (_) => ref.read(settingsViewModelProvider).refresh(),
+          onError: (err) => AppDialog.onlyOk(message: err).show(context),
+        );
+      },
+    ).show(context);
+  }
+
+  Widget _rowLoadRecord(BuildContext context, WidgetRef ref) {
+    return ListTile(
+      leading: AppIcon.record(size: _iconSize),
+      title: const Text(AppStrings.settingsLoadRecordLabel),
+      subtitle: const Text(AppStrings.settingsLoadRecordSubLabel),
+      onTap: () async => await _showLoadRecordDialog(context, ref),
+    );
+  }
+
+  Future<void> _showLoadRecordDialog(BuildContext context, WidgetRef ref) async {
+    await AppDialog.okAndCancel(
+      message: AppStrings.settingsLoadRecordConfirmMessage,
+      onOk: () async {
+        const progressDialog = AppProgressDialog<void>();
+        await progressDialog.show(
+          context,
+          execute: ref.read(settingsViewModelProvider).onLoadEvent,
+          onSuccess: (_) => ref.read(settingsViewModelProvider).refresh(),
+          onError: (err) => AppDialog.onlyOk(message: err).show(context),
+        );
+      },
+    ).show(context);
   }
 
   Widget _buttonSignIn(WidgetRef ref) {
