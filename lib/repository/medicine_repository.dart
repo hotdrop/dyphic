@@ -1,8 +1,7 @@
-import 'package:dyphic/common/app_logger.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:dyphic/model/medicine.dart';
 import 'package:dyphic/repository/local/dao/medicine_dao.dart';
 import 'package:dyphic/repository/remote/medicine_api.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 final medicineRepositoryProvider = Provider((ref) => _MedicineRepository(ref.read));
 
@@ -37,7 +36,6 @@ class _MedicineRepository {
       newMedicine = medicine.copyWith(imageUrl: saveUrl);
     }
 
-    AppLogger.d('お薬情報を保存します。\n${newMedicine.toString()}');
     await _read(medicineApiProvider).save(newMedicine);
     await _read(medicineDaoProvider).save(newMedicine);
   }

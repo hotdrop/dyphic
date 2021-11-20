@@ -1,4 +1,5 @@
 import 'package:dyphic/common/app_logger.dart';
+import 'package:dyphic/model/note.dart';
 import 'package:dyphic/model/record.dart';
 import 'package:dyphic/repository/account_repository.dart';
 import 'package:dyphic/repository/event_repository.dart';
@@ -54,6 +55,7 @@ class _SettingsViewModel extends BaseViewModel {
   Future<void> onLoadEvent() async {
     try {
       await _read(eventRepositoryProvider).refresh();
+      await _read(recordsProvider.notifier).onLoad();
     } catch (e, s) {
       await AppLogger.e('イベント情報の取得に失敗しました。', e, s);
       rethrow;
@@ -65,6 +67,15 @@ class _SettingsViewModel extends BaseViewModel {
       await _read(recordsProvider.notifier).refresh();
     } catch (e, s) {
       await AppLogger.e('記録情報の取得に失敗しました。', e, s);
+      rethrow;
+    }
+  }
+
+  Future<void> onLoadNote() async {
+    try {
+      await _read(notesProvider.notifier).refresh();
+    } catch (e, s) {
+      await AppLogger.e('ノート情報の取得に失敗しました。', e, s);
       rethrow;
     }
   }

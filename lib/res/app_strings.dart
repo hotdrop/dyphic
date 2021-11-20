@@ -83,6 +83,7 @@ class AppStrings {
   static const String settingsLoginEmailNotSettingLabel = '未設定';
   static const String settingsLoginWithGoogle = 'ログイン';
   static const String settingsLogoutLabel = 'ログアウト';
+  static const String settingsLicenseLabel = 'ライセンス';
   static const String settingsChangeAppThemeLabel = 'テーマ切り替え';
   static const String settingsEditConditionLabel = '体調情報';
   static const String settingsEditConditionSubLabel = 'タップで体調情報を表示します。';
@@ -94,7 +95,9 @@ class AppStrings {
   static const String settingsLoadRecordLabel = '記録情報を再取得';
   static const String settingsLoadRecordSubLabel = 'タップで日々の記録情報を最新化します。';
   static const String settingsLoadRecordConfirmMessage = 'サーバーから最新の記録情報を取得します。\nよろしいですか？\n\n※注意！\nこの操作は通常行う必要はありません。他の人がデータを更新した場合に実行してください。';
-  static const String settingsLicenseLabel = 'ライセンス';
+  static const String settingsLoadNoteLabel = 'ノート情報を再取得';
+  static const String settingsLoadNoteSubLabel = 'タップでノート情報を最新化します。';
+  static const String settingsLoadNoteConfirmMessage = 'サーバーから最新のノート情報を取得します。\nよろしいですか？';
 
   // 共通項目
   static const String textFieldRequiredEmptyError = '※必須項目';

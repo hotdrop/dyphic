@@ -21,6 +21,10 @@ class AppIcon extends StatelessWidget {
     return AppIcon._(Icons.event, Colors.purple, size);
   }
 
+  factory AppIcon.note({double? size}) {
+    return AppIcon._(Icons.sticky_note_2, Colors.lime, size);
+  }
+
   factory AppIcon.changeTheme(bool isDarkMode, {double? size}) {
     final icon = (isDarkMode) ? Icons.brightness_7 : Icons.brightness_4;
     Color c = (isDarkMode) ? Colors.blue[900]! : Colors.pink[200]!;

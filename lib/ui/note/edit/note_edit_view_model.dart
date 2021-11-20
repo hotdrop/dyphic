@@ -1,7 +1,6 @@
 import 'package:dyphic/common/app_logger.dart';
 import 'package:dyphic/model/app_settings.dart';
 import 'package:dyphic/model/note.dart';
-import 'package:dyphic/repository/note_repository.dart';
 import 'package:dyphic/ui/base_view_model.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -49,7 +48,7 @@ class _NoteEditViewModel extends BaseViewModel {
       detail: _inputDetail,
     );
     try {
-      await _read(noteRepositoryProvider).save(newNote);
+      await _read(notesProvider.notifier).save(newNote);
     } catch (e, s) {
       await AppLogger.e('ノートの保存に失敗しました。', e, s);
       rethrow;

@@ -1,6 +1,4 @@
-import 'package:dyphic/model/record.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:dyphic/common/app_logger.dart';
 import 'package:dyphic/model/calendar_event.dart';
 import 'package:dyphic/repository/local/dao/event_dao.dart';
 import 'package:dyphic/repository/local/shared_prefs.dart';
@@ -23,7 +21,6 @@ class _EventRepository {
       return events;
     }
 
-    AppLogger.d('イベント数が0件なのでリモートから取得する');
     await refresh();
     return await _read(eventDaoProvider).findAll();
   }
@@ -32,6 +29,5 @@ class _EventRepository {
     final events = await _read(eventApiProvider).findAll();
     await _read(eventDaoProvider).saveAll(events);
     await _read(sharedPrefsProvider).savePreviousGetEventDate(DateTime.now());
-    await _read(recordsProvider.notifier).onLoad();
   }
 }

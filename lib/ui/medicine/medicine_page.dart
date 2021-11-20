@@ -63,7 +63,7 @@ class MedicinePage extends ConsumerWidget {
   }
 
   Future<void> _processAdd(BuildContext context, WidgetRef ref) async {
-    final newEmptyMeidine = ref.read(medicineProvider.notifier).createNew();
+    final newEmptyMeidine = ref.read(medicineProvider.notifier).newMedicine();
     bool isUpdate = await MedicineEditPage.start(context, newEmptyMeidine);
     // TODO StateNotifierをwatchしているから多分これいらない
     // AppLogger.d('戻り値: $isUpdate');

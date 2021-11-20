@@ -54,6 +54,7 @@ class SettingsPage extends ConsumerWidget {
         const Divider(),
         _rowLoadRecord(context, ref),
         _rowLoadEvent(context, ref),
+        _rowLoadNote(context, ref),
       ],
     );
   }
@@ -156,6 +157,30 @@ class SettingsPage extends ConsumerWidget {
         await progressDialog.show(
           context,
           execute: ref.read(settingsViewModelProvider).onLoadRecord,
+          onSuccess: (_) => {/* 成功時は何もしない */},
+          onError: (err) => AppDialog.onlyOk(message: err).show(context),
+        );
+      },
+    ).show(context);
+  }
+
+  Widget _rowLoadNote(BuildContext context, WidgetRef ref) {
+    return ListTile(
+      leading: AppIcon.note(size: _iconSize),
+      title: const Text(AppStrings.settingsLoadNoteLabel),
+      subtitle: const Text(AppStrings.settingsLoadNoteSubLabel),
+      onTap: () async => await _showLoadNoteDialog(context, ref),
+    );
+  }
+
+  Future<void> _showLoadNoteDialog(BuildContext context, WidgetRef ref) async {
+    await AppDialog.okAndCancel(
+      message: AppStrings.settingsLoadNoteConfirmMessage,
+      onOk: () async {
+        const progressDialog = AppProgressDialog<void>();
+        await progressDialog.show(
+          context,
+          execute: ref.read(settingsViewModelProvider).onLoadNote,
           onSuccess: (_) => {/* 成功時は何もしない */},
           onError: (err) => AppDialog.onlyOk(message: err).show(context),
         );

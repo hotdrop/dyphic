@@ -31,10 +31,14 @@ class _ConditionNotifier extends StateNotifier<List<Condition>> {
     return id != condition.id;
   }
 
-  Future<void> save(String name) async {
+  Condition newCondition(String name) {
     final newId = _createNewId();
-    await _read(conditionRepositoryProvider).save(Condition(newId, name));
-    onLoad();
+    return Condition(newId, name);
+  }
+
+  Future<void> save(Condition condition) async {
+    await _read(conditionRepositoryProvider).save(condition);
+    await onLoad();
   }
 
   int _createNewId() {
@@ -48,8 +52,11 @@ class Condition {
   final int id;
   final String name;
 
-  Condition copyWith({required int newId, required String newName}) {
-    return Condition(newId, newName);
+  Condition copyWith({int? newId, String? newName}) {
+    return Condition(
+      newId ?? id,
+      newName ?? name,
+    );
   }
 
   @override

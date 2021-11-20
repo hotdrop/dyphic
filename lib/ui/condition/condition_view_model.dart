@@ -66,7 +66,13 @@ class _ConditionViewModel extends BaseViewModel {
   Future<void> save() async {
     AppLogger.d('${_controller.text} を保存します。');
     try {
-      await _read(conditionsProvider.notifier).save(_controller.text);
+      Condition c;
+      if (_selectedCondition != null) {
+        c = _selectedCondition!.copyWith(newName: _controller.text);
+      } else {
+        c = _read(conditionsProvider.notifier).newCondition(_controller.text);
+      }
+      await _read(conditionsProvider.notifier).save(c);
     } catch (e, s) {
       await AppLogger.e('体調情報の保存に失敗しました。', e, s);
       rethrow;

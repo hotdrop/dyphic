@@ -21,10 +21,10 @@ class _MedicineNotifier extends StateNotifier<List<Medicine>> {
 
   Future<void> save(Medicine medicine, bool isUpdateImage) async {
     await _read(medicineRepositoryProvider).save(medicine, isUpdateImage);
-    onLoad();
+    await onLoad();
   }
 
-  Medicine createNew() {
+  Medicine newMedicine() {
     return Medicine.createEmpty(_createNewId(), _createNewOrder());
   }
 

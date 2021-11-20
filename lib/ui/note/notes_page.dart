@@ -54,7 +54,7 @@ class NotesPage extends ConsumerWidget {
   }
 
   Widget _viewBody(BuildContext context, WidgetRef ref) {
-    final notes = ref.watch(notesViewModelProvider).notes;
+    final notes = ref.watch(notesProvider);
     if (notes.isEmpty) {
       return const Center(
         child: Text(AppStrings.notesNotRegisterLabel),
@@ -66,19 +66,19 @@ class NotesPage extends ConsumerWidget {
       itemBuilder: (ctx, index) => _RowNote(
         notes[index],
         onTap: () async {
-          await ref.watch(notesViewModelProvider).reload();
+          // await ref.read(notesViewModelProvider).reload();
         },
       ),
     );
   }
 
   Future<void> _onTapFab(BuildContext context, WidgetRef ref) async {
-    final newId = ref.read(notesViewModelProvider).createNewId();
-    final isUpdate = await NoteEditPage.start(context, Note.createEmpty(newId));
-    AppLogger.d('戻り値: $isUpdate');
-    if (isUpdate) {
-      await ref.read(notesViewModelProvider).reload();
-    }
+    final emptyNote = ref.read(notesProvider.notifier).newNote();
+    final isUpdate = await NoteEditPage.start(context, emptyNote);
+    // AppLogger.d('戻り値: $isUpdate');
+    // if (isUpdate) {
+    //   await ref.read(notesViewModelProvider).reload();
+    // }
   }
 }
 
@@ -101,10 +101,10 @@ class _RowNote extends StatelessWidget {
         title: Text(_note.title),
         onTap: () async {
           final isUpdate = await NoteEditPage.start(context, _note);
-          AppLogger.d('戻り値: $isUpdate');
-          if (isUpdate) {
-            onTap();
-          }
+          // AppLogger.d('戻り値: $isUpdate');
+          // if (isUpdate) {
+          //   onTap();
+          // }
         },
       ),
     );
