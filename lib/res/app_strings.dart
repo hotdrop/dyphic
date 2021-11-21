@@ -7,8 +7,8 @@ class AppStrings {
   static const String calenderPageDateFormat = 'yyyy年MM月dd日';
   static const String calenderNoEvent = '予定なし';
   static const String calenderUnRegisterLabel = 'この日の記録は未登録です。\nここをタップして記録しましょう。';
-  static const String calenderDetailWalkingLabel = '散歩した';
   static const String calenderDetailConditionMemoLabel = '【体調メモ】';
+  static const String calenderDetailMemoLabel = '【メモ】';
 
   // 記録ページ
   static const String recordPageTitleDateFormat = 'yyyy年MM月dd日';
@@ -26,8 +26,8 @@ class AppStrings {
   static const String recordMedicineSaveButton = '選択した薬を保存する';
 
   static const String recordConditionTitle = '体調';
-  static const String recordWalkingLabel = '散歩した';
-  static const String recordToiletLabel = '排便した';
+  static const String recordWalkingLabel = '🚶‍♀️散歩';
+  static const String recordToiletLabel = '💩排便';
   static const String recordConditionMemoTitle = '体調メモ';
   static const String recordConditionMemoHint = '細かい体調はこちらに記載しましょう！';
   static const String recordConditionSaveButton = '体調情報を保存する';

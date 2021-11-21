@@ -51,9 +51,9 @@ class _AppCheckBoxState extends State<AppCheckBox> {
 
   Widget _viewLabel() {
     if (widget.isWalking) {
-      return const Text(AppStrings.recordWalkingLabel);
+      return const Text(AppStrings.recordWalkingLabel, style: TextStyle(fontSize: 20));
     } else {
-      return const Text(AppStrings.recordToiletLabel);
+      return const Text(AppStrings.recordToiletLabel, style: TextStyle(fontSize: 20));
     }
   }
 }

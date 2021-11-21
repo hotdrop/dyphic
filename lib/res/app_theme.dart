@@ -7,11 +7,14 @@ class AppTheme {
   static final ThemeData light = ThemeData.light().copyWith(
     primaryColor: AppColors.themeColor,
     primaryColorDark: AppColors.themeAccent,
-    backgroundColor: Colors.white,
     dividerColor: AppColors.themeAccent,
     toggleableActiveColor: AppColors.themeColor,
     appBarTheme: const AppBarTheme(
+      color: AppColors.themeColor,
       centerTitle: true,
+    ),
+    bottomNavigationBarTheme: const BottomNavigationBarThemeData(
+      selectedItemColor: AppColors.themeColor,
     ),
     outlinedButtonTheme: OutlinedButtonThemeData(
       style: OutlinedButton.styleFrom(
@@ -44,7 +47,11 @@ class AppTheme {
     dividerColor: AppColors.themeAccent,
     toggleableActiveColor: AppColors.themeAccent,
     appBarTheme: const AppBarTheme(
+      color: AppColors.themeColor,
       centerTitle: true,
+    ),
+    bottomNavigationBarTheme: const BottomNavigationBarThemeData(
+      selectedItemColor: AppColors.themeColor,
     ),
     outlinedButtonTheme: OutlinedButtonThemeData(
       style: OutlinedButton.styleFrom(

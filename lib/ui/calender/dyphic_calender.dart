@@ -159,7 +159,7 @@ class _DyphicCalendarState extends State<DyphicCalendar> {
     }
 
     if (record.isWalking) {
-      markers.add(const Icon(Icons.directions_walk, size: calendarIconSize, color: AppColors.walking));
+      markers.add(const SizedBox(width: calendarIconSize, child: Text('🚶‍♀️')));
     } else {
       markers.add(const SizedBox(width: calendarIconSize));
     }
@@ -242,20 +242,23 @@ class _DyphicCalendarState extends State<DyphicCalendar> {
     // 体調
     if (_selectedRecord.conditions.isNotEmpty) {
       widgets.add(Text(_selectedRecord.toConditionNames()));
-      widgets.add(const SizedBox(height: 8.0));
-    }
-
-    // 散歩
-    if (_selectedRecord.isWalking) {
-      widgets.add(const Text(AppStrings.calenderDetailWalkingLabel, style: TextStyle(color: AppColors.walking)));
-      widgets.add(const SizedBox(height: 8.0));
+      widgets.add(const SizedBox(height: 16));
     }
 
     // 体調メモ
-    final memo = _selectedRecord.conditionMemo ?? '';
-    if (memo.isNotEmpty) {
+    final conditionMemo = _selectedRecord.conditionMemo ?? '';
+    if (conditionMemo.isNotEmpty) {
       widgets.add(const Text(AppStrings.calenderDetailConditionMemoLabel));
+      widgets.add(Text(conditionMemo, maxLines: 10, overflow: TextOverflow.ellipsis));
+      widgets.add(const SizedBox(height: 16));
+    }
+
+    // 通常メモ
+    final memo = _selectedRecord.memo ?? '';
+    if (memo.isNotEmpty) {
+      widgets.add(const Text(AppStrings.calenderDetailMemoLabel));
       widgets.add(Text(memo, maxLines: 10, overflow: TextOverflow.ellipsis));
+      widgets.add(const SizedBox(height: 16));
     }
 
     if (widgets.isEmpty) {
