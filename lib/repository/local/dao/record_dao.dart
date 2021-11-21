@@ -44,6 +44,67 @@ class _RecordDao {
     await box.put(entity.id, entity);
   }
 
+  Future<void> saveCondition(Record record) async {
+    await saveItem(
+      record.id,
+      isWalking: record.isWalking,
+      isToilet: record.isToilet,
+      conditionIdsStr: record.toConditionIdsStr(),
+      conditionMemo: record.conditionMemo,
+    );
+  }
+
+  Future<void> saveItem(
+    int id, {
+    String? breakfast,
+    String? lunch,
+    String? dinner,
+    bool? isWalking,
+    bool? isToilet,
+    String? conditionIdsStr,
+    String? conditionMemo,
+    double? morningTemperature,
+    double? nightTemperature,
+    String? medicineIdsStr,
+    String? memo,
+  }) async {
+    final box = await Hive.openBox<RecordEntity>(RecordEntity.boxName);
+    final target = box.get(id);
+    if (target != null) {
+      final entityUpdate = RecordEntity(
+        id: id,
+        breakfast: breakfast ?? target.breakfast,
+        lunch: lunch ?? target.lunch,
+        dinner: dinner ?? target.dinner,
+        isWalking: isWalking ?? target.isWalking,
+        isToilet: isToilet ?? target.isToilet,
+        conditionIdsStr: conditionIdsStr ?? target.conditionIdsStr,
+        conditionMemo: conditionMemo ?? target.conditionMemo,
+        morningTemperature: morningTemperature ?? target.morningTemperature,
+        nightTemperature: nightTemperature ?? target.nightTemperature,
+        medicineIdsStr: medicineIdsStr ?? target.medicineIdsStr,
+        memo: memo ?? target.memo,
+      );
+      await box.put(id, entityUpdate);
+    } else {
+      final entityNew = RecordEntity(
+        id: id,
+        breakfast: breakfast,
+        lunch: lunch,
+        dinner: dinner,
+        isWalking: isWalking ?? false,
+        isToilet: isToilet ?? false,
+        conditionIdsStr: conditionIdsStr,
+        conditionMemo: conditionMemo,
+        morningTemperature: morningTemperature,
+        nightTemperature: nightTemperature,
+        medicineIdsStr: medicineIdsStr,
+        memo: memo,
+      );
+      await box.put(id, entityNew);
+    }
+  }
+
   Record _toRecord(RecordEntity entity) {
     final conditions = _read(conditionsProvider);
     final medicines = _read(medicineProvider);

@@ -40,33 +40,41 @@ class _RecordRepository {
 
   Future<void> saveBreakFast(int recordId, String breakFast) async {
     await _read(recordApiProvider).saveBreakFast(recordId, breakFast);
+    await _read(recordDaoProvider).saveItem(recordId, breakfast: breakFast);
   }
 
   Future<void> saveLunch(int recordId, String lunch) async {
     await _read(recordApiProvider).saveLunch(recordId, lunch);
+    await _read(recordDaoProvider).saveItem(recordId, lunch: lunch);
   }
 
   Future<void> saveDinner(int recordId, String dinner) async {
     await _read(recordApiProvider).saveDinner(recordId, dinner);
+    await _read(recordDaoProvider).saveItem(recordId, dinner: dinner);
   }
 
   Future<void> saveMorningTemperature(int recordId, double temperature) async {
     await _read(recordApiProvider).saveMorningTemperature(recordId, temperature);
+    await _read(recordDaoProvider).saveItem(recordId, morningTemperature: temperature);
   }
 
   Future<void> saveNightTemperature(int recordId, double temperature) async {
     await _read(recordApiProvider).saveNightTemperature(recordId, temperature);
+    await _read(recordDaoProvider).saveItem(recordId, nightTemperature: temperature);
   }
 
   Future<void> saveCondition(Record record) async {
     await _read(recordApiProvider).saveCondition(record);
+    await _read(recordDaoProvider).saveCondition(record);
   }
 
   Future<void> saveMedicineIds(int recordId, String idsStr) async {
     await _read(recordApiProvider).saveMedicineIds(recordId, idsStr);
+    await _read(recordDaoProvider).saveItem(recordId, medicineIdsStr: idsStr);
   }
 
   Future<void> saveMemo(int recordId, String memo) async {
     await _read(recordApiProvider).saveMemo(recordId, memo);
+    await _read(recordDaoProvider).saveItem(recordId, memo: memo);
   }
 }
