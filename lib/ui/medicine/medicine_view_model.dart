@@ -14,6 +14,7 @@ class _MedicineViewModel extends BaseViewModel {
 
   Future<void> _init() async {
     try {
+      //  TODO ここやっぱ見直し
       await _read(medicineProvider.notifier).refresh();
       onSuccess();
     } catch (e, s) {

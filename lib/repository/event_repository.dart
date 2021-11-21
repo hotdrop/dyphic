@@ -1,5 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:dyphic/model/calendar_event.dart';
+import 'package:dyphic/model/event.dart';
 import 'package:dyphic/repository/local/dao/event_dao.dart';
 import 'package:dyphic/repository/local/shared_prefs.dart';
 import 'package:dyphic/repository/remote/event_api.dart';

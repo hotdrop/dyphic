@@ -1,4 +1,5 @@
-import 'package:dyphic/common/app_logger.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:dyphic/model/app_settings.dart';
 import 'package:dyphic/res/app_strings.dart';
 import 'package:dyphic/model/note.dart';
@@ -6,8 +7,6 @@ import 'package:dyphic/ui/note/edit/note_edit_page.dart';
 import 'package:dyphic/ui/note/notes_view_model.dart';
 import 'package:dyphic/ui/note/widget_note_type_icon.dart';
 import 'package:dyphic/ui/widget/app_dialog.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class NotesPage extends ConsumerWidget {
   const NotesPage({Key? key}) : super(key: key);

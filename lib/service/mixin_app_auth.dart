@@ -1,5 +1,4 @@
 import 'package:dyphic/common/app_logger.dart';
-import 'package:dyphic/model/app_exception.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/services.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -34,10 +33,10 @@ mixin AppAuthMixin {
       AppLogger.d('サインイン処理が完了しました。');
     } on PlatformException catch (e, s) {
       AppLogger.e('FirebaseAuth: サインイン処理でエラー', e, s);
-      throw AppException(message: 'サインイン処理でプラットフォームのエラーが発生しました。', exception: e, stackTrace: s);
+      rethrow;
     } on FirebaseAuthException catch (e, s) {
       AppLogger.e('FirebaseAuth: サインイン処理でエラー', e, s);
-      throw AppException(message: 'サインイン処理でFirebaseのエラーが発生しました。', exception: e, stackTrace: s);
+      rethrow;
     }
   }
 

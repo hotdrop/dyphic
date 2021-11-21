@@ -18,10 +18,12 @@ class _RecordRepository {
   Future<List<Record>> findAll(bool isForceUpdate) async {
     final records = await _read(recordDaoProvider).findAll();
     if (records.isNotEmpty && !isForceUpdate) {
+      records.sort((a, b) => a.id - b.id);
       return records;
     }
     // 0件ならリモートから取得
     final newRecords = await _read(recordApiProvider).findAll();
+    newRecords.sort((a, b) => a.id - b.id);
     await _read(recordDaoProvider).saveAll(newRecords);
     return newRecords;
   }

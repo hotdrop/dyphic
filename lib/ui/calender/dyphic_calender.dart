@@ -3,7 +3,8 @@ import 'package:dyphic/res/app_colors.dart';
 import 'package:dyphic/res/app_strings.dart';
 import 'package:dyphic/model/dyphic_id.dart';
 import 'package:dyphic/res/app_images.dart';
-import 'package:dyphic/ui/calender/record/record_page.dart';
+import 'package:dyphic/ui/calender/record/records_page_view.dart';
+import 'package:dyphic/ui/widget/app_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:table_calendar/table_calendar.dart';
@@ -12,11 +13,11 @@ class DyphicCalendar extends StatefulWidget {
   const DyphicCalendar({
     Key? key,
     required this.records,
-    required this.onReturnEditPage,
+    required this.onReturn,
   }) : super(key: key);
 
   final List<Record> records;
-  final void Function(bool isUpdate, int id) onReturnEditPage;
+  final Function onReturn;
 
   @override
   _DyphicCalendarState createState() => _DyphicCalendarState();
@@ -27,20 +28,30 @@ class _DyphicCalendarState extends State<DyphicCalendar> {
 
   DateTime _focusDate = DateTime.now();
   DateTime? _selectedDate;
-  Record _selectedRecord = Record.create(id: DyphicID.makeRecordId(DateTime.now()));
+  late Record _selectedRecord;
 
   static const double calendarIconSize = 15.0;
 
   @override
   void initState() {
     super.initState();
-    final nowDate = DateTime.now();
+
+    final nowId = DyphicID.makeRecordId(DateTime.now());
+    bool existNowDate = false;
     for (var record in widget.records) {
       _recordMap[record.id] = record;
-      if (Record.isSameDay(nowDate, record.date)) {
+      if (record.id == nowId) {
         _selectedRecord = record;
+        existNowDate = true;
       }
     }
+
+    // 同日のデータがなければMapに追加する
+    if (!existNowDate) {
+      _selectedRecord = Record.create(id: nowId);
+      _recordMap[nowId] = _selectedRecord;
+    }
+
     _selectedDate = _focusDate;
   }
 
@@ -54,7 +65,15 @@ class _DyphicCalendarState extends State<DyphicCalendar> {
     setState(() {
       _focusDate = date;
       _selectedDate = date;
-      _selectedRecord = selectedItem ?? Record.create(id: DyphicID.makeRecordId(date));
+
+      if (selectedItem != null) {
+        _selectedRecord = selectedItem;
+      } else {
+        final newId = DyphicID.makeRecordId(date);
+        final newRecord = Record.create(id: newId);
+        _recordMap[newId] = newRecord;
+        _selectedRecord = newRecord;
+      }
     });
   }
 
@@ -97,8 +116,8 @@ class _DyphicCalendarState extends State<DyphicCalendar> {
       onDaySelected: (selectDate, focusDate) {
         final id = DyphicID.makeEventId(selectDate);
         if (_recordMap.containsKey(id)) {
-          final event = _recordMap[id];
-          _onDaySelected(selectDate, selectedItem: event);
+          final record = _recordMap[id];
+          _onDaySelected(selectDate, selectedItem: record);
         } else {
           _onDaySelected(selectDate);
         }
@@ -160,15 +179,29 @@ class _DyphicCalendarState extends State<DyphicCalendar> {
         margin: const EdgeInsets.only(left: 16.0, right: 16.0, bottom: 8.0),
         elevation: 4.0,
         child: InkWell(
-          onTap: () async {
-            final isUpdate = await RecordPage.start(context, _selectedRecord);
-            final recordId = DyphicID.makeRecordId(_selectedRecord.date);
-            widget.onReturnEditPage(isUpdate, recordId);
-          },
+          onTap: () async => await _onTapCard(context),
           child: _detailDailyRecord(),
         ),
       ),
     );
+  }
+
+  Future<void> _onTapCard(BuildContext context) async {
+    // indexでページスワイプをするので必ずソートする
+    final records = _sortedRecords();
+    final index = records.indexWhere((e) => _selectedRecord.id == e.id);
+    if (index == -1) {
+      AppDialog.onlyOk(message: 'インデックスが-1になってしまいました！おかしいです').show(context);
+      return;
+    }
+    await RecordsPageView.start(context, records: records, selectedIndex: index);
+    await widget.onReturn();
+  }
+
+  List<Record> _sortedRecords() {
+    final l = _recordMap.values.toList();
+    l.sort((a, b) => a.id.compareTo(b.id));
+    return l;
   }
 
   Widget _detailDailyRecord() {

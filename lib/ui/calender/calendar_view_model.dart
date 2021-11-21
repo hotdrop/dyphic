@@ -12,11 +12,11 @@ class _CalendarViewModel extends BaseViewModel {
 
   final Reader _read;
 
+  bool _isEditRecordInfo = false;
+
   Future<void> _init() async {
     try {
-      // final events = await _read(eventRepositoryProvider).findAll();
       await _read(recordsProvider.notifier).onLoad();
-      // _events = _merge(_read(recordsProvider), events);
       onSuccess();
     } catch (e, s) {
       await AppLogger.e('カレンダー情報の取得に失敗しました。', e, s);
@@ -24,49 +24,16 @@ class _CalendarViewModel extends BaseViewModel {
     }
   }
 
-  // Map<int, CalendarEvent> _merge(List<Record> records, List<Event> events) {
-  //   final Map<int, Event> eventMap = Map.fromIterables(events.map((e) => e.id), events.map((e) => e));
-  //   final Map<int, CalendarEvent> results = {};
+  void isEditted() {
+    _isEditRecordInfo = true;
+  }
 
-  //   // レコードをベースにイベントをマージする
-  //   for (var r in records) {
-  //     if (eventMap.containsKey(r.id)) {
-  //       final Event event = eventMap[r.id]!;
-  //       results[r.id] = CalendarEvent.create(event, r);
-  //     } else {
-  //       results[r.id] = CalendarEvent.createOnlyRecord(r);
-  //     }
-  //   }
-
-  //   // レコードに入っていないイベントをマージする
-  //   for (var e in events) {
-  //     if (!results.containsKey(e.id)) {
-  //       results[e.id] = (CalendarEvent.createOnlyEvent(e));
-  //     }
-  //   }
-
-  //   return results;
-  // }
-
-  // Future<void> refresh(int id) async {
-  //   try {
-  //     final record = _read(recordsProvider).firstWhereOrNull((r) => r.id == id);
-  //     if (record == null) {
-  //       return;
-  //     }
-
-  //     if (_events.containsKey(record.id)) {
-  //       final existEventWithNewRecord = _events[record.id]!.updateRecord(record);
-  //       _events[record.id] = existEventWithNewRecord;
-  //     } else {
-  //       final newEvent = CalendarEvent.createOnlyRecord(record);
-  //       _events[record.id] = newEvent;
-  //     }
-
-  //     notifyListeners();
-  //   } catch (e, s) {
-  //     await AppLogger.e('カレンダー情報の更新に失敗しました。', e, s);
-  //     onError('$e');
-  //   }
-  // }
+  Future<void> reLoad() async {
+    if (_isEditRecordInfo) {
+      AppLogger.d('記録情報が編集されているので再ロードします。');
+      await _read(recordsProvider.notifier).onLoad();
+      _isEditRecordInfo = false;
+      notifyListeners();
+    }
+  }
 }

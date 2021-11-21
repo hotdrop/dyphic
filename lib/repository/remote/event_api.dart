@@ -1,6 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:dyphic/common/app_logger.dart';
-import 'package:dyphic/model/calendar_event.dart';
+import 'package:dyphic/model/event.dart';
 import 'package:dyphic/repository/remote/response/event_response.dart';
 import 'package:dyphic/service/app_firebase.dart';
 

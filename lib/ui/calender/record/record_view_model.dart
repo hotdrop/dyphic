@@ -1,178 +1,109 @@
 import 'package:dyphic/repository/record_repository.dart';
+import 'package:dyphic/ui/calender/calendar_view_model.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:dyphic/common/app_logger.dart';
 import 'package:dyphic/model/condition.dart';
 import 'package:dyphic/model/record.dart';
-import 'package:dyphic/ui/base_view_model.dart';
 
-final recordViewModelProvider = ChangeNotifierProvider.autoDispose((ref) => _RecordViewModel(ref.read));
+final recordViewModelProvider = Provider((ref) => _RecordViewModel(ref.read));
 
-class _RecordViewModel extends BaseViewModel {
+class _RecordViewModel {
   _RecordViewModel(this._read);
 
   final Reader _read;
 
-  late int _id;
-
-  Set<int> _selectConditionIds = {};
-  bool _inputIsWalking = false;
-  bool _inputIsToilet = false;
-  String _inputConditionMemo = '';
-  Set<int> _selectMedicineIds = {};
-  String _inputMemo = '';
-
-  bool _isUpdate = false;
-
-  Future<void> init(int id) async {
-    _id = id;
-    onSuccess();
-  }
-
-  Future<void> update() async {
-    await _read(recordsProvider.notifier).onLoad();
-  }
-
-  bool isUpdate() {
-    return _isUpdate;
-  }
-
-  Future<void> inputBreakfast(String? newVal) async {
-    if (newVal == null) {
-      return;
-    }
+  Future<void> inputBreakfast({required int id, required String newVal}) async {
     try {
-      await _read(recordRepositoryProvider).saveBreakFast(_id, newVal);
-      _isUpdate = true;
+      await _read(recordRepositoryProvider).saveBreakFast(id, newVal);
+      _read(calendarViewModelProvider).isEditted();
     } catch (e, s) {
       await AppLogger.e('朝食の保存に失敗しました。', e, s);
-      onError('朝食の保存に失敗しました。 $e');
+      rethrow;
     }
   }
 
-  Future<void> inputLunch(String? newVal) async {
-    if (newVal == null) {
-      return;
-    }
+  Future<void> inputLunch({required int id, required String newVal}) async {
     try {
-      await _read(recordRepositoryProvider).saveLunch(_id, newVal);
-      _isUpdate = true;
+      await _read(recordRepositoryProvider).saveLunch(id, newVal);
+      _read(calendarViewModelProvider).isEditted();
     } catch (e, s) {
       await AppLogger.e('昼食の保存に失敗しました。', e, s);
-      onError('昼食の保存に失敗しました。 $e');
+      rethrow;
     }
   }
 
-  Future<void> inputDinner(String? newVal) async {
-    if (newVal == null) {
-      return;
-    }
+  Future<void> inputDinner({required int id, required String newVal}) async {
     try {
-      await _read(recordRepositoryProvider).saveDinner(_id, newVal);
-      _isUpdate = true;
+      await _read(recordRepositoryProvider).saveDinner(id, newVal);
+      _read(calendarViewModelProvider).isEditted();
     } catch (e, s) {
       await AppLogger.e('夕食の保存に失敗しました。', e, s);
-      onError('夕食の保存に失敗しました。 $e');
+      rethrow;
     }
   }
 
-  Future<void> inputMorningTemperature(double newVal) async {
+  Future<void> inputMorningTemperature({required int id, required double newVal}) async {
     try {
-      await _read(recordRepositoryProvider).saveMorningTemperature(_id, newVal);
-      _isUpdate = true;
+      await _read(recordRepositoryProvider).saveMorningTemperature(id, newVal);
+      _read(calendarViewModelProvider).isEditted();
     } catch (e, s) {
       await AppLogger.e('朝の体温の保存に失敗しました。', e, s);
-      onError('朝の体温の保存に失敗しました。 $e');
+      rethrow;
     }
   }
 
-  Future<void> inputNightTemperature(double newVal) async {
+  Future<void> inputNightTemperature({required int id, required double newVal}) async {
     try {
-      await _read(recordRepositoryProvider).saveNightTemperature(_id, newVal);
-      _isUpdate = true;
+      await _read(recordRepositoryProvider).saveNightTemperature(id, newVal);
+      _read(calendarViewModelProvider).isEditted();
     } catch (e, s) {
       await AppLogger.e('夜の体温の保存に失敗しました。', e, s);
-      onError('夜の体温の保存に失敗しました。 $e');
+      rethrow;
     }
   }
 
-  // ここから体調情報
-
-  void changeSelectedCondition(Set<int> selectedIds) {
-    AppLogger.d('選択している症状は $selectedIds 個です');
-    _selectConditionIds = selectedIds;
-  }
-
-  void inputIsWalking(bool? isWalking) {
-    _inputIsWalking = isWalking ?? false;
-  }
-
-  void inputIsToilet(bool? isToilet) {
-    _inputIsToilet = isToilet ?? false;
-  }
-
-  void inputConditionMemo(String newVal) {
-    _inputConditionMemo = newVal;
-  }
-
-  Future<void> saveCondition() async {
+  Future<void> saveCondition({
+    required int id,
+    required Set<int> conditionIds,
+    required bool isWalking,
+    required bool isToilet,
+    required String memo,
+  }) async {
     try {
-      final newRecord = _createOnlyCondition(_id);
+      final conditions = _read(conditionsProvider).where((e) => conditionIds.contains(e.id)).toList();
+      final newRecord = Record.condition(
+        id: id,
+        conditions: conditions,
+        isWalking: isWalking,
+        isToilet: isToilet,
+        memo: memo,
+      );
       await _read(recordRepositoryProvider).saveCondition(newRecord);
-      _isUpdate = true;
+      _read(calendarViewModelProvider).isEditted();
     } catch (e, s) {
       await AppLogger.e('体調情報の保存に失敗しました。', e, s);
-      onError('体調情報の保存に失敗しました。 $e');
+      rethrow;
     }
   }
 
-  Record _createOnlyCondition(int id) {
-    final conditions = _read(conditionsProvider).where((e) => _selectConditionIds.contains(e.id)).toList();
-    return Record(
-      id: id,
-      isWalking: _inputIsWalking,
-      isToilet: _inputIsToilet,
-      conditions: conditions,
-      conditionMemo: _inputConditionMemo,
-      morningTemperature: null,
-      nightTemperature: null,
-      medicines: [],
-      breakfast: null,
-      lunch: null,
-      dinner: null,
-      memo: null,
-    );
-  }
-
-  // ここからお薬情報
-
-  void changeSelectedMedicine(Set<int> selectedIds) {
-    AppLogger.d('選択しているお薬は $selectedIds です');
-    _selectMedicineIds = selectedIds;
-  }
-
-  Future<void> saveMedicine() async {
+  Future<void> saveMedicine({required int id, required Set<int> medicineIds}) async {
     try {
-      final idsStr = Record.setToMedicineIdsStr(_selectMedicineIds);
-      await _read(recordRepositoryProvider).saveMedicineIds(_id, idsStr);
-      _isUpdate = true;
+      final idsStr = Record.setToMedicineIdsStr(medicineIds);
+      await _read(recordRepositoryProvider).saveMedicineIds(id, idsStr);
+      _read(calendarViewModelProvider).isEditted();
     } catch (e, s) {
       await AppLogger.e('選択したお薬の保存に失敗しました。', e, s);
-      onError('選択したお薬の保存に失敗しました。 $e');
+      rethrow;
     }
   }
 
-  // ここからメモ情報
-  void inputMemo(String newVal) {
-    _inputMemo = newVal;
-  }
-
-  Future<void> saveMemo() async {
+  Future<void> saveMemo({required int id, required String memo}) async {
     try {
-      await _read(recordRepositoryProvider).saveMemo(_id, _inputMemo);
-      _isUpdate = true;
+      await _read(recordRepositoryProvider).saveMemo(id, memo);
+      _read(calendarViewModelProvider).isEditted();
     } catch (e, s) {
       await AppLogger.e('メモの保存に失敗しました。', e, s);
-      onError('メモの保存に失敗しました。 $e');
+      rethrow;
     }
   }
 }

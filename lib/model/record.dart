@@ -1,4 +1,4 @@
-import 'package:dyphic/model/calendar_event.dart';
+import 'package:dyphic/model/event.dart';
 import 'package:dyphic/model/condition.dart';
 import 'package:dyphic/model/dyphic_id.dart';
 import 'package:dyphic/model/medicine.dart';
@@ -84,6 +84,29 @@ class Record {
         lunch: null,
         dinner: null,
         memo: null);
+  }
+
+  factory Record.condition({
+    required int id,
+    required List<Condition> conditions,
+    required bool isWalking,
+    required bool isToilet,
+    required String memo,
+  }) {
+    return Record(
+      id: id,
+      isWalking: isWalking,
+      isToilet: isToilet,
+      conditions: conditions,
+      conditionMemo: memo,
+      morningTemperature: null,
+      nightTemperature: null,
+      medicines: [],
+      breakfast: null,
+      lunch: null,
+      dinner: null,
+      memo: null,
+    );
   }
 
   final int id;
