@@ -148,6 +148,12 @@ class _DyphicCalendarState extends State<DyphicCalendar> {
         width: calendarIconSize,
         height: calendarIconSize,
       ));
+    } else if (record.morningTemperature != null) {
+      markers.add(Image.asset(
+        AppImages.icThermometerMorning,
+        width: calendarIconSize,
+        height: calendarIconSize,
+      ));
     } else {
       markers.add(const SizedBox(width: calendarIconSize));
     }
@@ -242,22 +248,30 @@ class _DyphicCalendarState extends State<DyphicCalendar> {
     // 体調
     if (_selectedRecord.conditions.isNotEmpty) {
       widgets.add(Text(_selectedRecord.toConditionNames()));
-      widgets.add(const SizedBox(height: 16));
+      widgets.add(const SizedBox(height: 8));
+    }
+
+    if (_selectedRecord.morningTemperature != null) {
+      widgets.add(Text(
+        '${AppStrings.calenderDetailMorningTempLabel} ${_selectedRecord.morningTemperature}',
+        style: const TextStyle(
+          color: AppColors.themeAccent,
+        ),
+      ));
+      widgets.add(const SizedBox(height: 8));
     }
 
     // 体調メモ
     final conditionMemo = _selectedRecord.conditionMemo ?? '';
     if (conditionMemo.isNotEmpty) {
-      widgets.add(const Text(AppStrings.calenderDetailConditionMemoLabel));
-      widgets.add(Text(conditionMemo, maxLines: 10, overflow: TextOverflow.ellipsis));
-      widgets.add(const SizedBox(height: 16));
+      widgets.add(Text(conditionMemo));
+      widgets.add(const SizedBox(height: 8));
     }
 
     // 通常メモ
     final memo = _selectedRecord.memo ?? '';
     if (memo.isNotEmpty) {
-      widgets.add(const Text(AppStrings.calenderDetailMemoLabel));
-      widgets.add(Text(memo, maxLines: 10, overflow: TextOverflow.ellipsis));
+      widgets.add(Text(memo));
       widgets.add(const SizedBox(height: 16));
     }
 
