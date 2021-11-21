@@ -12,8 +12,6 @@ class _CalendarViewModel extends BaseViewModel {
 
   final Reader _read;
 
-  bool _isEditRecordInfo = false;
-
   Future<void> _init() async {
     try {
       await _read(recordsProvider.notifier).onLoad();
@@ -21,19 +19,6 @@ class _CalendarViewModel extends BaseViewModel {
     } catch (e, s) {
       await AppLogger.e('カレンダー情報の取得に失敗しました。', e, s);
       onError('$e');
-    }
-  }
-
-  void isEditted() {
-    _isEditRecordInfo = true;
-  }
-
-  Future<void> reLoad() async {
-    if (_isEditRecordInfo) {
-      AppLogger.d('記録情報が編集されているので再ロードします。');
-      await _read(recordsProvider.notifier).onLoad();
-      _isEditRecordInfo = false;
-      notifyListeners();
     }
   }
 }

@@ -8,15 +8,16 @@ import 'package:dyphic/ui/calender/record/record_page.dart';
 class RecordsPageView extends StatelessWidget {
   const RecordsPageView._(this._records, this._selectedIndex);
 
-  static Future<void> start(
+  static Future<bool> start(
     BuildContext context, {
     required List<Record> records,
     required int selectedIndex,
   }) async {
-    await Navigator.push<void>(
-      context,
-      MaterialPageRoute(builder: (_) => RecordsPageView._(records, selectedIndex)),
-    );
+    return await Navigator.push<bool>(
+          context,
+          MaterialPageRoute(builder: (_) => RecordsPageView._(records, selectedIndex)),
+        ) ??
+        false;
   }
 
   final List<Record> _records;

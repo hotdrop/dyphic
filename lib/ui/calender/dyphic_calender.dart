@@ -1,3 +1,4 @@
+import 'package:dyphic/common/app_logger.dart';
 import 'package:dyphic/model/record.dart';
 import 'package:dyphic/res/app_colors.dart';
 import 'package:dyphic/res/app_strings.dart';
@@ -6,29 +7,25 @@ import 'package:dyphic/res/app_images.dart';
 import 'package:dyphic/ui/calender/record/records_page_view.dart';
 import 'package:dyphic/ui/widget/app_dialog.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:table_calendar/table_calendar.dart';
 
-class DyphicCalendar extends StatefulWidget {
-  const DyphicCalendar({
-    Key? key,
-    required this.records,
-    required this.onReturn,
-  }) : super(key: key);
+class DyphicCalendar extends ConsumerStatefulWidget {
+  const DyphicCalendar({required this.records, Key? key}) : super(key: key);
 
   final List<Record> records;
-  final Function onReturn;
 
   @override
   _DyphicCalendarState createState() => _DyphicCalendarState();
 }
 
-class _DyphicCalendarState extends State<DyphicCalendar> {
-  final Map<int, Record> _recordMap = {};
+class _DyphicCalendarState extends ConsumerState<DyphicCalendar> {
+  Map<int, Record> _recordMap = {};
 
   DateTime _focusDate = DateTime.now();
   DateTime? _selectedDate;
-  late Record _selectedRecord;
+  Record? _selectedRecord;
 
   static const double calendarIconSize = 15.0;
 
@@ -37,22 +34,31 @@ class _DyphicCalendarState extends State<DyphicCalendar> {
     super.initState();
 
     final nowId = DyphicID.makeRecordId(DateTime.now());
+    _recordMap = _createMap(nowId, widget.records);
+
+    _selectedRecord ??= Record.create(id: nowId);
+    _selectedDate = _focusDate;
+  }
+
+  Map<int, Record> _createMap(int selectedId, List<Record> records) {
+    final resultMap = <int, Record>{};
+
+    final nowId = DyphicID.makeRecordId(DateTime.now());
     bool existNowDate = false;
-    for (var record in widget.records) {
-      _recordMap[record.id] = record;
-      if (record.id == nowId) {
+    for (var record in records) {
+      resultMap[record.id] = record;
+      if (record.id == selectedId) {
         _selectedRecord = record;
+      }
+      if (record.id == nowId) {
         existNowDate = true;
       }
     }
-
     // 同日のデータがなければMapに追加する
     if (!existNowDate) {
-      _selectedRecord = Record.create(id: nowId);
-      _recordMap[nowId] = _selectedRecord;
+      resultMap[nowId] = Record.create(id: nowId);
     }
-
-    _selectedDate = _focusDate;
+    return resultMap;
   }
 
   List<Record> _getEventForDay(DateTime date) {
@@ -195,13 +201,16 @@ class _DyphicCalendarState extends State<DyphicCalendar> {
   Future<void> _onTapCard(BuildContext context) async {
     // indexでページスワイプをするので必ずソートする
     final records = _sortedRecords();
-    final index = records.indexWhere((e) => _selectedRecord.id == e.id);
-    if (index == -1) {
-      AppDialog.onlyOk(message: 'インデックスが-1になってしまいました！おかしいです').show(context);
-      return;
+    final index = records.indexWhere((e) => _selectedRecord!.id == e.id);
+    bool isUpdate = await RecordsPageView.start(context, records: records, selectedIndex: index);
+    AppLogger.d('記録情報の更新有無: $isUpdate');
+    if (isUpdate) {
+      await ref.read(recordsProvider.notifier).onLoad();
+      final newRecords = ref.watch(recordsProvider);
+      setState(() {
+        _recordMap = _createMap(_selectedRecord!.id, newRecords);
+      });
     }
-    await RecordsPageView.start(context, records: records, selectedIndex: index);
-    await widget.onReturn();
   }
 
   List<Record> _sortedRecords() {
@@ -227,11 +236,11 @@ class _DyphicCalendarState extends State<DyphicCalendar> {
   }
 
   Widget _labelEventInfo() {
-    final dateStr = DateFormat(AppStrings.calenderPageDateFormat).format(_selectedRecord.date);
-    if (_selectedRecord.event?.name != null) {
+    final dateStr = DateFormat(AppStrings.calenderPageDateFormat).format(_selectedRecord!.date);
+    if (_selectedRecord!.event?.name != null) {
       return Center(
         child: Text(
-          '$dateStr(${_selectedRecord.event!.name})',
+          '$dateStr(${_selectedRecord!.event!.name})',
           style: const TextStyle(color: AppColors.themeColor),
         ),
       );
@@ -245,15 +254,23 @@ class _DyphicCalendarState extends State<DyphicCalendar> {
   Widget _labelRecordInfo() {
     final widgets = <Widget>[];
 
+    final sr = _selectedRecord;
+    if (sr == null) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: const [Text(AppStrings.calenderUnRegisterLabel)],
+      );
+    }
+
     // 体調
-    if (_selectedRecord.conditions.isNotEmpty) {
-      widgets.add(Text(_selectedRecord.toConditionNames()));
+    if (sr.conditions.isNotEmpty) {
+      widgets.add(Text(sr.toConditionNames()));
       widgets.add(const SizedBox(height: 8));
     }
 
-    if (_selectedRecord.morningTemperature != null) {
+    if (sr.morningTemperature != null) {
       widgets.add(Text(
-        '${AppStrings.calenderDetailMorningTempLabel} ${_selectedRecord.morningTemperature}',
+        '${AppStrings.calenderDetailMorningTempLabel} ${sr.morningTemperature}',
         style: const TextStyle(
           color: AppColors.themeAccent,
         ),
@@ -262,14 +279,14 @@ class _DyphicCalendarState extends State<DyphicCalendar> {
     }
 
     // 体調メモ
-    final conditionMemo = _selectedRecord.conditionMemo ?? '';
+    final conditionMemo = sr.conditionMemo ?? '';
     if (conditionMemo.isNotEmpty) {
       widgets.add(Text(conditionMemo));
       widgets.add(const SizedBox(height: 8));
     }
 
     // 通常メモ
-    final memo = _selectedRecord.memo ?? '';
+    final memo = sr.memo ?? '';
     if (memo.isNotEmpty) {
       widgets.add(Text(memo));
       widgets.add(const SizedBox(height: 16));

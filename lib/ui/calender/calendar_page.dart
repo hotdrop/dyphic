@@ -36,12 +36,6 @@ class CalenderPage extends ConsumerWidget {
   }
 
   Widget _onSuccess(BuildContext context, WidgetRef ref) {
-    final records = ref.watch(recordsProvider);
-    return DyphicCalendar(
-      records: records,
-      onReturn: () async {
-        await ref.read(calendarViewModelProvider).reLoad();
-      },
-    );
+    return DyphicCalendar(records: ref.watch(recordsProvider));
   }
 }
