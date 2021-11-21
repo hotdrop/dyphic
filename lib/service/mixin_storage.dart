@@ -18,11 +18,16 @@ mixin AppStorageMixin {
     return url;
   }
 
-  Future<dynamic> readEventJson() async {
-    final url = await FirebaseStorage.instance.ref(_eventJsonFileName).getDownloadURL();
-    final response = await http.get(Uri.parse(url));
+  Future<Map<String, dynamic>?> readEventJson() async {
+    try {
+      final url = await FirebaseStorage.instance.ref(_eventJsonFileName).getDownloadURL();
+      final response = await http.get(Uri.parse(url));
 
-    final bodyDecode = convert.utf8.decode(response.bodyBytes);
-    return convert.jsonDecode(bodyDecode);
+      final bodyDecode = convert.utf8.decode(response.bodyBytes);
+      return convert.jsonDecode(bodyDecode) as Map<String, dynamic>;
+    } catch (e, s) {
+      AppLogger.e('イベント情報が取得できませんでした。', e, s);
+      return null;
+    }
   }
 }

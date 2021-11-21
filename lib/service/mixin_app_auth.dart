@@ -40,7 +40,7 @@ mixin AppAuthMixin {
     }
   }
 
-  Future<void> logout() async {
+  Future<void> signOut() async {
     GoogleSignIn().disconnect();
     await FirebaseAuth.instance.signOut();
   }

@@ -85,12 +85,7 @@ class MedicinePage extends ConsumerWidget {
           medicine: medicines[index],
           isEditable: isSignIn,
           onTapEvent: () async {
-            bool isUpdate = await MedicineEditPage.start(context, medicines[index]);
-            // TODO StateNotifierをwatchしているから多分これいらない
-            // AppLogger.d('戻り値: $isUpdate');
-            // if (isUpdate) {
-            //   await ref.read(medicineViewModelProvider).reload();
-            // }
+            await MedicineEditPage.start(context, medicines[index]);
           },
         );
       },
@@ -116,11 +111,6 @@ class MedicinePage extends ConsumerWidget {
 
   Future<void> _processAdd(BuildContext context, WidgetRef ref) async {
     final newEmptyMeidine = ref.read(medicineProvider.notifier).newMedicine();
-    bool isUpdate = await MedicineEditPage.start(context, newEmptyMeidine);
-    // TODO StateNotifierをwatchしているから多分これいらない
-    // AppLogger.d('戻り値: $isUpdate');
-    // if (isUpdate) {
-    //   await ref.read(medicineViewModelProvider).reload();
-    // }
+    await MedicineEditPage.start(context, newEmptyMeidine);
   }
 }

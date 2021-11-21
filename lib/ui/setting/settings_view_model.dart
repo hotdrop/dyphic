@@ -43,8 +43,13 @@ class _SettingsViewModel extends BaseViewModel {
   }
 
   Future<void> signIn() async {
-    await _read(accountRepositoryProvider).signIn();
-    notifyListeners();
+    try {
+      await _read(accountRepositoryProvider).signIn();
+      notifyListeners();
+    } catch (e, s) {
+      await AppLogger.e('サインインに失敗しました。', e, s);
+      onError('サインインに失敗しました。$e');
+    }
   }
 
   Future<void> signOut() async {

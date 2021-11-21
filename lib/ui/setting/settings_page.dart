@@ -212,7 +212,6 @@ class SettingsPage extends ConsumerWidget {
           onSuccess: (_) {/* 成功時は何もしない */},
           onError: (err) async => await AppDialog.onlyOk(message: err).show(context),
         );
-        Navigator.pop(context);
       },
       child: const Text(AppStrings.settingsLogoutLabel),
     );

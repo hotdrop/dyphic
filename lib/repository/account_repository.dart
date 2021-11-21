@@ -19,7 +19,7 @@ class _AccountRepository {
   }
 
   Future<void> signOut() async {
-    await _read(appFirebaseProvider).logout();
+    await _read(appFirebaseProvider).signOut();
     await _read(appSettingsProvider.notifier).refresh();
   }
 }

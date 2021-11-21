@@ -13,7 +13,10 @@ class _EventApi {
 
   Future<List<Event>> findAll() async {
     AppLogger.d('サーバーからイベントを全取得します。');
-    final responseRow = await _read(appFirebaseProvider).readEventJson() as Map<String, dynamic>;
+    final responseRow = await _read(appFirebaseProvider).readEventJson();
+    if (responseRow == null) {
+      return [];
+    }
     final response = EventsResponse.fromJson(responseRow);
     return response.events.map((r) => _toEvent(r)).toList();
   }
