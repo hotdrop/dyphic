@@ -40,7 +40,6 @@ class _RecordPageState extends ConsumerState<RecordPage> {
   Set<int> _inputSelectMedicineIds = {};
 
   String _inputMemo = '';
-  bool _isUpdate = false;
 
   @override
   void initState() {
@@ -64,31 +63,25 @@ class _RecordPageState extends ConsumerState<RecordPage> {
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () async {
-        Navigator.pop(context, _isUpdate);
-        return true;
-      },
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text(DateFormat(AppStrings.recordPageTitleDateFormat).format(widget.record.date)),
-        ),
-        body: GestureDetector(
-          onTap: () => FocusScope.of(context).unfocus(),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
-            child: ListView(
-              children: <Widget>[
-                _viewMealArea(),
-                _viewTemperatureArea(),
-                _viewConditionArea(),
-                const SizedBox(height: 16.0),
-                _viewMedicineArea(),
-                const SizedBox(height: 16.0),
-                _viewMemo(context),
-                const SizedBox(height: 36),
-              ],
-            ),
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(DateFormat(AppStrings.recordPageTitleDateFormat).format(widget.record.date)),
+      ),
+      body: GestureDetector(
+        onTap: () => FocusScope.of(context).unfocus(),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
+          child: ListView(
+            children: <Widget>[
+              _viewMealArea(),
+              _viewTemperatureArea(),
+              _viewConditionArea(),
+              const SizedBox(height: 16.0),
+              _viewMedicineArea(),
+              const SizedBox(height: 16.0),
+              _viewMemo(context),
+              const SizedBox(height: 36),
+            ],
           ),
         ),
       ),
@@ -124,7 +117,6 @@ class _RecordPageState extends ConsumerState<RecordPage> {
           await ref.read(recordViewModelProvider).inputBreakfast(id: widget.record.id, newVal: v);
           setState(() {
             _inputBreakfast = v;
-            _isUpdate = true;
           });
         }
       },
@@ -139,7 +131,6 @@ class _RecordPageState extends ConsumerState<RecordPage> {
           await ref.read(recordViewModelProvider).inputLunch(id: widget.record.id, newVal: v);
           setState(() {
             _inputLunch = v;
-            _isUpdate = true;
           });
         }
       },
@@ -154,7 +145,6 @@ class _RecordPageState extends ConsumerState<RecordPage> {
           ref.read(recordViewModelProvider).inputDinner(id: widget.record.id, newVal: v);
           setState(() {
             _inputDinner = v;
-            _isUpdate = true;
           });
         }
       },
@@ -174,7 +164,6 @@ class _RecordPageState extends ConsumerState<RecordPage> {
                 ref.read(recordViewModelProvider).inputMorningTemperature(id: widget.record.id, newVal: v);
                 setState(() {
                   _inputMorningTemperature = v;
-                  _isUpdate = true;
                 });
               }
             },
@@ -186,7 +175,6 @@ class _RecordPageState extends ConsumerState<RecordPage> {
                 await ref.read(recordViewModelProvider).inputNightTemperature(id: widget.record.id, newVal: v);
                 setState(() {
                   _inputNightTemperature = v;
-                  _isUpdate = true;
                 });
               }
             },
@@ -297,9 +285,7 @@ class _RecordPageState extends ConsumerState<RecordPage> {
               memo: _inputConditionMemo,
             );
       },
-      onSuccess: (_) {
-        setState(() => _isUpdate = true);
-      },
+      onSuccess: (_) {/* 成功時は何もしない */},
       onError: (err) => AppDialog.onlyOk(message: err).show(context),
     );
   }
@@ -354,9 +340,7 @@ class _RecordPageState extends ConsumerState<RecordPage> {
               medicineIds: _inputSelectMedicineIds,
             );
       },
-      onSuccess: (_) {
-        setState(() => _isUpdate = true);
-      },
+      onSuccess: (_) {/* 成功時は何もしない */},
       onError: (err) => AppDialog.onlyOk(message: err).show(context),
     );
   }
@@ -398,7 +382,6 @@ class _RecordPageState extends ConsumerState<RecordPage> {
       context,
       execute: () async {
         await ref.read(recordViewModelProvider).saveMemo(id: widget.record.id, memo: _inputMemo);
-        setState(() => _isUpdate = true);
       },
       onSuccess: (_) {/* 成功時は何もしない */},
       onError: (err) => AppDialog.onlyOk(message: err).show(context),

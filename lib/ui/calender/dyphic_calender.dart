@@ -4,6 +4,7 @@ import 'package:dyphic/res/app_colors.dart';
 import 'package:dyphic/res/app_strings.dart';
 import 'package:dyphic/model/dyphic_id.dart';
 import 'package:dyphic/res/app_images.dart';
+import 'package:dyphic/ui/calender/calendar_view_model.dart';
 import 'package:dyphic/ui/calender/record/records_page_view.dart';
 import 'package:dyphic/ui/widget/app_dialog.dart';
 import 'package:flutter/material.dart';
@@ -202,7 +203,8 @@ class _DyphicCalendarState extends ConsumerState<DyphicCalendar> {
     // indexでページスワイプをするので必ずソートする
     final records = _sortedRecords();
     final index = records.indexWhere((e) => _selectedRecord!.id == e.id);
-    bool isUpdate = await RecordsPageView.start(context, records: records, selectedIndex: index);
+    await RecordsPageView.start(context, records: records, selectedIndex: index);
+    final isUpdate = ref.watch(calendarViewModelProvider).isEditRecord;
     AppLogger.d('記録情報の更新有無: $isUpdate');
     if (isUpdate) {
       await ref.read(recordsProvider.notifier).onLoad();

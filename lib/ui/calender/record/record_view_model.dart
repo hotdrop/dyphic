@@ -15,6 +15,7 @@ class _RecordViewModel {
   Future<void> inputBreakfast({required int id, required String newVal}) async {
     try {
       await _read(recordRepositoryProvider).saveBreakFast(id, newVal);
+      _read(calendarViewModelProvider).markRecordEditted();
     } catch (e, s) {
       await AppLogger.e('朝食の保存に失敗しました。', e, s);
       rethrow;
@@ -24,6 +25,7 @@ class _RecordViewModel {
   Future<void> inputLunch({required int id, required String newVal}) async {
     try {
       await _read(recordRepositoryProvider).saveLunch(id, newVal);
+      _read(calendarViewModelProvider).markRecordEditted();
     } catch (e, s) {
       await AppLogger.e('昼食の保存に失敗しました。', e, s);
       rethrow;
@@ -33,6 +35,7 @@ class _RecordViewModel {
   Future<void> inputDinner({required int id, required String newVal}) async {
     try {
       await _read(recordRepositoryProvider).saveDinner(id, newVal);
+      _read(calendarViewModelProvider).markRecordEditted();
     } catch (e, s) {
       await AppLogger.e('夕食の保存に失敗しました。', e, s);
       rethrow;
@@ -74,6 +77,7 @@ class _RecordViewModel {
         memo: memo,
       );
       await _read(recordRepositoryProvider).saveCondition(newRecord);
+      _read(calendarViewModelProvider).markRecordEditted();
     } catch (e, s) {
       await AppLogger.e('体調情報の保存に失敗しました。', e, s);
       rethrow;
@@ -84,6 +88,7 @@ class _RecordViewModel {
     try {
       final idsStr = Record.setToMedicineIdsStr(medicineIds);
       await _read(recordRepositoryProvider).saveMedicineIds(id, idsStr);
+      _read(calendarViewModelProvider).markRecordEditted();
     } catch (e, s) {
       await AppLogger.e('選択したお薬の保存に失敗しました。', e, s);
       rethrow;
@@ -93,6 +98,7 @@ class _RecordViewModel {
   Future<void> saveMemo({required int id, required String memo}) async {
     try {
       await _read(recordRepositoryProvider).saveMemo(id, memo);
+      _read(calendarViewModelProvider).markRecordEditted();
     } catch (e, s) {
       await AppLogger.e('メモの保存に失敗しました。', e, s);
       rethrow;
