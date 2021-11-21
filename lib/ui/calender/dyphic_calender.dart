@@ -6,7 +6,6 @@ import 'package:dyphic/model/dyphic_id.dart';
 import 'package:dyphic/res/app_images.dart';
 import 'package:dyphic/ui/calender/calendar_view_model.dart';
 import 'package:dyphic/ui/calender/record/records_page_view.dart';
-import 'package:dyphic/ui/widget/app_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
