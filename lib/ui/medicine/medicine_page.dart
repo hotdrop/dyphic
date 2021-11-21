@@ -5,6 +5,7 @@ import 'package:dyphic/ui/medicine/edit/medicine_edit_page.dart';
 import 'package:dyphic/ui/medicine/medicine_card_view.dart';
 import 'package:dyphic/ui/medicine/medicine_view_model.dart';
 import 'package:dyphic/ui/widget/app_dialog.dart';
+import 'package:dyphic/ui/widget/app_progress_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -48,6 +49,12 @@ class MedicinePage extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text(AppStrings.medicinePageTitle),
+        actions: [
+          IconButton(
+            onPressed: () async => await _showRefreshDialog(context, ref),
+            icon: const Icon(Icons.refresh),
+          ),
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.only(bottom: 32.0),
@@ -60,16 +67,6 @@ class MedicinePage extends ConsumerWidget {
             )
           : null,
     );
-  }
-
-  Future<void> _processAdd(BuildContext context, WidgetRef ref) async {
-    final newEmptyMeidine = ref.read(medicineProvider.notifier).newMedicine();
-    bool isUpdate = await MedicineEditPage.start(context, newEmptyMeidine);
-    // TODO StateNotifierをwatchしているから多分これいらない
-    // AppLogger.d('戻り値: $isUpdate');
-    // if (isUpdate) {
-    //   await ref.read(medicineViewModelProvider).reload();
-    // }
   }
 
   Widget _viewContents(BuildContext context, WidgetRef ref) {
@@ -98,5 +95,32 @@ class MedicinePage extends ConsumerWidget {
         );
       },
     );
+  }
+
+  Future<void> _showRefreshDialog(BuildContext context, WidgetRef ref) async {
+    AppDialog.okAndCancel(
+      message: AppStrings.medicineRefreshConfirmMessage,
+      onOk: () async => await _refresh(context, ref),
+    ).show(context);
+  }
+
+  Future<void> _refresh(BuildContext context, WidgetRef ref) async {
+    const progressDialog = AppProgressDialog<void>();
+    await progressDialog.show(
+      context,
+      execute: ref.read(medicineViewModelProvider).refresh,
+      onSuccess: (_) => {/* 成功時は何もしない */},
+      onError: (err) => AppDialog.onlyOk(message: err).show(context),
+    );
+  }
+
+  Future<void> _processAdd(BuildContext context, WidgetRef ref) async {
+    final newEmptyMeidine = ref.read(medicineProvider.notifier).newMedicine();
+    bool isUpdate = await MedicineEditPage.start(context, newEmptyMeidine);
+    // TODO StateNotifierをwatchしているから多分これいらない
+    // AppLogger.d('戻り値: $isUpdate');
+    // if (isUpdate) {
+    //   await ref.read(medicineViewModelProvider).reload();
+    // }
   }
 }

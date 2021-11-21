@@ -62,34 +62,20 @@ class NotesPage extends ConsumerWidget {
 
     return ListView.builder(
       itemCount: notes.length,
-      itemBuilder: (ctx, index) => _RowNote(
-        notes[index],
-        onTap: () async {
-          // await ref.read(notesViewModelProvider).reload();
-        },
-      ),
+      itemBuilder: (ctx, index) => _RowNote(notes[index]),
     );
   }
 
   Future<void> _onTapFab(BuildContext context, WidgetRef ref) async {
     final emptyNote = ref.read(notesProvider.notifier).newNote();
-    final isUpdate = await NoteEditPage.start(context, emptyNote);
-    // AppLogger.d('戻り値: $isUpdate');
-    // if (isUpdate) {
-    //   await ref.read(notesViewModelProvider).reload();
-    // }
+    await NoteEditPage.start(context, emptyNote);
   }
 }
 
 class _RowNote extends StatelessWidget {
-  const _RowNote(
-    this._note, {
-    Key? key,
-    required this.onTap,
-  }) : super(key: key);
+  const _RowNote(this._note, {Key? key}) : super(key: key);
 
   final Note _note;
-  final Function onTap;
 
   @override
   Widget build(BuildContext context) {
@@ -99,11 +85,7 @@ class _RowNote extends StatelessWidget {
         leading: NoteTypeIcon.createNote(_note),
         title: Text(_note.title),
         onTap: () async {
-          final isUpdate = await NoteEditPage.start(context, _note);
-          // AppLogger.d('戻り値: $isUpdate');
-          // if (isUpdate) {
-          //   onTap();
-          // }
+          await NoteEditPage.start(context, _note);
         },
       ),
     );

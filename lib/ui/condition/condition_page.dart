@@ -23,6 +23,12 @@ class ConditionPage extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text(AppStrings.conditionPageTitle),
+        actions: [
+          IconButton(
+            onPressed: () async => await _showRefreshDialog(context, ref),
+            icon: const Icon(Icons.refresh),
+          ),
+        ],
       ),
       body: GestureDetector(
         onTap: () {
@@ -149,17 +155,34 @@ class ConditionPage extends ConsumerWidget {
     final canSaved = ref.watch(conditionViewModelProvider).enableOnSave;
 
     return ElevatedButton(
-      onPressed: canSaved ? () async => await _processSave(context, ref) : null,
+      onPressed: canSaved ? () async => await _save(context, ref) : null,
       child: Text(buttonName),
     );
   }
 
-  Future<void> _processSave(BuildContext context, WidgetRef ref) async {
+  Future<void> _save(BuildContext context, WidgetRef ref) async {
     const progressDialog = AppProgressDialog<void>();
     await progressDialog.show(
       context,
       execute: ref.read(conditionViewModelProvider).save,
       onSuccess: (_) => ref.read(conditionViewModelProvider).clear(),
+      onError: (err) => AppDialog.onlyOk(message: err).show(context),
+    );
+  }
+
+  Future<void> _showRefreshDialog(BuildContext context, WidgetRef ref) async {
+    AppDialog.okAndCancel(
+      message: AppStrings.conditionRefreshConfirmMessage,
+      onOk: () async => await _refresh(context, ref),
+    ).show(context);
+  }
+
+  Future<void> _refresh(BuildContext context, WidgetRef ref) async {
+    const progressDialog = AppProgressDialog<void>();
+    await progressDialog.show(
+      context,
+      execute: ref.read(conditionViewModelProvider).refresh,
+      onSuccess: (_) => {/* 成功時は何もしない */},
       onError: (err) => AppDialog.onlyOk(message: err).show(context),
     );
   }

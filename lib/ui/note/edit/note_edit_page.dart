@@ -11,12 +11,11 @@ import 'package:dyphic/ui/widget/app_text_field.dart';
 class NoteEditPage extends ConsumerWidget {
   const NoteEditPage._(this._note);
 
-  static Future<bool> start(BuildContext context, Note note) async {
-    return await Navigator.push<bool>(
-          context,
-          MaterialPageRoute(builder: (_) => NoteEditPage._(note)),
-        ) ??
-        false;
+  static Future<void> start(BuildContext context, Note note) async {
+    await Navigator.push<void>(
+      context,
+      MaterialPageRoute(builder: (_) => NoteEditPage._(note)),
+    );
   }
 
   final Note _note;
@@ -103,7 +102,7 @@ class NoteEditPage extends ConsumerWidget {
     await progressDialog.show(
       context,
       execute: ref.watch(noteEditViewModelProvider).save,
-      onSuccess: (_) => Navigator.pop(context, true),
+      onSuccess: (_) => Navigator.pop(context),
       onError: (err) => AppDialog.onlyOk(message: err).show(context),
     );
   }

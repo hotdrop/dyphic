@@ -26,12 +26,21 @@ class _ConditionViewModel extends BaseViewModel {
 
   Future<void> _init() async {
     try {
-      // 体調情報管理機能では必ず最新化してデータを取得する TODO ここやっぱ見直し
-      await _read(conditionsProvider.notifier).refresh();
+      await _read(conditionsProvider.notifier).onLoad();
       onSuccess();
     } catch (e, s) {
       await AppLogger.e('体調情報一覧の初回取得に失敗しました。', e, s);
       onError('$e');
+    }
+  }
+
+  Future<void> refresh() async {
+    try {
+      await _read(conditionsProvider.notifier).refresh();
+      notifyListeners();
+    } catch (e, s) {
+      await AppLogger.e('体調情報一覧の更新に失敗しました。', e, s);
+      rethrow;
     }
   }
 

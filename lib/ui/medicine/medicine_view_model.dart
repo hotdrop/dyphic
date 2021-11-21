@@ -14,8 +14,7 @@ class _MedicineViewModel extends BaseViewModel {
 
   Future<void> _init() async {
     try {
-      //  TODO ここやっぱ見直し
-      await _read(medicineProvider.notifier).refresh();
+      await _read(medicineProvider.notifier).onLoad();
       onSuccess();
     } catch (e, s) {
       await AppLogger.e('お薬情報一覧の初回取得に失敗しました。', e, s);
@@ -23,7 +22,13 @@ class _MedicineViewModel extends BaseViewModel {
     }
   }
 
-  // Future<void> reload() async {
-  //   await _read(medicineProvider.notifier).onLoad();
-  // }
+  Future<void> refresh() async {
+    try {
+      await _read(medicineProvider.notifier).refresh();
+      onSuccess();
+    } catch (e, s) {
+      await AppLogger.e('お薬情報の更新に失敗しました。', e, s);
+      rethrow;
+    }
+  }
 }

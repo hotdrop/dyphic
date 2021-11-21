@@ -63,6 +63,7 @@ class AppStrings {
   static const String medicineMemoHint = '詳細な情報を残したい場合はここに記載してください。';
   static const String medicineSaveButton = 'この内容で保存する';
   static const String medicineNotSaveAttention = 'お薬の名前が未入力です。';
+  static const String medicineRefreshConfirmMessage = 'サーバーから最新のお薬情報を取得します。\nよろしいですか？';
 
   // 体調ページ
   static const String conditionPageTitle = '体調管理';
@@ -73,6 +74,7 @@ class AppStrings {
   static const String conditionInputDuplicateMessage = 'この症状名は既に登録されています。';
   static const String conditionNewButton = '新しく登録する';
   static const String conditionEditButton = '症状名を修正する';
+  static const String conditionRefreshConfirmMessage = 'サーバーから最新の体調情報を取得します。\nよろしいですか？';
 
   // 設定ページ
   static const String settingsPageTitle = '設定';
@@ -91,7 +93,7 @@ class AppStrings {
   static const String settingsEditMedicineSubLabel = 'タップでお薬情報を表示します。';
   static const String settingsLoadEventLabel = 'イベント情報を再取得';
   static const String settingsLoadEventSubLabel = '前回取得日:';
-  static const String settingsLoadEventConfirmMessage = 'サーバーから最新のイベント情報を取得します。よろしいですか？';
+  static const String settingsLoadEventConfirmMessage = 'サーバーから最新のイベント情報を取得します。\nよろしいですか？';
   static const String settingsLoadRecordLabel = '記録情報を再取得';
   static const String settingsLoadRecordSubLabel = 'タップで日々の記録情報を最新化します。';
   static const String settingsLoadRecordConfirmMessage = 'サーバーから最新の記録情報を取得します。\nよろしいですか？\n\n※注意！\nこの操作は通常行う必要はありません。他の人がデータを更新した場合に実行してください。';
