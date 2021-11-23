@@ -1,4 +1,41 @@
-import 'package:dyphic/common/app_strings.dart';
+import 'dart:math';
+
+import 'package:dyphic/repository/medicine_repository.dart';
+import 'package:dyphic/res/app_strings.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+final medicineProvider = StateNotifierProvider<_MedicineNotifier, List<Medicine>>((ref) => _MedicineNotifier(ref.read));
+
+class _MedicineNotifier extends StateNotifier<List<Medicine>> {
+  _MedicineNotifier(this._read) : super([]);
+
+  final Reader _read;
+
+  Future<void> onLoad() async {
+    state = await _read(medicineRepositoryProvider).findAll(isForceUpdate: false);
+  }
+
+  Future<void> refresh() async {
+    state = await _read(medicineRepositoryProvider).findAll(isForceUpdate: true);
+  }
+
+  Future<void> save(Medicine medicine, bool isUpdateImage) async {
+    await _read(medicineRepositoryProvider).save(medicine, isUpdateImage);
+    await onLoad();
+  }
+
+  Medicine newMedicine() {
+    return Medicine.createEmpty(_createNewId(), _createNewOrder());
+  }
+
+  int _createNewId() {
+    return (state.isNotEmpty) ? state.map((e) => e.id).reduce(max) + 1 : 1;
+  }
+
+  int _createNewOrder() {
+    return (state.isNotEmpty) ? state.map((e) => e.order).reduce(max) + 1 : 1;
+  }
+}
 
 class Medicine {
   const Medicine({
@@ -12,7 +49,15 @@ class Medicine {
   });
 
   factory Medicine.createEmpty(int id, int order) {
-    return Medicine(id: id, name: '', overview: '', type: MedicineType.oral, memo: '', imagePath: '', order: order);
+    return Medicine(
+      id: id,
+      name: '',
+      overview: '',
+      type: MedicineType.oral,
+      memo: '',
+      imagePath: '',
+      order: order,
+    );
   }
 
   final int id;
@@ -24,7 +69,15 @@ class Medicine {
   final int order;
 
   Medicine copyWith({required String imageUrl}) {
-    return Medicine(id: id, name: name, overview: overview, type: type, order: order, memo: memo, imagePath: imageUrl);
+    return Medicine(
+      id: id,
+      name: name,
+      overview: overview,
+      type: type,
+      order: order,
+      memo: memo,
+      imagePath: imageUrl,
+    );
   }
 
   String toTypeString() {

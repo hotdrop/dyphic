@@ -1,74 +1,34 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:dyphic/common/app_logger.dart';
 import 'package:dyphic/model/record.dart';
-import 'package:dyphic/ui/notifier_view_model.dart';
-import 'package:dyphic/model/calendar_event.dart';
-import 'package:dyphic/repository/event_repository.dart';
-import 'package:dyphic/repository/record_repository.dart';
+import 'package:dyphic/ui/base_view_model.dart';
 
-class CalendarViewModel extends NotifierViewModel {
-  CalendarViewModel._(this._recordRepository, this._eventRepository) {
+final calendarViewModelProvider = ChangeNotifierProvider.autoDispose((ref) => _CalendarViewModel(ref.read));
+
+class _CalendarViewModel extends BaseViewModel {
+  _CalendarViewModel(this._read) {
     _init();
   }
 
-  factory CalendarViewModel.create() {
-    return CalendarViewModel._(RecordRepository.create(), EventRepository.create());
-  }
+  final Reader _read;
 
-  final RecordRepository _recordRepository;
-  final EventRepository _eventRepository;
-
-  late Map<int, CalendarEvent> _events;
-  List<CalendarEvent> get calendarEvents => _events.values.toList();
+  // 記録詳細ページで何か編集したらこれをtrueにする。trueだったらカレンダーを更新する。
+  // 記録詳細ページはPageViewで実装しているので、各々のページで更新情報を持つと別のページ切り替え時にその情報が消えてしまう
+  // 消えないように記録詳細ページ全体のStateを作るかベースとなるこのViewModelで持つか迷った結果、一旦ここで持つことにした。
+  bool _isEditRecord = false;
+  bool get isEditRecord => _isEditRecord;
 
   Future<void> _init() async {
-    final events = await _eventRepository.findAll();
-    final overviewRecords = await _recordRepository.findEventRecords();
-    _events = _merge(events, overviewRecords);
-    loadSuccess();
+    try {
+      await _read(recordsProvider.notifier).onLoad();
+      onSuccess();
+    } catch (e, s) {
+      await AppLogger.e('カレンダー情報の取得に失敗しました。', e, s);
+      onError('$e');
+    }
   }
 
-  Map<int, CalendarEvent> _merge(List<Event> events, List<RecordOverview> overviewRecords) {
-    final Map<int, Event> eventMap = Map.fromIterables(events.map((e) => e.id), events.map((e) => e));
-    final Map<int, CalendarEvent> results = {};
-
-    // レコードをベースにイベントをマージする
-    overviewRecords.forEach((overviewRecord) {
-      if (eventMap.containsKey(overviewRecord.recordId)) {
-        final Event event = eventMap[overviewRecord.recordId]!;
-        results[overviewRecord.recordId] = CalendarEvent.create(event, overviewRecord);
-      } else {
-        results[overviewRecord.recordId] = CalendarEvent.createOnlyRecord(overviewRecord);
-      }
-    });
-
-    // レコードに入っていないイベントをマージする
-    events.forEach((event) {
-      if (!results.containsKey(event.id)) {
-        results[event.id] = (CalendarEvent.createOnlyEvent(event));
-      }
-    });
-
-    return results;
-  }
-
-  Future<void> refresh(int updateId) async {
-    nowLoading();
-    final RecordOverview? recordOverview = await _recordRepository.findOverview(updateId);
-    if (recordOverview == null) {
-      // 通常、refresh時に対象となるupdateIdのrecordOverviewがnullになるとはないが、
-      // 何らかの理由でデータが書き込めていないとかネットワーク障害でデータを取得できなかった場合はnullになる可能性がある。
-      // その場合はrefreshせずに終了する。
-      loadSuccess();
-      return;
-    }
-
-    if (_events.containsKey(recordOverview.recordId)) {
-      final existEventWithNewRecord = _events[recordOverview.recordId]!.updateRecord(recordOverview);
-      _events[recordOverview.recordId] = existEventWithNewRecord;
-    } else {
-      final newEvent = CalendarEvent.createOnlyRecord(recordOverview);
-      _events[recordOverview.recordId] = newEvent;
-    }
-
-    loadSuccess();
+  void markRecordEditted() {
+    _isEditRecord = true;
   }
 }

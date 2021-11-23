@@ -1,144 +1,219 @@
-import 'package:dyphic/common/app_strings.dart';
+import 'package:dyphic/res/app_images.dart';
+import 'package:dyphic/res/app_strings.dart';
 import 'package:dyphic/model/app_settings.dart';
-import 'package:dyphic/model/page_state.dart';
 import 'package:dyphic/ui/condition/condition_page.dart';
 import 'package:dyphic/ui/medicine/medicine_page.dart';
 import 'package:dyphic/ui/setting/settings_view_model.dart';
+import 'package:dyphic/ui/widget/app_dialog.dart';
 import 'package:dyphic/ui/widget/app_icon.dart';
 import 'package:dyphic/ui/widget/app_progress_dialog.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class SettingsPage extends StatelessWidget {
-  final double _iconSize = 30;
+class SettingsPage extends ConsumerWidget {
+  const SettingsPage({Key? key}) : super(key: key);
+
+  static const double _iconSize = 30;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final uiState = ref.watch(settingsViewModelProvider).uiState;
     return Scaffold(
       appBar: AppBar(
-        centerTitle: true,
         title: const Text(AppStrings.settingsPageTitle),
       ),
-      body: ChangeNotifierProvider<SettingsViewModel>(
-        create: (_) => SettingsViewModel.create(),
-        builder: (context, _) {
-          final pageState = context.select<SettingsViewModel, PageLoadingState>((vm) => vm.pageState);
-          if (pageState.isLoadSuccess) {
-            return _loadSuccessView(context);
-          } else {
-            return _nowLoadingView();
-          }
-        },
-        child: _nowLoadingView(),
+      body: uiState.when(
+        loading: (errMsg) => _onLoading(context, errMsg),
+        success: () => _onSuccess(context, ref),
       ),
     );
   }
 
-  Widget _nowLoadingView() {
-    return Center(
-      child: const CircularProgressIndicator(),
+  Widget _onLoading(BuildContext context, String? errMsg) {
+    Future.delayed(Duration.zero).then((_) async {
+      if (errMsg != null) {
+        await AppDialog.onlyOk(message: errMsg).show(context);
+      }
+    });
+    return const Center(
+      child: CircularProgressIndicator(),
     );
   }
 
-  Widget _loadSuccessView(BuildContext context) {
-    final loggedIn = context.select<SettingsViewModel, bool>((vm) => vm.loggedIn);
+  Widget _onSuccess(BuildContext context, WidgetRef ref) {
+    final signIn = ref.watch(appSettingsProvider).isSignIn;
     return ListView(
       children: [
-        _rowAccountInfo(context),
-        if (!loggedIn) _loginDescriptionLabel(context),
+        _rowAccountInfo(context, ref),
+        if (!signIn) _viewSignInLabel(context),
+        _rowAppLicense(context, ref),
+        _rowSwitchTheme(context, ref),
         const Divider(),
         _rowConditionEdit(context),
         _rowMedicineEdit(context),
-        _rowSwitchTheme(context),
         const Divider(),
-        _rowAppVersion(context),
+        _rowLoadRecord(context, ref),
+        _rowLoadEvent(context, ref),
+        _rowLoadNote(context, ref),
       ],
     );
   }
 
-  Widget _rowAccountInfo(BuildContext context) {
-    final viewModel = Provider.of<SettingsViewModel>(context);
-    final loggedIn = context.select<SettingsViewModel, bool>((vm) => vm.loggedIn);
+  Widget _rowAccountInfo(BuildContext context, WidgetRef ref) {
+    final isSignIn = ref.watch(appSettingsProvider).isSignIn;
     return ListTile(
-      leading: Icon(Icons.account_circle, size: _iconSize),
-      title: Text(viewModel.getLoginEmail(), style: TextStyle(fontSize: 12.0)),
-      subtitle: Text(viewModel.getLoginUserName()),
-      trailing: (loggedIn) ? _logoutButton(context) : _loginButton(context),
+      leading: const Icon(Icons.account_circle, size: _iconSize),
+      title: Text(ref.watch(settingsViewModelProvider).userName),
+      subtitle: Text(ref.watch(settingsViewModelProvider).email),
+      trailing: (isSignIn) ? _buttonSignOut(context, ref) : _buttonSignIn(ref),
     );
   }
 
-  Widget _rowConditionEdit(BuildContext context) {
-    final isDarkMode = Provider.of<AppSettings>(context).isDarkMode;
+  Widget _rowAppLicense(BuildContext context, WidgetRef ref) {
     return ListTile(
-      leading: AppIcon.condition(isDarkMode, size: _iconSize),
-      title: const Text(AppStrings.settingsEditConditionLabel),
-      subtitle: const Text(AppStrings.settingsEditConditionSubLabel),
+      leading: const Icon(Icons.info, size: _iconSize),
+      title: const Text(AppStrings.settingsLicenseLabel),
+      trailing: const Icon(Icons.arrow_forward_ios),
       onTap: () {
-        Navigator.of(context).push<void>(
-          MaterialPageRoute(builder: (_) => ConditionPage()),
+        showLicensePage(
+          context: context,
+          applicationName: AppStrings.appTitle,
+          applicationVersion: ref.watch(settingsViewModelProvider).appVersion,
+          applicationIcon: Image.asset(AppImages.icLaunch, width: 50, height: 50),
         );
       },
     );
   }
 
-  Widget _rowMedicineEdit(BuildContext context) {
-    final isDarkMode = Provider.of<AppSettings>(context).isDarkMode;
+  Widget _rowSwitchTheme(BuildContext context, WidgetRef ref) {
+    final isDarkMode = ref.watch(appSettingsProvider).isDarkMode;
     return ListTile(
-      leading: AppIcon.medicine(isDarkMode, size: _iconSize),
-      title: const Text(AppStrings.settingsEditMedicineLabel),
-      subtitle: const Text(AppStrings.settingsEditMedicineSubLabel),
-      onTap: () {
-        Navigator.of(context).push<void>(
-          MaterialPageRoute(builder: (_) => MedicinePage()),
-        );
-      },
-    );
-  }
-
-  Widget _rowSwitchTheme(BuildContext context) {
-    final appSettings = Provider.of<AppSettings>(context);
-    return ListTile(
-      leading: AppIcon.changeTheme(appSettings.isDarkMode, size: _iconSize),
+      leading: AppIcon.changeTheme(isDarkMode, size: _iconSize),
       title: const Text(AppStrings.settingsChangeAppThemeLabel),
       trailing: Switch(
-        onChanged: (isDark) => appSettings.changeTheme(isDark),
-        value: appSettings.isDarkMode,
+        onChanged: (isDark) => ref.read(appSettingsProvider.notifier).changeTheme(isDark),
+        value: isDarkMode,
       ),
     );
   }
 
-  Widget _rowAppVersion(BuildContext context) {
-    final appVersion = context.select<SettingsViewModel, String>((vm) => vm.appVersion);
+  Widget _rowConditionEdit(BuildContext context) {
     return ListTile(
-      leading: Icon(Icons.info, size: _iconSize),
-      title: const Text(AppStrings.settingsAppVersionLabel),
-      trailing: Text(appVersion),
+      leading: AppIcon.condition(size: _iconSize),
+      title: const Text(AppStrings.settingsEditConditionLabel),
+      subtitle: const Text(AppStrings.settingsEditConditionSubLabel),
+      onTap: () async => await ConditionPage.start(context),
     );
   }
 
-  Widget _loginButton(BuildContext context) {
-    final viewModel = Provider.of<SettingsViewModel>(context);
+  Widget _rowMedicineEdit(BuildContext context) {
+    return ListTile(
+      leading: AppIcon.medicine(size: _iconSize),
+      title: const Text(AppStrings.settingsEditMedicineLabel),
+      subtitle: const Text(AppStrings.settingsEditMedicineSubLabel),
+      onTap: () async => await MedicinePage.start(context),
+    );
+  }
+
+  Widget _rowLoadEvent(BuildContext context, WidgetRef ref) {
+    final prevDateStr = ref.read(settingsViewModelProvider).prevLoadEventStr;
+    return ListTile(
+      leading: AppIcon.event(size: _iconSize),
+      title: const Text(AppStrings.settingsLoadEventLabel),
+      subtitle: Text('${AppStrings.settingsLoadEventSubLabel} $prevDateStr'),
+      onTap: () async => await _showLoadEventDialog(context, ref),
+    );
+  }
+
+  Future<void> _showLoadEventDialog(BuildContext context, WidgetRef ref) async {
+    await AppDialog.okAndCancel(
+      message: AppStrings.settingsLoadEventConfirmMessage,
+      onOk: () async {
+        const progressDialog = AppProgressDialog<void>();
+        await progressDialog.show(
+          context,
+          execute: ref.read(settingsViewModelProvider).onLoadEvent,
+          onSuccess: (_) => ref.read(settingsViewModelProvider).refresh(),
+          onError: (err) => AppDialog.onlyOk(message: err).show(context),
+        );
+      },
+    ).show(context);
+  }
+
+  Widget _rowLoadRecord(BuildContext context, WidgetRef ref) {
+    return ListTile(
+      leading: AppIcon.record(size: _iconSize),
+      title: const Text(AppStrings.settingsLoadRecordLabel),
+      subtitle: const Text(AppStrings.settingsLoadRecordSubLabel),
+      onTap: () async => await _showLoadRecordDialog(context, ref),
+    );
+  }
+
+  Future<void> _showLoadRecordDialog(BuildContext context, WidgetRef ref) async {
+    await AppDialog.okAndCancel(
+      message: AppStrings.settingsLoadRecordConfirmMessage,
+      onOk: () async {
+        const progressDialog = AppProgressDialog<void>();
+        await progressDialog.show(
+          context,
+          execute: ref.read(settingsViewModelProvider).onLoadRecord,
+          onSuccess: (_) => {/* 成功時は何もしない */},
+          onError: (err) => AppDialog.onlyOk(message: err).show(context),
+        );
+      },
+    ).show(context);
+  }
+
+  Widget _rowLoadNote(BuildContext context, WidgetRef ref) {
+    return ListTile(
+      leading: AppIcon.note(size: _iconSize),
+      title: const Text(AppStrings.settingsLoadNoteLabel),
+      subtitle: const Text(AppStrings.settingsLoadNoteSubLabel),
+      onTap: () async => await _showLoadNoteDialog(context, ref),
+    );
+  }
+
+  Future<void> _showLoadNoteDialog(BuildContext context, WidgetRef ref) async {
+    await AppDialog.okAndCancel(
+      message: AppStrings.settingsLoadNoteConfirmMessage,
+      onOk: () async {
+        const progressDialog = AppProgressDialog<void>();
+        await progressDialog.show(
+          context,
+          execute: ref.read(settingsViewModelProvider).onLoadNote,
+          onSuccess: (_) => {/* 成功時は何もしない */},
+          onError: (err) => AppDialog.onlyOk(message: err).show(context),
+        );
+      },
+    ).show(context);
+  }
+
+  Widget _buttonSignIn(WidgetRef ref) {
     return ElevatedButton(
-      onPressed: () => viewModel.loginWithGoogle(),
+      onPressed: () => ref.read(settingsViewModelProvider).signIn(),
       child: const Text(AppStrings.settingsLoginWithGoogle),
     );
   }
 
-  Widget _loginDescriptionLabel(BuildContext context) {
+  Widget _viewSignInLabel(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(left: 16.0, right: 16.0),
+      padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Text(AppStrings.settingsLoginInfo, style: Theme.of(context).textTheme.caption),
     );
   }
 
-  Widget _logoutButton(BuildContext context) {
-    final viewModel = Provider.of<SettingsViewModel>(context);
+  Widget _buttonSignOut(BuildContext context, WidgetRef ref) {
     return OutlinedButton(
       onPressed: () async {
-        await AppProgressDialog(execute: viewModel.logout).show(context);
-        Navigator.pop(context);
+        const progressDialog = AppProgressDialog<void>();
+        await progressDialog.show(
+          context,
+          execute: ref.read(settingsViewModelProvider).signOut,
+          onSuccess: (_) {/* 成功時は何もしない */},
+          onError: (err) async => await AppDialog.onlyOk(message: err).show(context),
+        );
       },
-      child: Text(AppStrings.settingsLogoutLabel),
+      child: const Text(AppStrings.settingsLogoutLabel),
     );
   }
 }

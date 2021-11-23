@@ -1,24 +1,22 @@
-import 'package:dyphic/repository/local/app_data_source.dart';
-import 'package:dyphic/service/app_firebase.dart';
+import 'package:dyphic/repository/local/shared_prefs.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class AppSettingsRepository {
-  const AppSettingsRepository._(this._appFirebase, this._prefs);
+final appSettingsRepositoryProvider = Provider((ref) => _AppSettingRepository(ref.read));
 
-  factory AppSettingsRepository.create() {
-    return AppSettingsRepository._(AppFirebase.instance, AppDataSource.getInstance());
+class _AppSettingRepository {
+  _AppSettingRepository(this._read);
+
+  final Reader _read;
+
+  Future<bool> isDarkMode() async {
+    return await _read(sharedPrefsProvider).isDarkMode();
   }
 
-  final AppFirebase _appFirebase;
-  final AppDataSource _prefs;
-
-  bool isLogIn() => _appFirebase.isLogIn;
-  bool isDarkMode() => _prefs.isDarkMode();
-
   Future<void> changeDarkMode() async {
-    await _prefs.saveDarkMode();
+    await _read(sharedPrefsProvider).saveDarkMode(true);
   }
 
   Future<void> changeLightMode() async {
-    await _prefs.saveLightMode();
+    await _read(sharedPrefsProvider).saveDarkMode(false);
   }
 }

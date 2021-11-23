@@ -1,119 +1,162 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:dyphic/common/app_logger.dart';
 import 'package:dyphic/model/condition.dart';
 import 'package:dyphic/model/medicine.dart';
 import 'package:dyphic/model/note.dart';
-import 'package:dyphic/model/record.dart';
+import 'package:dyphic/repository/remote/document/record_detail_doc.dart';
+import 'package:dyphic/repository/remote/document/record_overview_doc.dart';
+import 'package:dyphic/repository/remote/document/record_temperature_doc.dart';
 
 mixin AppFirestoreMixin {
-  ///
-  /// 記録情報詳細
-  ///
-  static final String _recordRootCollection = 'dyphic';
-  static final String _recordRootDocument = 'records';
-  DocumentReference get _recordRootDoc => FirebaseFirestore.instance.collection(_recordRootCollection).doc(_recordRootDocument);
+  static const String _recordRootCollection = 'dyphic';
+  static const String _recordRootDocument = 'records';
+  DocumentReference get _recordRootDoc => FirebaseFirestore.instance //
+      .collection(_recordRootCollection)
+      .doc(_recordRootDocument);
 
-  static final String _recordOverviewCollection = 'overview';
-  static final String _recordOverviewIsWalking = 'isWalking';
-  static final String _recordOverviewIsToilet = 'isToilet';
-  static final String _recordConditionIDsField = 'conditionIDs';
-  static final String _recordConditionMemoField = 'conditionMemo';
+  static const String _recordOverviewCollection = 'overview';
+  static const String _recordTemperatureCollection = 'temperature';
+  static const String _recordDetailCollection = 'detail';
 
-  Future<RecordOverview?> findOverviewRecord(int id) async {
-    try {
-      final snapshot = await _recordRootDoc.collection(_recordOverviewCollection).doc(id.toString()).get();
-      if (snapshot.exists) {
-        final allConditions = await findConditions();
-        final map = snapshot.data();
-        final conditionIds = getString(map, _recordConditionIDsField);
-        final conditions = _convertConditions(allConditions, conditionIds);
-        return RecordOverview(
-          recordId: id,
-          isWalking: getBool(map, _recordOverviewIsWalking),
-          isToilet: getBool(map, _recordOverviewIsToilet),
-          conditions: conditions,
-          conditionMemo: getString(map, _recordConditionMemoField),
-        );
-      } else {
-        return null;
-      }
-    } on FirebaseException catch (e, s) {
-      await AppLogger.e('Firestore: id=$id のrecords-overviewの取得に失敗', e, s);
-      rethrow;
-    }
+  static const String _recordOverviewIsWalking = 'isWalking';
+  static const String _recordOverviewIsToilet = 'isToilet';
+  static const String _recordConditionIDsField = 'conditionIDs';
+  static const String _recordConditionMemoField = 'conditionMemo';
+
+  static const String _recordMorningTemperatureField = 'morningTemperature';
+  static const String _recordNightTemperatureField = 'nightTemperature';
+
+  static const String _recordMedicineIDsField = 'medicineIDs';
+  static const String _recordBreakFastField = 'breakfast';
+  static const String _recordLunchField = 'lunch';
+  static const String _recordDinnerField = 'dinner';
+  static const String _recordMemoField = 'memo';
+
+  ///
+  /// 記録概要を全取得
+  ///
+  Future<List<RecordOverviewDoc>> findAllRecordOverview() async {
+    final snapshot = await _recordRootDoc.collection(_recordOverviewCollection).get();
+    return snapshot.docs.map((doc) {
+      final map = doc.data();
+      return RecordOverviewDoc(
+        recordId: int.parse(doc.id),
+        isWalking: _getBool(map, _recordOverviewIsWalking),
+        isToilet: _getBool(map, _recordOverviewIsToilet),
+        conditionStringIds: _getString(map, _recordConditionIDsField),
+        conditionMemo: _getString(map, _recordConditionMemoField),
+      );
+    }).toList();
   }
 
-  Future<List<RecordOverview>> findOverviewRecords() async {
-    try {
-      final snapshot = await _recordRootDoc.collection(_recordOverviewCollection).get();
-      final allConditions = await findConditions();
-      return snapshot.docs.map((doc) {
-        final map = doc.data();
-        final conditionIds = getString(map, _recordConditionIDsField);
-        final conditions = _convertConditions(allConditions, conditionIds);
-        return RecordOverview(
-          recordId: int.parse(doc.id),
-          isWalking: getBool(map, _recordOverviewIsWalking),
-          isToilet: getBool(map, _recordOverviewIsToilet),
-          conditions: conditions,
-          conditionMemo: getString(map, _recordConditionMemoField),
-        );
-      }).toList();
-    } on FirebaseException catch (e, s) {
-      await AppLogger.e('Firestore: records-overviewの全件取得に失敗', e, s);
-      rethrow;
+  ///
+  /// 指定したIDの記録概要を取得
+  ///
+  Future<RecordOverviewDoc?> findOverviewRecord(int id) async {
+    final snapshot = await _recordRootDoc //
+        .collection(_recordOverviewCollection)
+        .doc(id.toString())
+        .get();
+
+    if (!snapshot.exists) {
+      return null;
     }
+
+    final map = snapshot.data();
+    return RecordOverviewDoc(
+      recordId: int.parse(snapshot.id),
+      isWalking: _getBool(map, _recordOverviewIsWalking),
+      isToilet: _getBool(map, _recordOverviewIsToilet),
+      conditionStringIds: _getString(map, _recordConditionIDsField),
+      conditionMemo: _getString(map, _recordConditionMemoField),
+    );
   }
 
-  Future<void> saveOverview(RecordOverview overview) async {
+  ///
+  /// 体温情報を全取得
+  ///
+  Future<List<RecordTemperatureDoc>> findAllTemperature() async {
+    final snapshot = await _recordRootDoc.collection(_recordTemperatureCollection).get();
+    return snapshot.docs.map((doc) {
+      final map = doc.data();
+      return RecordTemperatureDoc(
+        recordId: int.parse(doc.id),
+        morningTemperature: _getDouble(map, _recordMorningTemperatureField),
+        nightTemperature: _getDouble(map, _recordNightTemperatureField),
+      );
+    }).toList();
+  }
+
+  ///
+  /// 指定したIDの体温情報を取得
+  ///
+  Future<RecordTemperatureDoc?> findTemperatureRecord(int id) async {
+    final snapshot = await _recordRootDoc //
+        .collection(_recordTemperatureCollection)
+        .doc(id.toString())
+        .get();
+
+    if (!snapshot.exists) {
+      return null;
+    }
+
+    final map = snapshot.data();
+    return RecordTemperatureDoc(
+      recordId: id,
+      morningTemperature: _getDouble(map, _recordMorningTemperatureField),
+      nightTemperature: _getDouble(map, _recordNightTemperatureField),
+    );
+  }
+
+  ///
+  /// 記録詳細情報を全取得
+  ///
+  Future<List<RecordDetailDoc>> findAllDetails() async {
+    final snapshot = await _recordRootDoc.collection(_recordDetailCollection).get();
+    return snapshot.docs.map((doc) {
+      final map = doc.data();
+      return RecordDetailDoc(
+        recordId: int.parse(doc.id),
+        medicineStrIds: _getString(map, _recordMedicineIDsField),
+        breakfast: _getString(map, _recordBreakFastField),
+        lunch: _getString(map, _recordLunchField),
+        dinner: _getString(map, _recordDinnerField),
+        memo: _getString(map, _recordMemoField),
+      );
+    }).toList();
+  }
+
+  ///
+  /// 指定したIDの記録詳細情報を取得
+  ///
+  Future<RecordDetailDoc?> findDetailRecord(int id) async {
+    final snapshot = await _recordRootDoc //
+        .collection(_recordDetailCollection)
+        .doc(id.toString())
+        .get();
+
+    if (snapshot.exists) {
+      return null;
+    }
+
+    final map = snapshot.data();
+    return RecordDetailDoc(
+      recordId: id,
+      medicineStrIds: _getString(map, _recordMedicineIDsField),
+      breakfast: _getString(map, _recordBreakFastField),
+      lunch: _getString(map, _recordLunchField),
+      dinner: _getString(map, _recordDinnerField),
+      memo: _getString(map, _recordMemoField),
+    );
+  }
+
+  Future<void> saveOverview(RecordOverviewDoc overview) async {
     final map = <String, dynamic>{
-      _recordConditionIDsField: overview.toStringConditionIds(),
+      _recordConditionIDsField: overview.conditionStringIds,
       _recordConditionMemoField: overview.conditionMemo,
       _recordOverviewIsWalking: overview.isWalking,
       _recordOverviewIsToilet: overview.isToilet,
     };
     await _saveField(overview.recordId.toString(), _recordOverviewCollection, map);
-  }
-
-  static final String _recordTemperatureCollection = 'temperature';
-  static final String _recordMorningTemperatureField = 'morningTemperature';
-  static final String _recordNightTemperatureField = 'nightTemperature';
-
-  Future<RecordTemperature?> findTemperatureRecord(int id) async {
-    try {
-      final snapshot = await _recordRootDoc.collection(_recordTemperatureCollection).doc(id.toString()).get();
-      if (snapshot.exists) {
-        final map = snapshot.data();
-        return RecordTemperature(
-          recordId: id,
-          morningTemperature: getDouble(map, _recordMorningTemperatureField),
-          nightTemperature: getDouble(map, _recordNightTemperatureField),
-        );
-      } else {
-        return null;
-      }
-    } on FirebaseException catch (e, s) {
-      await AppLogger.e('Firestore: id=$id のrecords-temperatureの取得に失敗', e, s);
-      rethrow;
-    }
-  }
-
-  // まだ体温を全件取得してグラフを表示する機能は実装していない。
-  Future<List<RecordTemperature>> findTemperatureRecords() async {
-    try {
-      final snapshot = await _recordRootDoc.collection(_recordTemperatureCollection).get();
-      return snapshot.docs.map((doc) {
-        final map = doc.data();
-        return RecordTemperature(
-          recordId: int.parse(doc.id),
-          morningTemperature: getDouble(map, _recordMorningTemperatureField),
-          nightTemperature: getDouble(map, _recordNightTemperatureField),
-        );
-      }).toList();
-    } on FirebaseException catch (e, s) {
-      await AppLogger.e('Firestore: records-temperatureの全件取得に失敗', e, s);
-      rethrow;
-    }
   }
 
   Future<void> saveMorningTemperature(int recordId, double temperature) async {
@@ -124,38 +167,6 @@ mixin AppFirestoreMixin {
   Future<void> saveNightTemperature(int recordId, double temperature) async {
     final map = <String, dynamic>{_recordNightTemperatureField: temperature};
     await _saveField(recordId.toString(), _recordTemperatureCollection, map);
-  }
-
-  static final String _recordDetailCollection = 'detail';
-  static final String _recordMedicineIDsField = 'medicineIDs';
-  static final String _recordBreakFastField = 'breakfast';
-  static final String _recordLunchField = 'lunch';
-  static final String _recordDinnerField = 'dinner';
-  static final String _recordMemoField = 'memo';
-
-  Future<RecordDetail?> findDetailRecord(int id) async {
-    try {
-      final snapshot = await _recordRootDoc.collection(_recordDetailCollection).doc(id.toString()).get();
-      if (snapshot.exists) {
-        final allMedicines = await findMedicines();
-        final map = snapshot.data();
-        final medicineIds = getString(map, _recordMedicineIDsField);
-        final medicines = _convertMedicines(allMedicines, medicineIds);
-        return RecordDetail(
-          recordId: id,
-          medicines: medicines,
-          breakfast: getString(map, _recordBreakFastField),
-          lunch: getString(map, _recordLunchField),
-          dinner: getString(map, _recordDinnerField),
-          memo: getString(map, _recordMemoField),
-        );
-      } else {
-        return null;
-      }
-    } on FirebaseException catch (e, s) {
-      await AppLogger.e('Firestore: id=$id のrecords-detailの取得に失敗', e, s);
-      rethrow;
-    }
   }
 
   Future<void> saveMedicineIds(int recordId, String idsStr) async {
@@ -183,60 +194,50 @@ mixin AppFirestoreMixin {
     await _saveField(recordId.toString(), _recordDetailCollection, map);
   }
 
-  List<Condition> _convertConditions(List<Condition> allConditions, String idsStr) {
-    final ids = _splitIds(idsStr);
-    return allConditions.where((e) => ids.contains(e.id)).toList();
-  }
-
-  List<Medicine> _convertMedicines(List<Medicine> allMedicines, String idsStr) {
-    final ids = _splitIds(idsStr);
-    return allMedicines.where((e) => ids.contains(e.id)).toList();
-  }
-
-  List<int> _splitIds(String nStr) {
-    if (nStr.isEmpty) {
-      return [];
-    }
-    if (nStr.contains(Record.listSeparator)) {
-      return nStr.split(Record.listSeparator).map((id) => int.parse(id)).toList();
-    } else {
-      return [int.parse(nStr)];
-    }
-  }
-
   Future<void> _saveField(String id, String collectionName, Map<String, dynamic> map) async {
-    try {
-      await _recordRootDoc.collection(collectionName).doc(id).set(map, SetOptions(merge: true));
-    } on FirebaseException catch (e, s) {
-      await AppLogger.e('Firestore: id=$id の $collectionName の保存に失敗', e, s);
-      rethrow;
-    }
+    await _recordRootDoc
+        .collection(collectionName) //
+        .doc(id)
+        .set(map, SetOptions(merge: true));
   }
 
   ///
   /// お薬
   ///
-  static final String _medicineRootName = 'medicines';
+  static const String _medicineRootName = 'medicines';
 
   Future<List<Medicine>> findMedicines() async {
-    try {
-      final snapshot = await FirebaseFirestore.instance.collection(_medicineRootName).get();
-      return snapshot.docs.map((doc) {
-        final map = doc.data();
-        return Medicine(
-          id: int.parse(doc.id),
-          name: getString(map, 'name'),
-          overview: getString(map, 'overview'),
-          imagePath: getString(map, 'imagePath'),
-          type: Medicine.toType(getInt(map, 'type')),
-          memo: getString(map, 'memo'),
-          order: getInt(map, 'order'),
-        );
-      }).toList();
-    } on FirebaseException catch (e, s) {
-      await AppLogger.e('Firestore: medicinesの取得に失敗', e, s);
-      rethrow;
-    }
+    final snapshot = await FirebaseFirestore.instance.collection(_medicineRootName).get();
+    return snapshot.docs.map((doc) {
+      final map = doc.data();
+      return Medicine(
+        id: int.parse(doc.id),
+        name: _getString(map, 'name'),
+        overview: _getString(map, 'overview'),
+        imagePath: _getString(map, 'imagePath'),
+        type: Medicine.toType(_getInt(map, 'type')),
+        memo: _getString(map, 'memo'),
+        order: _getInt(map, 'order'),
+      );
+    }).toList();
+  }
+
+  Future<Medicine> findMedicine(int id) async {
+    final doc = await FirebaseFirestore.instance //
+        .collection(_conditionRootName)
+        .doc(id.toString())
+        .get();
+
+    final map = doc.data();
+    return Medicine(
+      id: int.parse(doc.id),
+      name: _getString(map, 'name'),
+      overview: _getString(map, 'overview'),
+      imagePath: _getString(map, 'imagePath'),
+      type: Medicine.toType(_getInt(map, 'type')),
+      memo: _getString(map, 'memo'),
+      order: _getInt(map, 'order'),
+    );
   }
 
   Future<void> saveMedicine(Medicine medicine) async {
@@ -250,69 +251,60 @@ mixin AppFirestoreMixin {
       'order': medicine.order,
     };
 
-    try {
-      await FirebaseFirestore.instance.collection(_medicineRootName).doc(id).set(map);
-    } on FirebaseException catch (e, s) {
-      await AppLogger.e('Firestore: medicine(id=$id name=${medicine.name})の保存に失敗', e, s);
-      rethrow;
-    }
+    await FirebaseFirestore.instance.collection(_medicineRootName).doc(id).set(map);
   }
 
   ///
   /// 体調
   ///
-  static final String _conditionRootName = 'conditions';
+  static const String _conditionRootName = 'conditions';
 
   Future<List<Condition>> findConditions() async {
-    try {
-      final snapshot = await FirebaseFirestore.instance.collection(_conditionRootName).get();
-      return snapshot.docs.map((doc) {
-        final map = doc.data();
-        return Condition(
-          int.parse(doc.id),
-          getString(map, 'name'),
-        );
-      }).toList();
-    } on FirebaseException catch (e, s) {
-      await AppLogger.e('Firestore: conditionsの取得に失敗', e, s);
-      rethrow;
-    }
+    final snapshot = await FirebaseFirestore.instance.collection(_conditionRootName).get();
+    return snapshot.docs.map((doc) {
+      final map = doc.data();
+      return Condition(
+        int.parse(doc.id),
+        _getString(map, 'name'),
+      );
+    }).toList();
+  }
+
+  Future<Condition> findCondition(int id) async {
+    final doc = await FirebaseFirestore.instance //
+        .collection(_conditionRootName)
+        .doc(id.toString())
+        .get();
+
+    final map = doc.data();
+    return Condition(
+      int.parse(doc.id),
+      _getString(map, 'name'),
+    );
   }
 
   Future<void> saveCondition(Condition condition) async {
     final id = condition.id.toString();
-    final map = <String, dynamic>{
-      'name': condition.name,
-    };
-    try {
-      await FirebaseFirestore.instance.collection(_conditionRootName).doc(id).set(map);
-    } on FirebaseException catch (e, s) {
-      await AppLogger.e('Firestore: condition(id=$id name=${condition.name})の保存に失敗', e, s);
-      rethrow;
-    }
+    final map = <String, dynamic>{'name': condition.name};
+    await FirebaseFirestore.instance.collection(_conditionRootName).doc(id).set(map);
   }
 
   ///
   /// ノート
   ///
-  static final String _noteRootName = 'notes';
+  static const String _noteRootName = 'notes';
 
   Future<List<Note>> findNotes() async {
-    try {
-      final snapshot = await FirebaseFirestore.instance.collection(_noteRootName).get();
-      return snapshot.docs.map((doc) {
-        final map = doc.data();
-        return Note(
-          id: int.parse(doc.id),
-          typeValue: getInt(map, 'typeValue'),
-          title: getString(map, 'title'),
-          detail: getString(map, 'detail'),
-        );
-      }).toList();
-    } on FirebaseException catch (e, s) {
-      await AppLogger.e('Firestore: notesの取得に失敗', e, s);
-      rethrow;
-    }
+    final snapshot = await FirebaseFirestore.instance.collection(_noteRootName).get();
+    return snapshot.docs.map((doc) {
+      final map = doc.data();
+      return Note(
+        id: int.parse(doc.id),
+        typeValue: _getInt(map, 'typeValue'),
+        title: _getString(map, 'title'),
+        detail: _getString(map, 'detail'),
+      );
+    }).toList();
   }
 
   Future<void> saveNote(Note note) async {
@@ -322,17 +314,12 @@ mixin AppFirestoreMixin {
       'title': note.title,
       'detail': note.detail,
     };
-    try {
-      await FirebaseFirestore.instance.collection(_noteRootName).doc(id).set(map);
-    } on FirebaseException catch (e, s) {
-      await AppLogger.e('Firestore: note(id=$id title=${note.title})の保存に失敗', e, s);
-      rethrow;
-    }
+    await FirebaseFirestore.instance.collection(_noteRootName).doc(id).set(map);
   }
 
-  // ここから下はMapとDocumentSnapshotから型情報ありで取りたい場合の便利メソッド
+  // ここから下はMapとDocumentSnapshotから型情報を取得するための共通メソッド
 
-  int getInt(Map<String, dynamic>? map, String fieldName) {
+  int _getInt(Map<String, dynamic>? map, String fieldName) {
     dynamic fieldVal = map?[fieldName] ?? 0;
     if (fieldVal is int) {
       return fieldVal;
@@ -341,7 +328,7 @@ mixin AppFirestoreMixin {
     }
   }
 
-  String getString(Map<String, dynamic>? map, String fieldName) {
+  String _getString(Map<String, dynamic>? map, String fieldName) {
     dynamic fieldVal = map?[fieldName] ?? 0;
     if (fieldVal is String) {
       return fieldVal;
@@ -350,7 +337,7 @@ mixin AppFirestoreMixin {
     }
   }
 
-  bool getBool(Map<String, dynamic>? map, String fieldName) {
+  bool _getBool(Map<String, dynamic>? map, String fieldName) {
     dynamic fieldVal = map?[fieldName] ?? 0;
     if (fieldVal is bool) {
       return fieldVal;
@@ -359,7 +346,7 @@ mixin AppFirestoreMixin {
     }
   }
 
-  double getDouble(Map<String, dynamic>? map, String fieldName) {
+  double _getDouble(Map<String, dynamic>? map, String fieldName) {
     dynamic fieldVal = map?[fieldName] ?? 0;
     if (fieldVal is double) {
       return fieldVal;

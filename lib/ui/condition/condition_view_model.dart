@@ -1,29 +1,22 @@
-import 'dart:math';
 import 'package:flutter/material.dart';
-
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:dyphic/ui/base_view_model.dart';
 import 'package:dyphic/common/app_logger.dart';
-import 'package:dyphic/common/app_strings.dart';
-import 'package:dyphic/common/app_extension.dart';
+import 'package:dyphic/res/app_strings.dart';
 import 'package:dyphic/model/condition.dart';
-import 'package:dyphic/repository/condition_repository.dart';
-import 'package:dyphic/ui/notifier_view_model.dart';
 
-class ConditionViewModel extends NotifierViewModel {
-  ConditionViewModel._(this._repository) {
+final conditionViewModelProvider = ChangeNotifierProvider.autoDispose((ref) => _ConditionViewModel(ref.read));
+
+class _ConditionViewModel extends BaseViewModel {
+  _ConditionViewModel(this._read) {
     _init();
   }
 
-  factory ConditionViewModel.create() {
-    return ConditionViewModel._(ConditionRepository.create());
-  }
+  final Reader _read;
 
-  final ConditionRepository _repository;
-
-  late List<Condition> _conditions;
-  List<Condition> get conditions => _conditions;
-
-  Condition _selectedCondition = Condition.empty();
-  Condition get selectedCondition => _selectedCondition;
+  Condition? _selectedCondition;
+  String get selectedConditionName => _selectedCondition?.name ?? '';
+  bool get isSelected => _selectedCondition != null;
 
   final TextEditingController _controller = TextEditingController();
   TextEditingController get editController => _controller;
@@ -32,8 +25,23 @@ class ConditionViewModel extends NotifierViewModel {
   bool get enableOnSave => _enableOnSave;
 
   Future<void> _init() async {
-    _conditions = await _repository.findAll();
-    loadSuccess();
+    try {
+      await _read(conditionsProvider.notifier).onLoad();
+      onSuccess();
+    } catch (e, s) {
+      await AppLogger.e('体調情報一覧の初回取得に失敗しました。', e, s);
+      onError('$e');
+    }
+  }
+
+  Future<void> refresh() async {
+    try {
+      await _read(conditionsProvider.notifier).refresh();
+      notifyListeners();
+    } catch (e, s) {
+      await AppLogger.e('体調情報一覧の更新に失敗しました。', e, s);
+      rethrow;
+    }
   }
 
   void selectCondition(Condition con) {
@@ -44,18 +52,17 @@ class ConditionViewModel extends NotifierViewModel {
   }
 
   String? inputValidator(String? inputVal) {
-    if (inputVal.isNullOrEmpty()) {
+    if (inputVal == null) {
       _enableOnSave = false;
       return null;
     }
 
     // 自分以外で入力値と重複する名前がある場合は重複エラー
-    Condition sameNameCondition = conditions.firstWhere((c) => c.name == inputVal, orElse: () => Condition.empty());
-    if (sameNameCondition.id != _selectedCondition.id) {
+    final isExist = _read(conditionsProvider.notifier).isExist(_selectedCondition?.id, inputVal);
+    if (isExist) {
       _enableOnSave = false;
       return AppStrings.conditionInputDuplicateMessage;
     }
-
     _enableOnSave = true;
     return null;
   }
@@ -65,40 +72,32 @@ class ConditionViewModel extends NotifierViewModel {
     notifyListeners();
   }
 
-  bool exist() {
-    return _selectedCondition.exist;
-  }
-
-  Future<bool> onSave() async {
+  Future<void> save() async {
     AppLogger.d('${_controller.text} を保存します。');
-    final newId = _createNewId();
-    final c = _selectedCondition.copyWith(newId: newId, newName: _controller.text);
     try {
-      await _repository.save(c);
-      return true;
+      Condition c;
+      if (_selectedCondition != null) {
+        c = _selectedCondition!.copyWith(newName: _controller.text);
+      } else {
+        c = _read(conditionsProvider.notifier).newCondition(_controller.text);
+      }
+      await _read(conditionsProvider.notifier).save(c);
     } catch (e, s) {
       await AppLogger.e('体調情報の保存に失敗しました。', e, s);
-      return false;
+      rethrow;
     }
-  }
-
-  int _createNewId() {
-    if (conditions.isNotEmpty) {
-      return conditions.map((e) => e.id).reduce(max) + 1;
-    } else {
-      return 1;
-    }
-  }
-
-  Future<void> refresh() async {
-    _conditions = await _repository.findAll();
-    clear();
   }
 
   void clear() {
-    _selectedCondition = Condition.empty();
+    _selectedCondition = null;
     _enableOnSave = false;
     _controller.clear();
     notifyListeners();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _controller.dispose();
   }
 }

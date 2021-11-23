@@ -1,17 +1,28 @@
-import 'package:dyphic/common/app_colors.dart';
+import 'package:dyphic/res/app_colors.dart';
+import 'package:dyphic/res/app_images.dart';
 import 'package:flutter/material.dart';
 
 class AppIcon extends StatelessWidget {
   const AppIcon._(this._iconData, this._iconColor, this.size);
 
-  factory AppIcon.condition(bool isDarkMode, {double? size}) {
-    Color c = (isDarkMode) ? AppColors.conditionNight : AppColors.condition;
-    return AppIcon._(Icons.sentiment_satisfied_rounded, c, size);
+  factory AppIcon.condition({double? size}) {
+    return AppIcon._(Icons.sentiment_satisfied_rounded, AppColors.condition, size);
   }
 
-  factory AppIcon.medicine(bool isDarkMode, {double? size}) {
-    Color c = (isDarkMode) ? AppColors.medicineNight : AppColors.medicine;
-    return AppIcon._(Icons.medical_services, c, size);
+  factory AppIcon.medicine({double? size}) {
+    return AppIcon._(Icons.medical_services, AppColors.medicine, size);
+  }
+
+  factory AppIcon.record({double? size}) {
+    return AppIcon._(Icons.calendar_today, Colors.blueAccent, size);
+  }
+
+  factory AppIcon.event({double? size}) {
+    return AppIcon._(Icons.event, Colors.purple, size);
+  }
+
+  factory AppIcon.note({double? size}) {
+    return AppIcon._(Icons.sticky_note_2, Colors.lime, size);
   }
 
   factory AppIcon.changeTheme(bool isDarkMode, {double? size}) {
@@ -42,11 +53,11 @@ class ThermometerIcon extends StatelessWidget {
   const ThermometerIcon._(this.imagePath);
 
   factory ThermometerIcon.morning() {
-    return ThermometerIcon._('res/images/ic_thermometer_morning.png');
+    return const ThermometerIcon._(AppImages.icThermometerMorning);
   }
 
   factory ThermometerIcon.night() {
-    return ThermometerIcon._('res/images/ic_thermometer_night.png');
+    return const ThermometerIcon._(AppImages.icThermometerNight);
   }
 
   final String imagePath;

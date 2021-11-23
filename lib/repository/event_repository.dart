@@ -1,28 +1,33 @@
-import 'package:dyphic/model/calendar_event.dart';
-import 'package:dyphic/repository/local/app_data_source.dart';
-import 'package:dyphic/repository/local/event_data_source.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:dyphic/model/event.dart';
+import 'package:dyphic/repository/local/dao/event_dao.dart';
+import 'package:dyphic/repository/local/shared_prefs.dart';
 import 'package:dyphic/repository/remote/event_api.dart';
 
-class EventRepository {
-  const EventRepository._(this._eventApi, this._eventDb, this._prefs);
+final eventRepositoryProvider = Provider((ref) => _EventRepository(ref.read));
 
-  factory EventRepository.create() {
-    return EventRepository._(EventApi.create(), EventDataSource.create(), AppDataSource.getInstance());
+class _EventRepository {
+  const _EventRepository(this._read);
+
+  final Reader _read;
+
+  Future<DateTime?> getPreviousLoadEventDate() async {
+    return await _read(sharedPrefsProvider).getPrevSaveEventDate();
   }
 
-  final EventApi _eventApi;
-  final EventDataSource _eventDb;
-  final AppDataSource _prefs;
-
   Future<List<Event>> findAll() async {
-    final prevSaveEventDate = await _prefs.getPrevSaveEventDate();
-    final latestEvents = await _eventApi.findByLatest(prevSaveEventDate);
-
-    if (latestEvents.isNotEmpty) {
-      await _eventDb.update(latestEvents);
-      await _prefs.savePreviousGetEventDate();
+    final events = await _read(eventDaoProvider).findAll();
+    if (events.isNotEmpty) {
+      return events;
     }
 
-    return await _eventDb.findAll();
+    await refresh();
+    return await _read(eventDaoProvider).findAll();
+  }
+
+  Future<void> refresh() async {
+    final events = await _read(eventApiProvider).findAll();
+    await _read(eventDaoProvider).saveAll(events);
+    await _read(sharedPrefsProvider).savePreviousGetEventDate(DateTime.now());
   }
 }

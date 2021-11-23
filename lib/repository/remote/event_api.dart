@@ -1,26 +1,28 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:dyphic/common/app_logger.dart';
-import 'package:dyphic/model/calendar_event.dart';
-import 'package:dyphic/repository/json/event_json.dart';
+import 'package:dyphic/model/event.dart';
+import 'package:dyphic/repository/remote/response/event_response.dart';
 import 'package:dyphic/service/app_firebase.dart';
 
-class EventApi {
-  const EventApi._(this._appFirebase);
+final eventApiProvider = Provider((ref) => _EventApi(ref.read));
 
-  factory EventApi.create() {
-    return EventApi._(AppFirebase.instance);
-  }
+class _EventApi {
+  const _EventApi(this._read);
 
-  final AppFirebase _appFirebase;
+  final Reader _read;
 
-  Future<List<Event>> findByLatest(DateTime? prevSaveEventDate) async {
-    final isUpdate = await _appFirebase.isUpdateEventJson(prevSaveEventDate);
-    AppLogger.d('イベント情報更新が必要か？ $isUpdate');
-
-    if (!isUpdate) {
+  Future<List<Event>> findAll() async {
+    AppLogger.d('サーバーからイベントを全取得します。');
+    final responseRow = await _read(appFirebaseProvider).readEventJson();
+    if (responseRow == null) {
       return [];
     }
+    final response = EventsResponse.fromJson(responseRow);
+    return response.events.map((r) => _toEvent(r)).toList();
+  }
 
-    String json = await _appFirebase.readEventJson();
-    return EventJson.parse(json);
+  Event _toEvent(EventResponse response) {
+    final type = Event.toType(response.typeIdx);
+    return Event(id: response.id, type: type, name: response.name);
   }
 }

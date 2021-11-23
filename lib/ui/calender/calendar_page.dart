@@ -1,46 +1,41 @@
+import 'package:dyphic/model/record.dart';
+import 'package:dyphic/ui/widget/app_dialog.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 import 'package:dyphic/ui/calender/dyphic_calender.dart';
 import 'package:dyphic/ui/calender/calendar_view_model.dart';
-import 'package:dyphic/model/page_state.dart';
-import 'package:dyphic/common/app_strings.dart';
+import 'package:dyphic/res/app_strings.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class CalenderPage extends StatelessWidget {
+class CalenderPage extends ConsumerWidget {
+  const CalenderPage({Key? key}) : super(key: key);
+
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final uiState = ref.watch(calendarViewModelProvider).uiState;
     return Scaffold(
-      appBar: AppBar(centerTitle: true, title: const Text(AppStrings.calenderPageTitle)),
-      body: ChangeNotifierProvider<CalendarViewModel>(
-        create: (_) => CalendarViewModel.create(),
-        builder: (context, viewModel) {
-          final pageState = context.select<CalendarViewModel, PageLoadingState>((vm) => vm.pageState);
-          if (pageState.isLoadSuccess) {
-            return _loadSuccessView(context);
-          } else {
-            return _nowLoadingView();
-          }
-        },
-        child: _nowLoadingView(),
+      appBar: AppBar(
+        title: const Text(AppStrings.calenderPageTitle),
+      ),
+      body: uiState.when(
+        loading: (err) => _onLoading(context, err),
+        success: () => _onSuccess(context, ref),
       ),
     );
   }
 
-  Widget _nowLoadingView() {
-    return Center(
-      child: const CircularProgressIndicator(),
+  Widget _onLoading(BuildContext context, String? errMsg) {
+    Future.delayed(Duration.zero).then((_) async {
+      if (errMsg != null) {
+        await AppDialog.onlyOk(message: errMsg).show(context);
+      }
+    });
+    return const Center(
+      child: CircularProgressIndicator(),
     );
   }
 
-  Widget _loadSuccessView(BuildContext context) {
-    final viewModel = context.read<CalendarViewModel>();
-    return DyphicCalendar(
-      events: viewModel.calendarEvents,
-      onReturnEditPage: (isUpdate, targetId) {
-        if (isUpdate) {
-          viewModel.refresh(targetId);
-        }
-      },
-    );
+  Widget _onSuccess(BuildContext context, WidgetRef ref) {
+    return DyphicCalendar(records: ref.watch(recordsProvider));
   }
 }

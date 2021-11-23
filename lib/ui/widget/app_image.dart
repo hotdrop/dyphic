@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:dyphic/res/app_images.dart';
 import 'package:flutter/material.dart';
 
 class AppImage extends StatelessWidget {
@@ -30,7 +31,7 @@ class AppImage extends StatelessWidget {
   }
 
   Widget _loadImageDefault() {
-    return Image.asset('res/images/no_image.png', height: _height, width: _width);
+    return Image.asset(AppImages.noImage, height: _height, width: _width);
   }
 
   Widget _loadImageFromLocalStorage() {
@@ -45,10 +46,10 @@ class AppImage extends StatelessWidget {
       placeholder: (context, url) => SizedBox(
         width: _width,
         height: _height,
-        child: CircularProgressIndicator(),
+        child: const CircularProgressIndicator(),
       ),
       errorWidget: (context, url, dynamic error) => Image.asset(
-        'res/images/no_image.png',
+        AppImages.noImage,
         fit: BoxFit.cover,
       ),
     );

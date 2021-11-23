@@ -19,9 +19,4 @@ mixin AppCrashlytics {
       }
     };
   }
-
-  Future<void> crashRecord(String message, dynamic exception, StackTrace stackTrace) async {
-    await FirebaseCrashlytics.instance.setCustomKey('message', message);
-    await FirebaseCrashlytics.instance.recordError(exception, stackTrace);
-  }
 }

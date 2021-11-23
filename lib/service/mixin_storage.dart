@@ -1,60 +1,33 @@
-import 'dart:convert';
+import 'dart:convert' as convert;
 import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:path/path.dart';
-
 import 'package:dyphic/common/app_logger.dart';
 
 mixin AppStorageMixin {
-  final eventJsonFileName = 'event.json';
+  static const String _eventJsonFileName = 'event.json';
 
   Future<String> saveImage(String localFilePath) async {
     String fileName = basename(localFilePath);
     File localFile = File(localFilePath);
 
-    try {
-      final task = await FirebaseStorage.instance.ref('images/$fileName').putFile(localFile);
-      final url = await task.ref.getDownloadURL();
-      AppLogger.d('ファイルをStorageに保存しました。 path=$url');
-      return url;
-    } on FirebaseException catch (e, s) {
-      await AppLogger.e('FirebaseStorage: 保存処理に失敗', e, s);
-      rethrow;
-    }
+    final task = await FirebaseStorage.instance.ref('images/$fileName').putFile(localFile);
+    final url = await task.ref.getDownloadURL();
+    AppLogger.d('ファイルをStorageに保存しました。 path=$url');
+    return url;
   }
 
-  Future<String> readEventJson() async {
+  Future<Map<String, dynamic>?> readEventJson() async {
     try {
-      final url = await FirebaseStorage.instance.ref(eventJsonFileName).getDownloadURL();
-      final uri = Uri.parse(url);
-      final response = await http.get(uri);
-      return utf8.decode(response.bodyBytes);
-    } on FirebaseException catch (e, s) {
-      await AppLogger.e('FirebaseStorage: $eventJsonFileNameの読み込みに失敗', e, s);
-      rethrow;
-    }
-  }
+      final url = await FirebaseStorage.instance.ref(_eventJsonFileName).getDownloadURL();
+      final response = await http.get(Uri.parse(url));
 
-  Future<bool> isUpdateEventJson(DateTime? previousReadDate) async {
-    if (previousReadDate == null) {
-      return true;
-    }
-
-    try {
-      final metadata = await FirebaseStorage.instance.ref(eventJsonFileName).getMetadata();
-      final updateAt = metadata.updated;
-      AppLogger.d('event.jsonの更新日時: $updateAt');
-      if (updateAt != null) {
-        final updateDate = DateTime(updateAt.year, updateAt.month, updateAt.day);
-        return previousReadDate.isBefore(updateDate);
-      } else {
-        // updateAtが取れない場合はファイルが存在しないので無条件でfalseにする
-        return false;
-      }
-    } on FirebaseException catch (e, s) {
-      await AppLogger.e('FirebaseStorage: $eventJsonFileNameの更新日時取得に失敗', e, s);
-      rethrow;
+      final bodyDecode = convert.utf8.decode(response.bodyBytes);
+      return convert.jsonDecode(bodyDecode) as Map<String, dynamic>;
+    } catch (e, s) {
+      AppLogger.e('イベント情報が取得できませんでした。', e, s);
+      return null;
     }
   }
 }

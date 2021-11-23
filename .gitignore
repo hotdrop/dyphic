@@ -41,10 +41,13 @@ app.*.symbols
 app.*.map.json
 
 .metadata
+.vscode
 
 # add custom
 /keystore
 **/android/**/google-services.json
 **/android/key.properties
 **/ios/Runner/GoogleService-Info.plist
-
+*.g.dart
+*.freezed.dart
+*.mocks.dart

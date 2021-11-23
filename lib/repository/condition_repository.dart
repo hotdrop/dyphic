@@ -1,20 +1,34 @@
 import 'package:dyphic/model/condition.dart';
+import 'package:dyphic/repository/local/dao/condition_dao.dart';
 import 'package:dyphic/repository/remote/condition_api.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class ConditionRepository {
-  const ConditionRepository._(this._conditionApi);
+final conditionRepositoryProvider = Provider((ref) => _ConditionRepository(ref.read));
 
-  factory ConditionRepository.create() {
-    return ConditionRepository._(ConditionApi.create());
-  }
+class _ConditionRepository {
+  const _ConditionRepository(this._read);
 
-  final ConditionApi _conditionApi;
+  final Reader _read;
 
-  Future<List<Condition>> findAll() async {
-    return await _conditionApi.findAll();
+  ///
+  /// 体調情報をローカルから取得する。
+  /// データがローカルにない場合はリモートから取得する。
+  /// isForceUpdate がtrueの場合はリモートのデータで最新化する。
+  ///
+  Future<List<Condition>> findAll({required bool isForceUpdate}) async {
+    final conditions = await _read(conditionDaoProvider).findAll();
+    if (conditions.isNotEmpty && !isForceUpdate) {
+      return conditions;
+    }
+
+    // API経由でデータ取得
+    final newConditions = await _read(conditionApiProvider).findAll();
+    await _read(conditionDaoProvider).saveAll(newConditions);
+    return newConditions;
   }
 
   Future<void> save(Condition condition) async {
-    return await _conditionApi.save(condition);
+    await _read(conditionApiProvider).save(condition);
+    await _read(conditionDaoProvider).save(condition);
   }
 }

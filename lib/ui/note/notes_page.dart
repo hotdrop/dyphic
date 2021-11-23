@@ -1,101 +1,93 @@
-import 'package:dyphic/common/app_logger.dart';
-import 'package:dyphic/common/app_strings.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:dyphic/model/app_settings.dart';
+import 'package:dyphic/res/app_strings.dart';
 import 'package:dyphic/model/note.dart';
-import 'package:dyphic/model/page_state.dart';
 import 'package:dyphic/ui/note/edit/note_edit_page.dart';
 import 'package:dyphic/ui/note/notes_view_model.dart';
 import 'package:dyphic/ui/note/widget_note_type_icon.dart';
-import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:dyphic/ui/widget/app_dialog.dart';
 
-class NotesPage extends StatelessWidget {
+class NotesPage extends ConsumerWidget {
+  const NotesPage({Key? key}) : super(key: key);
+
   @override
-  Widget build(BuildContext context) {
-    return ChangeNotifierProvider<NotesViewModel>(
-      create: (_) => NotesViewModel.create(),
-      builder: (context, _) {
-        final pageState = context.select<NotesViewModel, PageLoadingState>((vm) => vm.pageState);
-        if (pageState.isLoadSuccess) {
-          return _loadSuccessView(context);
-        } else {
-          return _nowLoadingView();
-        }
-      },
-      child: _nowLoadingView(),
+  Widget build(BuildContext context, WidgetRef ref) {
+    final uiState = ref.watch(notesViewModelProvider).uiState;
+    return uiState.when(
+      loading: (String? errorMsg) => _onLoading(context, errorMsg),
+      success: () => _onSuccess(context, ref),
     );
   }
 
-  Widget _nowLoadingView() {
+  Widget _onLoading(BuildContext context, String? errorMsg) {
+    Future.delayed(Duration.zero).then((_) async {
+      if (errorMsg != null) {
+        await AppDialog.onlyOk(message: errorMsg).show(context);
+      }
+    });
     return Scaffold(
       appBar: AppBar(
-        centerTitle: true,
         title: const Text(AppStrings.notesPageTitle),
       ),
-      body: Center(
-        child: const CircularProgressIndicator(),
+      body: const Center(
+        child: CircularProgressIndicator(),
       ),
     );
   }
 
-  Widget _loadSuccessView(BuildContext context) {
-    final isLogin = Provider.of<AppSettings>(context).isLogin;
-    final viewModel = Provider.of<NotesViewModel>(context);
+  Widget _onSuccess(BuildContext context, WidgetRef ref) {
+    final isSignIn = ref.watch(appSettingsProvider).isSignIn;
     return Scaffold(
       appBar: AppBar(
-        centerTitle: true,
         title: const Text(AppStrings.notesPageTitle),
       ),
-      body: _contentsView(context),
-      floatingActionButton: isLogin
+      body: _viewBody(context, ref),
+      floatingActionButton: isSignIn
           ? FloatingActionButton(
-              onPressed: () async {
-                int newId = viewModel.createNewId();
-                bool isUpdate = await Navigator.of(context).push<bool>(
-                      MaterialPageRoute(builder: (_) => NoteEditPage(Note.createEmpty(newId))),
-                    ) ??
-                    false;
-                AppLogger.d('戻り値: $isUpdate');
-                if (isUpdate) {
-                  await viewModel.reload();
-                }
-              },
-              child: Icon(Icons.add),
+              onPressed: () async => await _onTapFab(context, ref),
+              child: const Icon(Icons.add),
             )
           : null,
     );
   }
 
-  Widget _contentsView(BuildContext context) {
-    final viewModel = Provider.of<NotesViewModel>(context);
-    final notes = viewModel.notes;
+  Widget _viewBody(BuildContext context, WidgetRef ref) {
+    final notes = ref.watch(notesProvider);
     if (notes.isEmpty) {
-      return Center(
-        child: const Text(AppStrings.notesNotRegisterLabel),
-      );
-    } else {
-      return ListView.builder(
-        itemCount: notes.length,
-        itemBuilder: (BuildContext context, int index) {
-          return Card(
-            elevation: 1.0,
-            child: ListTile(
-              leading: NoteTypeIcon.createNote(notes[index]),
-              title: Text(notes[index].title),
-              onTap: () async {
-                bool isUpdate = await Navigator.of(context).push<bool>(
-                      MaterialPageRoute(builder: (_) => NoteEditPage(notes[index])),
-                    ) ??
-                    false;
-                AppLogger.d('戻り値: $isUpdate');
-                if (isUpdate) {
-                  await viewModel.reload();
-                }
-              },
-            ),
-          );
-        },
+      return const Center(
+        child: Text(AppStrings.notesNotRegisterLabel),
       );
     }
+
+    return ListView.builder(
+      itemCount: notes.length,
+      itemBuilder: (ctx, index) => _RowNote(notes[index]),
+    );
+  }
+
+  Future<void> _onTapFab(BuildContext context, WidgetRef ref) async {
+    final emptyNote = ref.read(notesProvider.notifier).newNote();
+    await NoteEditPage.start(context, emptyNote);
+  }
+}
+
+class _RowNote extends StatelessWidget {
+  const _RowNote(this._note, {Key? key}) : super(key: key);
+
+  final Note _note;
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      elevation: 1.0,
+      child: ListTile(
+        leading: NoteTypeIcon.createNote(_note),
+        title: Text(_note.title),
+        onTap: () async {
+          await NoteEditPage.start(context, _note);
+        },
+      ),
+    );
   }
 }

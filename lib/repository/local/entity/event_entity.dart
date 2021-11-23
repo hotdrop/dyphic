@@ -1,54 +1,23 @@
-import 'package:dyphic/model/calendar_event.dart';
-import 'package:dyphic/repository/local/entity/db_entity.dart';
+import 'package:hive/hive.dart';
 
-class EventEntity extends DBEntity {
-  const EventEntity({
+part 'event_entity.g.dart';
+
+@HiveType(typeId: 3)
+class EventEntity extends HiveObject {
+  EventEntity({
     required this.id,
     required this.type,
     required this.name,
   });
 
-  static const String tableName = 'Event';
-  static const String createTableSql = '''
-    CREATE TABLE $tableName (
-      $columnId INTEGER PRIMARY KEY,
-      $columnType INTEGER,
-      $columnName TEXT
-    )
-  ''';
+  static const String boxName = 'event';
 
-  static const String columnId = 'id';
+  @HiveField(0)
   final int id;
 
-  static const String columnType = 'type';
+  @HiveField(1)
   final int type;
 
-  static const String columnName = 'name';
+  @HiveField(2)
   final String name;
-
-  static EventEntity fromMap(Map<String, dynamic> map) {
-    return EventEntity(
-      id: map[columnId] as int,
-      type: map[columnType] as int,
-      name: map[columnName] as String,
-    );
-  }
-
-  @override
-  Map<String, dynamic> toMap() {
-    return <String, dynamic>{columnId: id, columnType: type, columnName: name};
-  }
-}
-
-extension EventMapper on Event {
-  EventEntity toEntity() {
-    return EventEntity(id: id, type: type.index, name: name);
-  }
-}
-
-extension EventEntityMapper on EventEntity {
-  Event toEvent() {
-    final type = Event.toType(this.type);
-    return Event(id: id, type: type, name: name);
-  }
 }

@@ -1,157 +1,193 @@
+import 'package:dyphic/model/event.dart';
 import 'package:dyphic/model/condition.dart';
 import 'package:dyphic/model/dyphic_id.dart';
 import 'package:dyphic/model/medicine.dart';
+import 'package:dyphic/repository/event_repository.dart';
+import 'package:dyphic/repository/record_repository.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-///
-/// 記録情報を保持する
-///
-class Record {
-  const Record._(
-    this.id,
-    this.date,
-    this.overview,
-    this.temperature,
-    this.detail,
-  );
+final recordsProvider = StateNotifierProvider<_RecordsNotifier, List<Record>>((ref) => _RecordsNotifier(ref.read));
 
-  factory Record.create({
-    required int id,
-    RecordOverview? recordOverview,
-    RecordTemperature? recordTemperature,
-    RecordDetail? recordDetail,
-  }) {
-    return Record._(id, DyphicID.idToDate(id), recordOverview, recordTemperature, recordDetail);
+class _RecordsNotifier extends StateNotifier<List<Record>> {
+  _RecordsNotifier(this._read) : super([]);
+
+  final Reader _read;
+
+  Future<void> onLoad() async {
+    final records = await _read(recordRepositoryProvider).findAll(false);
+    final events = await _read(eventRepositoryProvider).findAll();
+    state = _merge(records, events);
   }
 
-  final int id;
-  final DateTime date;
-  final RecordOverview? overview;
-  final RecordTemperature? temperature;
-  final RecordDetail? detail;
+  Future<void> refresh() async {
+    final records = await _read(recordRepositoryProvider).findAll(true);
+    final events = await _read(eventRepositoryProvider).findAll();
+    state = _merge(records, events);
+  }
 
-  bool? get isWalking => overview?.isWalking;
-  bool? get isToilet => overview?.isToilet;
-  List<Condition>? get conditions => overview?.conditions;
-  String? get conditionMemo => overview?.conditionMemo;
-  double? get morningTemperature => temperature?.morningTemperature;
-  double? get nightTemperature => temperature?.nightTemperature;
-  List<Medicine>? get medicines => detail?.medicines;
-  String? get breakfast => detail?.breakfast;
-  String? get lunch => detail?.lunch;
-  String? get dinner => detail?.dinner;
-  String? get memo => detail?.memo;
+  List<Record> _merge(List<Record> records, List<Event> events) {
+    final recordMap = Map.fromIterables(records.map((e) => e.id), records.map((e) => e));
 
-  static String listSeparator = ',';
+    for (var e in events) {
+      if (recordMap.containsKey(e.id)) {
+        recordMap[e.id]!.event = e;
+      } else {
+        final newRecord = Record.create(id: e.id);
+        newRecord.event = e;
+        recordMap[e.id] = newRecord;
+      }
+    }
 
-  @override
-  String toString() {
-    return '''
-    date: $date
-    ${overview?.toString() ?? 'overview: null'}
-    ${temperature?.toString() ?? 'temperature: null'}
-    ${detail?.toString() ?? 'detail: null'}
-    ''';
+    return recordMap.values.toList();
+  }
+
+  ///
+  /// 指定したIDの記録情報を最新化する
+  /// 例）他の端末で記録情報を見たときに情報が古くなっているとき、このメソッドで最新化する
+  ///
+  Future<void> reload(int id) async {
+    await _read(recordRepositoryProvider).refresh(id);
+    await onLoad();
   }
 }
 
 ///
-/// 記録情報（概要）
-/// カレンダー表示時に各日付に紐付ける情報で、カレンダーではこのクラスにあるもののみ即閲覧可能
-/// このアプリは体調情報がメインなので、体調情報を保持している
+/// 記録情報のモデルクラス
 ///
-class RecordOverview {
-  const RecordOverview({
-    required this.recordId,
+class Record {
+  Record({
+    required this.id,
     required this.isWalking,
     required this.isToilet,
     required this.conditions,
     required this.conditionMemo,
-  });
-
-  final int recordId;
-  final bool isWalking;
-  final bool isToilet;
-  final List<Condition> conditions;
-  final String conditionMemo;
-
-  String toStringConditionIds() {
-    if (conditions.isEmpty) {
-      return '';
-    }
-    return conditions.map((c) => c.id).join(Record.listSeparator);
-  }
-
-  String toStringConditionNames() {
-    if (conditions.isEmpty) {
-      return '';
-    }
-    return conditions.map((c) => c.name).join('${Record.listSeparator} ');
-  }
-
-  @override
-  String toString() {
-    return '''
-    walking: $isWalking
-    toilet: $isToilet
-    conditions: ${conditions.map((c) => c.name)}
-    conditionMemo: $conditionMemo
-    ''';
-  }
-}
-
-///
-/// 記録情報（体温）
-/// 体温はグラフにしたいので別で保持している
-///
-class RecordTemperature {
-  const RecordTemperature({
-    required this.recordId,
     required this.morningTemperature,
     required this.nightTemperature,
-  });
-
-  final int recordId;
-  final double morningTemperature;
-  final double nightTemperature;
-
-  @override
-  String toString() {
-    return '''
-    morningTemperature: $morningTemperature
-    nightTemperature: $nightTemperature
-    ''';
-  }
-}
-
-///
-/// 記録情報（詳細）
-/// 体調と体温以外の記録情報
-///
-class RecordDetail {
-  const RecordDetail({
-    required this.recordId,
     required this.medicines,
     required this.breakfast,
     required this.lunch,
     required this.dinner,
     required this.memo,
-  });
+  }) : date = DyphicID.idToDate(id);
 
-  final int recordId;
+  factory Record.create({required int id}) {
+    return Record(
+        id: id,
+        isWalking: false,
+        isToilet: false,
+        conditions: [],
+        conditionMemo: null,
+        morningTemperature: null,
+        nightTemperature: null,
+        medicines: [],
+        breakfast: null,
+        lunch: null,
+        dinner: null,
+        memo: null);
+  }
+
+  factory Record.condition({
+    required int id,
+    required List<Condition> conditions,
+    required bool isWalking,
+    required bool isToilet,
+    required String memo,
+  }) {
+    return Record(
+      id: id,
+      isWalking: isWalking,
+      isToilet: isToilet,
+      conditions: conditions,
+      conditionMemo: memo,
+      morningTemperature: null,
+      nightTemperature: null,
+      medicines: [],
+      breakfast: null,
+      lunch: null,
+      dinner: null,
+      memo: null,
+    );
+  }
+
+  final int id;
+  final DateTime date;
+
+  final String? breakfast;
+  final String? lunch;
+  final String? dinner;
+
+  final bool isWalking;
+  final bool isToilet;
+  final List<Condition> conditions;
+  final String? conditionMemo;
+
+  final double? morningTemperature;
+  final double? nightTemperature;
+
   final List<Medicine> medicines;
-  final String breakfast;
-  final String lunch;
-  final String dinner;
-  final String memo;
 
-  @override
-  String toString() {
-    return '''
-    medicines: ${medicines.map((m) => m.name)}
-    breakfast: $breakfast
-    lunch: $lunch
-    dinner: $dinner
-    memo: $memo
-    ''';
+  final String? memo;
+
+  Event? event;
+
+  static const String _strSeparator = ',';
+
+  static List<Condition> toConditions(List<Condition> conditions, String? idsStr) {
+    if (idsStr == null) {
+      return [];
+    }
+    final ids = _splitIds(idsStr);
+    return conditions.where((e) => ids.contains(e.id)).toList();
+  }
+
+  String toConditionIdsStr() {
+    return conditions.isEmpty ? '' : conditions.map((c) => c.id).join(_strSeparator);
+  }
+
+  String toMedicineIdsStr() {
+    return medicines.isEmpty ? '' : medicines.map((c) => c.id).join(_strSeparator);
+  }
+
+  static String setToMedicineIdsStr(Set<int> medicinesSet) {
+    return medicinesSet.isEmpty ? '' : medicinesSet.join(_strSeparator);
+  }
+
+  String toConditionNames() {
+    return conditions.isEmpty ? '' : conditions.map((c) => c.name).join('$_strSeparator ');
+  }
+
+  static List<Medicine> toMedicines(List<Medicine> medicines, String? idsStr) {
+    if (idsStr == null) {
+      return [];
+    }
+    final ids = _splitIds(idsStr);
+    return medicines.where((e) => ids.contains(e.id)).toList();
+  }
+
+  static List<int> _splitIds(String nStr) {
+    if (nStr.isEmpty) {
+      return [];
+    }
+    if (nStr.contains(_strSeparator)) {
+      return nStr.split(_strSeparator).map((id) => int.parse(id)).toList();
+    } else {
+      return [int.parse(nStr)];
+    }
+  }
+
+  bool typeMedical() {
+    final type = event?.type;
+    if (type == null) {
+      return false;
+    }
+    return type == EventType.hospital;
+  }
+
+  bool typeInjection() {
+    final type = event?.type;
+    if (type == null) {
+      return false;
+    }
+    return type == EventType.injection;
   }
 }

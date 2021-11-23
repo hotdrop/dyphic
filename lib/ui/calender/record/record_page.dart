@@ -1,157 +1,107 @@
-import 'package:dyphic/common/app_strings.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/intl.dart';
+import 'package:dyphic/common/app_logger.dart';
 import 'package:dyphic/model/app_settings.dart';
-import 'package:dyphic/model/page_state.dart';
-import 'package:dyphic/ui/calender/record/record_view_model.dart';
-import 'package:dyphic/ui/calender/record/widget_meal_card.dart';
-import 'package:dyphic/ui/calender/record/widget_temperature_view.dart';
 import 'package:dyphic/ui/widget/app_check_box.dart';
 import 'package:dyphic/ui/widget/app_chips.dart';
+import 'package:dyphic/ui/widget/app_dialog.dart';
 import 'package:dyphic/ui/widget/app_icon.dart';
 import 'package:dyphic/ui/widget/app_progress_dialog.dart';
 import 'package:dyphic/ui/widget/app_text_field.dart';
-import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
-import 'package:provider/provider.dart';
+import 'package:dyphic/ui/widget/meal_card.dart';
+import 'package:dyphic/res/app_strings.dart';
+import 'package:dyphic/model/record.dart';
+import 'package:dyphic/ui/calender/record/record_view_model.dart';
+import 'package:dyphic/ui/widget/temperature_view.dart';
 
-class RecordPage extends StatelessWidget {
-  const RecordPage(this._date);
+class RecordPage extends ConsumerStatefulWidget {
+  const RecordPage(this.record, {Key? key}) : super(key: key);
 
-  final DateTime _date;
+  final Record record;
+
+  @override
+  ConsumerState<RecordPage> createState() => _RecordPageState();
+}
+
+class _RecordPageState extends ConsumerState<RecordPage> {
+  String _inputBreakfast = '';
+  String _inputLunch = '';
+  String _inputDinner = '';
+
+  double _inputMorningTemperature = 0;
+  double _inputNightTemperature = 0;
+
+  Set<int> _inputSelectConditionIds = {};
+  bool _inputIsWalking = false;
+  bool _inputIsToilet = false;
+  String _inputConditionMemo = '';
+
+  Set<int> _inputSelectMedicineIds = {};
+
+  String _inputMemo = '';
+
+  @override
+  void initState() {
+    super.initState();
+    _inputBreakfast = widget.record.breakfast ?? '';
+    _inputLunch = widget.record.lunch ?? '';
+    _inputDinner = widget.record.dinner ?? '';
+
+    _inputMorningTemperature = widget.record.morningTemperature ?? 0;
+    _inputNightTemperature = widget.record.nightTemperature ?? 0;
+
+    _inputSelectConditionIds = widget.record.conditions.map((e) => e.id).toSet();
+    _inputIsWalking = widget.record.isWalking;
+    _inputIsToilet = widget.record.isToilet;
+    _inputConditionMemo = widget.record.conditionMemo ?? '';
+
+    _inputSelectMedicineIds = widget.record.medicines.map((e) => e.id).toSet();
+
+    _inputMemo = widget.record.memo ?? '';
+  }
 
   @override
   Widget build(BuildContext context) {
-    final headerTitle = DateFormat(AppStrings.recordPageTitleDateFormat).format(_date);
-    return ChangeNotifierProvider<RecordViewModel>(
-      create: (_) => RecordViewModel.create(_date),
-      builder: (context, _) {
-        final pageState = context.select<RecordViewModel, PageLoadingState>((vm) => vm.pageState);
-        if (pageState.isLoadSuccess) {
-          return _loadSuccessView(context, headerTitle);
-        } else {
-          return _nowLoadingView(headerTitle);
-        }
-      },
-      child: _nowLoadingView(headerTitle),
-    );
-  }
-
-  Widget _nowLoadingView(String headerTitle) {
     return Scaffold(
       appBar: AppBar(
-        centerTitle: true,
-        title: Text(headerTitle),
-      ),
-      body: Center(
-        child: const CircularProgressIndicator(),
-      ),
-    );
-  }
-
-  Widget _loadSuccessView(BuildContext context, String headerTitle) {
-    final isLogin = context.select<AppSettings, bool>((m) => m.isLogin);
-    if (isLogin) {
-      return _rootViewAllowEdit(context, headerTitle);
-    } else {
-      return _rootViewDeniedEdit(context, headerTitle);
-    }
-  }
-
-  Widget _rootViewDeniedEdit(BuildContext context, String headerTitle) {
-    return Scaffold(
-      appBar: AppBar(
-        centerTitle: true,
-        title: Text(headerTitle),
+        title: Text(DateFormat(AppStrings.recordPageTitleDateFormat).format(widget.record.date)),
       ),
       body: GestureDetector(
         onTap: () => FocusScope.of(context).unfocus(),
-        child: _contentsView(context),
-      ),
-    );
-  }
-
-  Widget _rootViewAllowEdit(BuildContext context, String headerTitle) {
-    return WillPopScope(
-      onWillPop: () async {
-        final viewModel = context.read<RecordViewModel>();
-        if (viewModel.isUpdate) {
-          Navigator.pop(context, true);
-        }
-        return true;
-      },
-      child: Scaffold(
-        appBar: AppBar(
-          centerTitle: true,
-          title: Text(headerTitle),
-        ),
-        body: GestureDetector(
-          onTap: () => FocusScope.of(context).unfocus(),
-          child: _contentsView(context),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
+          child: ListView(
+            children: <Widget>[
+              _viewMealArea(),
+              _viewTemperatureArea(),
+              _viewConditionArea(),
+              const SizedBox(height: 16.0),
+              _viewMedicineArea(),
+              const SizedBox(height: 16.0),
+              _viewMemo(context),
+              const SizedBox(height: 36),
+            ],
+          ),
         ),
       ),
     );
   }
 
-  Widget _contentsView(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(top: 16.0, left: 8.0, right: 8.0, bottom: 16.0),
-      child: ListView(
-        children: <Widget>[
-          _mealViewArea(context),
-          _temperatureViewArea(context),
-          _conditionViewArea(context),
-          const SizedBox(height: 16.0),
-          _medicineViewArea(context),
-          const SizedBox(height: 16.0),
-          _memoView(context),
-          const SizedBox(height: 36),
-        ],
-      ),
-    );
-  }
-
-  Widget _mealViewArea(BuildContext context) {
-    final viewModel = Provider.of<RecordViewModel>(context);
-    final isLogin = context.select<AppSettings, bool>((m) => m.isLogin);
+  Widget _viewMealArea() {
     return Column(
       children: [
-        Container(
+        SizedBox(
           height: 170,
           width: double.infinity,
           child: ListView(
             scrollDirection: Axis.horizontal,
             children: [
-              MealCard(
-                type: MealType.morning,
-                detail: viewModel.breakfast,
-                isLogin: isLogin,
-                onEditValue: (String? newVal) {
-                  if (newVal != null) {
-                    viewModel.inputBreakfast(newVal);
-                  }
-                },
-              ),
+              _viewMorningCard(),
               const SizedBox(width: 4),
-              MealCard(
-                type: MealType.lunch,
-                detail: viewModel.lunch,
-                isLogin: isLogin,
-                onEditValue: (String? newVal) {
-                  if (newVal != null) {
-                    viewModel.inputLunch(newVal);
-                  }
-                },
-              ),
+              _viewLunchCard(),
               const SizedBox(width: 4),
-              MealCard(
-                type: MealType.dinner,
-                detail: viewModel.dinner,
-                isLogin: isLogin,
-                onEditValue: (String? newVal) {
-                  if (newVal != null) {
-                    viewModel.inputDinner(newVal);
-                  }
-                },
-              ),
+              _viewDinnerCard(),
             ],
           ),
         ),
@@ -159,29 +109,73 @@ class RecordPage extends StatelessWidget {
     );
   }
 
-  Widget _temperatureViewArea(BuildContext context) {
-    final viewModel = Provider.of<RecordViewModel>(context);
-    final isLogin = context.select<AppSettings, bool>((m) => m.isLogin);
+  Widget _viewMorningCard() {
+    return MealCard.morning(
+      detail: _inputBreakfast,
+      onSubmitted: (String? v) async {
+        if (v != null) {
+          await ref.read(recordViewModelProvider).inputBreakfast(id: widget.record.id, newVal: v);
+          setState(() {
+            _inputBreakfast = v;
+          });
+        }
+      },
+    );
+  }
+
+  Widget _viewLunchCard() {
+    return MealCard.lunch(
+      detail: _inputLunch,
+      onSubmitted: (String? v) async {
+        if (v != null) {
+          await ref.read(recordViewModelProvider).inputLunch(id: widget.record.id, newVal: v);
+          setState(() {
+            _inputLunch = v;
+          });
+        }
+      },
+    );
+  }
+
+  Widget _viewDinnerCard() {
+    return MealCard.dinner(
+      detail: _inputDinner,
+      onSubmitted: (String? v) {
+        if (v != null) {
+          ref.read(recordViewModelProvider).inputDinner(id: widget.record.id, newVal: v);
+          setState(() {
+            _inputDinner = v;
+          });
+        }
+      },
+    );
+  }
+
+  Widget _viewTemperatureArea() {
     return Padding(
       padding: const EdgeInsets.only(top: 16.0, bottom: 16.0),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: <Widget>[
           TemperatureView.morning(
-            temperature: viewModel.morningTemperature,
-            isLogin: isLogin,
-            onEditValue: (double? newValue) {
-              if (newValue != null) {
-                viewModel.inputMorningTemperature(newValue);
+            temperature: _inputMorningTemperature,
+            onSubmitted: (double? v) {
+              if (v != null) {
+                ref.read(recordViewModelProvider).inputMorningTemperature(id: widget.record.id, newVal: v);
+                setState(() {
+                  _inputMorningTemperature = v;
+                });
               }
             },
           ),
           TemperatureView.night(
-            temperature: viewModel.nightTemperature,
-            isLogin: isLogin,
-            onEditValue: (double? newValue) {
-              if (newValue != null) {
-                viewModel.inputNightTemperature(newValue);
+            temperature: _inputNightTemperature,
+            onSubmitted: (double? v) async {
+              if (v != null) {
+                await ref.read(recordViewModelProvider).inputNightTemperature(id: widget.record.id, newVal: v);
+                setState(() {
+                  _inputNightTemperature = v;
+                });
               }
             },
           ),
@@ -190,108 +184,168 @@ class RecordPage extends StatelessWidget {
     );
   }
 
-  Widget _medicineViewArea(BuildContext context) {
-    final viewModel = Provider.of<RecordViewModel>(context);
-    final isDarkMode = context.select<AppSettings, bool>((m) => m.isDarkMode);
-    final isLogin = context.select<AppSettings, bool>((m) => m.isLogin);
+  Widget _viewConditionArea() {
     return Card(
       elevation: 4.0,
       child: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Column(
           children: [
-            _contentsTitle(
-              title: AppStrings.recordMedicalTitle,
-              icon: AppIcon.medicine(isDarkMode),
-            ),
-            const Divider(),
-            MedicineSelectChips(
-              selectIds: viewModel.selectMedicineIds,
-              allMedicines: viewModel.allMedicines,
-              onChange: (Set<int> ids) => viewModel.changeSelectedMedicine(ids),
-            ),
-            OutlinedButton(
-              onPressed: (isLogin)
-                  ? () async {
-                      // キーボードが出ている場合は閉じる
-                      FocusScope.of(context).unfocus();
-                      await AppProgressDialog(execute: viewModel.saveMedicine).show(context);
-                    }
-                  : null,
-              child: Text(AppStrings.recordMedicineSaveButton),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _conditionViewArea(BuildContext context) {
-    final viewModel = Provider.of<RecordViewModel>(context);
-    final isDarkMode = context.select<AppSettings, bool>((m) => m.isDarkMode);
-    final isLogin = context.select<AppSettings, bool>((m) => m.isLogin);
-    return Card(
-      elevation: 4.0,
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Column(
-          children: [
-            _contentsTitle(
+            _ContentsTitle(
               title: AppStrings.recordConditionTitle,
-              icon: AppIcon.condition(isDarkMode),
+              appIcon: AppIcon.condition(),
             ),
             const Divider(),
-            ConditionSelectChips(
-              selectIds: viewModel.selectConditionIds,
-              allConditions: viewModel.allConditions,
-              onChange: (Set<int> ids) => viewModel.changeSelectedCondition(ids),
-            ),
+            _viewConditionSelectChips(),
             const Divider(),
-            _viewCheckBoxes(context),
-            MultiLineTextField(
-              label: AppStrings.recordConditionMemoTitle,
-              initValue: viewModel.conditionMemo,
-              limitLine: 10,
-              hintText: AppStrings.recordConditionMemoHint,
-              onChanged: viewModel.inputConditionMemo,
-            ),
+            _viewConditionCheckBoxes(),
+            _viewConditionMemo(),
             const SizedBox(height: 8.0),
-            OutlinedButton(
-              onPressed: (isLogin)
-                  ? () async {
-                      // キーボードが出ている場合は閉じる
-                      FocusScope.of(context).unfocus();
-                      await AppProgressDialog(execute: viewModel.saveCondition).show(context);
-                    }
-                  : null,
-              child: const Text(AppStrings.recordConditionSaveButton),
-            ),
+            _viewConditionSaveButton(context),
           ],
         ),
       ),
     );
   }
 
-  Widget _viewCheckBoxes(BuildContext context) {
-    final viewModel = Provider.of<RecordViewModel>(context);
+  Widget _viewConditionSelectChips() {
+    return ConditionSelectChips(
+      selectIds: _inputSelectConditionIds,
+      onChange: (Set<int> ids) {
+        AppLogger.d('選択している症状は $ids です');
+        setState(() {
+          _inputSelectConditionIds = ids;
+        });
+      },
+    );
+  }
+
+  Widget _viewConditionCheckBoxes() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
         AppCheckBox.walking(
-          initValue: viewModel.isWalking,
-          onChanged: (bool? isCheck) => viewModel.inputIsWalking(isCheck),
+          initValue: _inputIsWalking,
+          onChanged: (bool? isCheck) {
+            AppLogger.d('歩いたチェック: $isCheck');
+            setState(() {
+              _inputIsWalking = isCheck ?? false;
+            });
+          },
         ),
         AppCheckBox.toilet(
-          initValue: viewModel.isToilet,
-          onChanged: (bool? isCheck) => viewModel.inputIsToilet(isCheck),
+          initValue: _inputIsToilet,
+          onChanged: (bool? isCheck) {
+            AppLogger.d('トイレチェック: $isCheck');
+            setState(() {
+              _inputIsToilet = isCheck ?? false;
+            });
+          },
         ),
       ],
     );
   }
 
-  Widget _memoView(BuildContext context) {
-    final viewModel = Provider.of<RecordViewModel>(context);
-    final isLogin = context.select<AppSettings, bool>((m) => m.isLogin);
+  Widget _viewConditionMemo() {
+    return MultiLineTextField(
+      label: AppStrings.recordConditionMemoTitle,
+      initValue: _inputConditionMemo,
+      limitLine: 10,
+      hintText: AppStrings.recordConditionMemoHint,
+      onChanged: (String? input) {
+        if (input != null) {
+          setState(() {
+            _inputConditionMemo = input;
+          });
+        }
+      },
+    );
+  }
+
+  Widget _viewConditionSaveButton(BuildContext context) {
+    final isSignIn = ref.watch(appSettingsProvider).isSignIn;
+    return OutlinedButton(
+      onPressed: isSignIn ? () async => await _processSaveCondition(context) : null,
+      child: const Text(AppStrings.recordConditionSaveButton),
+    );
+  }
+
+  Future<void> _processSaveCondition(BuildContext context) async {
+    // キーボードが出ている場合は閉じる
+    FocusScope.of(context).unfocus();
+    const progressDialog = AppProgressDialog<void>();
+    await progressDialog.show(
+      context,
+      execute: () async {
+        await ref.read(recordViewModelProvider).saveCondition(
+              id: widget.record.id,
+              conditionIds: _inputSelectConditionIds,
+              isWalking: _inputIsWalking,
+              isToilet: _inputIsToilet,
+              memo: _inputConditionMemo,
+            );
+      },
+      onSuccess: (_) {/* 成功時は何もしない */},
+      onError: (err) => AppDialog.onlyOk(message: err).show(context),
+    );
+  }
+
+  Widget _viewMedicineArea() {
+    return Card(
+      elevation: 4.0,
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          children: [
+            _ContentsTitle(
+              title: AppStrings.recordMedicalTitle,
+              appIcon: AppIcon.medicine(),
+            ),
+            const Divider(),
+            _viewMedicineSelectChips(),
+            _viewMedicineSaveButton(context),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _viewMedicineSelectChips() {
+    return MedicineSelectChips(
+      selectIds: _inputSelectMedicineIds,
+      onChanged: (Set<int> ids) {
+        AppLogger.d('選択しているお薬は $ids です');
+        setState(() => _inputSelectMedicineIds = ids);
+      },
+    );
+  }
+
+  Widget _viewMedicineSaveButton(BuildContext context) {
+    final isSignIn = ref.watch(appSettingsProvider).isSignIn;
+    return OutlinedButton(
+      onPressed: isSignIn ? () async => await _processSaveMedicine(context) : null,
+      child: const Text(AppStrings.recordMedicineSaveButton),
+    );
+  }
+
+  Future<void> _processSaveMedicine(BuildContext context) async {
+    // キーボードが出ている場合は閉じる
+    FocusScope.of(context).unfocus();
+    const progressDialog = AppProgressDialog<void>();
+    await progressDialog.show(
+      context,
+      execute: () async {
+        await ref.read(recordViewModelProvider).saveMedicine(
+              id: widget.record.id,
+              medicineIds: _inputSelectMedicineIds,
+            );
+      },
+      onSuccess: (_) {/* 成功時は何もしない */},
+      onError: (err) => AppDialog.onlyOk(message: err).show(context),
+    );
+  }
+
+  Widget _viewMemo(BuildContext context) {
     return Card(
       elevation: 4.0,
       child: Padding(
@@ -300,20 +354,18 @@ class RecordPage extends StatelessWidget {
           children: [
             MultiLineTextField(
               label: AppStrings.recordMemoTitle,
-              initValue: viewModel.memo,
+              initValue: _inputMemo,
               limitLine: 10,
               hintText: AppStrings.recordMemoHint,
-              onChanged: viewModel.inputMemo,
+              onChanged: (String? input) {
+                if (input != null) {
+                  setState(() => _inputMemo = input);
+                }
+              },
             ),
             const SizedBox(height: 8.0),
             OutlinedButton(
-              onPressed: (isLogin)
-                  ? () async {
-                      // キーボードが出ている場合は閉じる
-                      FocusScope.of(context).unfocus();
-                      await AppProgressDialog(execute: viewModel.saveMemo).show(context);
-                    }
-                  : null,
+              onPressed: ref.watch(appSettingsProvider).isSignIn ? () async => await _saveMemo(context) : null,
               child: const Text(AppStrings.recordMemoSaveButton),
             ),
           ],
@@ -322,11 +374,37 @@ class RecordPage extends StatelessWidget {
     );
   }
 
-  Widget _contentsTitle({required String title, required AppIcon icon}) {
+  Future<void> _saveMemo(BuildContext context) async {
+    // キーボードが出ている場合は閉じる
+    FocusScope.of(context).unfocus();
+    const progressDialog = AppProgressDialog<void>();
+    await progressDialog.show(
+      context,
+      execute: () async {
+        await ref.read(recordViewModelProvider).saveMemo(id: widget.record.id, memo: _inputMemo);
+      },
+      onSuccess: (_) {/* 成功時は何もしない */},
+      onError: (err) => AppDialog.onlyOk(message: err).show(context),
+    );
+  }
+}
+
+class _ContentsTitle extends StatelessWidget {
+  const _ContentsTitle({
+    Key? key,
+    required this.title,
+    required this.appIcon,
+  }) : super(key: key);
+
+  final String title;
+  final AppIcon appIcon;
+
+  @override
+  Widget build(BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
-        icon,
+        appIcon,
         const SizedBox(width: 8),
         Text(title),
       ],

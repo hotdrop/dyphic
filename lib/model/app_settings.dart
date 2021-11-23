@@ -1,37 +1,71 @@
-import 'package:dyphic/repository/local/app_data_source.dart';
+import 'package:dyphic/model/condition.dart';
+import 'package:dyphic/model/medicine.dart';
+import 'package:dyphic/repository/account_repository.dart';
+import 'package:dyphic/repository/local/local_data_source.dart';
 import 'package:dyphic/service/app_firebase.dart';
 import 'package:flutter/material.dart';
 
 import 'package:dyphic/repository/app_settings_repository.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-///
-/// アプリ全体の設定はこのモデルクラスからアクセスする
-/// 起動時に必要な処理も全てここで行う
-///
-class AppSettings extends ChangeNotifier {
-  AppSettings._(this._repository);
+final appSettingsProvider = StateNotifierProvider<_AppSettingsNotifier, AppSettings>((ref) => _AppSettingsNotifier(ref.read));
 
-  static Future<AppSettings> create() async {
-    // ここでアプリで必要な初期化を全て行う
-    final dataSource = AppDataSource.getInstance();
-    await dataSource.init();
+class _AppSettingsNotifier extends StateNotifier<AppSettings> {
+  _AppSettingsNotifier(this._read) : super(AppSettings.create());
 
-    await AppFirebase.instance.init();
+  final Reader _read;
 
-    return AppSettings._(AppSettingsRepository.create());
+  ///
+  /// アプリ起動時に一回だけ呼ぶ
+  ///
+  Future<void> init() async {
+    await _read(appFirebaseProvider).init();
+    await _read(localDataSourceProvider).init();
+    // 必要なデータをロード
+    if (_read(conditionsProvider).isEmpty) {
+      await _read(conditionsProvider.notifier).onLoad();
+    }
+    if (_read(medicineProvider).isEmpty) {
+      await _read(medicineProvider.notifier).onLoad();
+    }
+    refresh();
   }
 
-  final AppSettingsRepository _repository;
-
-  bool get isLogin => _repository.isLogIn();
-  bool get isDarkMode => _repository.isDarkMode();
+  Future<void> refresh() async {
+    final isDarkMode = await _read(appSettingsRepositoryProvider).isDarkMode();
+    state = AppSettings.create(
+      mode: isDarkMode ? ThemeMode.dark : ThemeMode.light,
+      isSignIn: _read(accountRepositoryProvider).isSignIn,
+    );
+  }
 
   Future<void> changeTheme(bool isDark) async {
     if (isDark) {
-      await _repository.changeDarkMode();
+      await _read(appSettingsRepositoryProvider).changeDarkMode();
     } else {
-      await _repository.changeLightMode();
+      await _read(appSettingsRepositoryProvider).changeLightMode();
     }
-    notifyListeners();
+    await refresh();
+  }
+}
+
+class AppSettings {
+  const AppSettings(this._currentMode, this.isSignIn);
+
+  factory AppSettings.create({ThemeMode? mode, bool? isSignIn}) {
+    final currentMode = mode ?? ThemeMode.system;
+    return AppSettings(currentMode, isSignIn ?? false);
+  }
+
+  final ThemeMode _currentMode;
+  final bool isSignIn;
+
+  bool get isDarkMode => _currentMode == ThemeMode.dark;
+
+  AppSettings copyWith(ThemeMode currentMode, {bool? isSignIn}) {
+    return AppSettings(
+      currentMode,
+      isSignIn ?? this.isSignIn,
+    );
   }
 }

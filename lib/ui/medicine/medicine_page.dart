@@ -1,101 +1,116 @@
-import 'package:dyphic/common/app_logger.dart';
-import 'package:dyphic/common/app_strings.dart';
 import 'package:dyphic/model/app_settings.dart';
+import 'package:dyphic/res/app_strings.dart';
 import 'package:dyphic/model/medicine.dart';
-import 'package:dyphic/model/page_state.dart';
 import 'package:dyphic/ui/medicine/edit/medicine_edit_page.dart';
 import 'package:dyphic/ui/medicine/medicine_card_view.dart';
 import 'package:dyphic/ui/medicine/medicine_view_model.dart';
+import 'package:dyphic/ui/widget/app_dialog.dart';
+import 'package:dyphic/ui/widget/app_progress_dialog.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class MedicinePage extends StatelessWidget {
+class MedicinePage extends ConsumerWidget {
+  const MedicinePage._();
+
+  static Future<void> start(BuildContext context) async {
+    await Navigator.push<void>(
+      context,
+      MaterialPageRoute(builder: (_) => const MedicinePage._()),
+    );
+  }
+
   @override
-  Widget build(BuildContext context) {
-    return ChangeNotifierProvider<MedicineViewModel>(
-      create: (_) => MedicineViewModel.create(),
-      builder: (context, _) {
-        final pageState = context.select<MedicineViewModel, PageLoadingState>((vm) => vm.pageState);
-        if (pageState.isLoadSuccess) {
-          return _loadSuccessView(context);
-        } else {
-          return _nowLoadingView();
-        }
-      },
-      child: _nowLoadingView(),
+  Widget build(BuildContext context, WidgetRef ref) {
+    final uiState = ref.watch(medicineViewModelProvider).uiState;
+    return uiState.when(
+      loading: (err) => _onLoading(context, err),
+      success: () => _onSuccess(context, ref),
     );
   }
 
-  Widget _nowLoadingView() {
+  Widget _onLoading(BuildContext context, String? errorMsg) {
+    Future.delayed(Duration.zero).then((_) async {
+      if (errorMsg != null) {
+        await AppDialog.onlyOk(message: errorMsg).show(context);
+      }
+    });
     return Scaffold(
       appBar: AppBar(
-        centerTitle: true,
         title: const Text(AppStrings.medicinePageTitle),
       ),
-      body: Center(
-        child: const CircularProgressIndicator(),
+      body: const Center(
+        child: CircularProgressIndicator(),
       ),
     );
   }
 
-  Widget _loadSuccessView(BuildContext context) {
-    final viewModel = Provider.of<MedicineViewModel>(context);
-    final isLogin = context.select<AppSettings, bool>((m) => m.isLogin);
+  Widget _onSuccess(BuildContext context, WidgetRef ref) {
+    final isSigniIn = ref.watch(appSettingsProvider).isSignIn;
     return Scaffold(
       appBar: AppBar(
-        centerTitle: true,
         title: const Text(AppStrings.medicinePageTitle),
+        actions: [
+          IconButton(
+            onPressed: () async => await _showRefreshDialog(context, ref),
+            icon: const Icon(Icons.refresh),
+          ),
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.only(bottom: 32.0),
-        child: _contentsView(context, isEditable: isLogin),
+        child: _viewContents(context, ref),
       ),
-      floatingActionButton: isLogin
+      floatingActionButton: isSigniIn
           ? FloatingActionButton(
-              onPressed: () async {
-                int newId = viewModel.createNewId();
-                int newOrder = viewModel.createNewOrder();
-                bool isUpdate = await Navigator.of(context).push<bool>(
-                      MaterialPageRoute(builder: (_) => MedicineEditPage(Medicine.createEmpty(newId, newOrder))),
-                    ) ??
-                    false;
-                AppLogger.d('戻り値: $isUpdate');
-                if (isUpdate) {
-                  await viewModel.reload();
-                }
-              },
-              child: Icon(Icons.add),
+              onPressed: () async => await _processAdd(context, ref),
+              child: const Icon(Icons.add),
             )
           : null,
     );
   }
 
-  Widget _contentsView(BuildContext context, {required bool isEditable}) {
-    final viewModel = Provider.of<MedicineViewModel>(context);
-    final medicines = viewModel.medicines;
+  Widget _viewContents(BuildContext context, WidgetRef ref) {
+    final medicines = ref.watch(medicineProvider);
     if (medicines.isEmpty) {
-      return Center(
-        child: const Text(AppStrings.medicinePageNothingItemLabel),
-      );
-    } else {
-      return ListView.builder(
-        itemCount: medicines.length,
-        itemBuilder: (BuildContext context, int index) {
-          return MedicineCardView(
-            medicine: medicines[index],
-            isEditable: isEditable,
-            onTapEvent: () async {
-              bool isUpdate =
-                  await Navigator.of(context).push<bool>(MaterialPageRoute(builder: (_) => MedicineEditPage(medicines[index]))) ??
-                      false;
-              AppLogger.d('戻り値: $isUpdate');
-              if (isUpdate) {
-                await viewModel.reload();
-              }
-            },
-          );
-        },
+      return const Center(
+        child: Text(AppStrings.medicinePageNothingItemLabel),
       );
     }
+
+    final isSignIn = ref.watch(appSettingsProvider).isSignIn;
+    return ListView.builder(
+      itemCount: medicines.length,
+      itemBuilder: (BuildContext context, int index) {
+        return MedicineCardView(
+          medicine: medicines[index],
+          isEditable: isSignIn,
+          onTapEvent: () async {
+            await MedicineEditPage.start(context, medicines[index]);
+          },
+        );
+      },
+    );
+  }
+
+  Future<void> _showRefreshDialog(BuildContext context, WidgetRef ref) async {
+    AppDialog.okAndCancel(
+      message: AppStrings.medicineRefreshConfirmMessage,
+      onOk: () async => await _refresh(context, ref),
+    ).show(context);
+  }
+
+  Future<void> _refresh(BuildContext context, WidgetRef ref) async {
+    const progressDialog = AppProgressDialog<void>();
+    await progressDialog.show(
+      context,
+      execute: ref.read(medicineViewModelProvider).refresh,
+      onSuccess: (_) => {/* 成功時は何もしない */},
+      onError: (err) => AppDialog.onlyOk(message: err).show(context),
+    );
+  }
+
+  Future<void> _processAdd(BuildContext context, WidgetRef ref) async {
+    final newEmptyMeidine = ref.read(medicineProvider.notifier).newMedicine();
+    await MedicineEditPage.start(context, newEmptyMeidine);
   }
 }
