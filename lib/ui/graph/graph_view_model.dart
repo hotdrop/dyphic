@@ -25,8 +25,8 @@ class _GraphViewModel extends StateNotifier<AsyncValue<List<GraphTemperature>>> 
           .where((r) => _isRegisterTemperature(r)) //
           .map((r) => GraphTemperature.create(
                 dateAt: r.date,
-                morningTemperature: r.morningTemperature!,
-                nightTemperature: r.nightTemperature!,
+                morningTemperature: r.morningTemperature ?? 0,
+                nightTemperature: r.nightTemperature ?? 0,
               ))
           .toList();
     });
