@@ -35,6 +35,15 @@ class AppStrings {
   static const String recordMemoHint = 'その他、残しておきたい記録があったらここに記載してください。';
   static const String recordMemoSaveButton = 'メモを保存する';
 
+  // グラフページ
+  static const String graphPageTitle = '体温';
+  static const String graphPageRadio1Month = '1ヶ月';
+  static const String graphPageRadio3Month = '3ヶ月';
+  static const String graphPageRadioAll = '全部';
+  static const String graphPageGraphYAxisUnit = '度';
+  static const String graphPageGraphMorningLabel = '朝の体温';
+  static const String graphPageGraphNightLabel = '夜の体温';
+
   // ノートページ
   static const String notesPageTitle = 'ノート';
   static const String notesNotRegisterLabel = 'ノートが1つも登録されていません。';
