@@ -1,5 +1,6 @@
 import 'package:dyphic/res/app_strings.dart';
 import 'package:dyphic/ui/calender/calendar_page.dart';
+import 'package:dyphic/ui/graph/graph_page.dart';
 import 'package:dyphic/ui/note/notes_page.dart';
 import 'package:dyphic/ui/setting/settings_page.dart';
 import 'package:flutter/material.dart';
@@ -55,6 +56,8 @@ class _TopPageState extends State<TopPage> {
       case 0:
         return const CalenderPage();
       case 1:
+        return const GraphPage();
+      case 2:
         return const NotesPage();
       default:
         return const SettingsPage();
@@ -70,6 +73,7 @@ class Destination {
 
 const _allDestinations = <Destination>[
   Destination(AppStrings.calenderPageTitle, Icons.calendar_today),
+  Destination(AppStrings.graphPageTitle, Icons.bar_chart),
   Destination(AppStrings.notesPageTitle, Icons.sticky_note_2),
   Destination(AppStrings.settingsPageTitle, Icons.settings),
 ];

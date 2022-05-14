@@ -1,4 +1,3 @@
-import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:dyphic/repository/local/entity/condition_entity.dart';
 import 'package:dyphic/repository/local/entity/event_entity.dart';
