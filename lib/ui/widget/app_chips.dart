@@ -19,7 +19,7 @@ class ConditionSelectChips extends ConsumerStatefulWidget {
   final void Function(Set<int>) onChange;
 
   @override
-  _ConditionSelectChipsState createState() => _ConditionSelectChipsState();
+  ConsumerState<ConditionSelectChips> createState() => _ConditionSelectChipsState();
 }
 
 class _ConditionSelectChipsState extends ConsumerState<ConditionSelectChips> {
@@ -80,7 +80,7 @@ class MedicineSelectChips extends ConsumerStatefulWidget {
   final void Function(Set<int>) onChanged;
 
   @override
-  _MedicineSelectChipsState createState() => _MedicineSelectChipsState();
+  ConsumerState<MedicineSelectChips> createState() => _MedicineSelectChipsState();
 }
 
 class _MedicineSelectChipsState extends ConsumerState<MedicineSelectChips> {

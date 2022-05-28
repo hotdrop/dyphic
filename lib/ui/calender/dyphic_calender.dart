@@ -17,7 +17,7 @@ class DyphicCalendar extends ConsumerStatefulWidget {
   final List<Record> records;
 
   @override
-  _DyphicCalendarState createState() => _DyphicCalendarState();
+  ConsumerState<DyphicCalendar> createState() => _DyphicCalendarState();
 }
 
 class _DyphicCalendarState extends ConsumerState<DyphicCalendar> {

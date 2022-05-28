@@ -18,7 +18,7 @@ class AppTextField extends StatefulWidget {
   final void Function(String) onChanged;
 
   @override
-  _AppTextFieldState createState() => _AppTextFieldState();
+  State<AppTextField> createState() => _AppTextFieldState();
 }
 
 class _AppTextFieldState extends State<AppTextField> {
@@ -90,7 +90,7 @@ class MultiLineTextField extends StatefulWidget {
   final void Function(String) onChanged;
 
   @override
-  _MultiLineTextFieldState createState() => _MultiLineTextFieldState();
+  State<MultiLineTextField> createState() => _MultiLineTextFieldState();
 }
 
 class _MultiLineTextFieldState extends State<MultiLineTextField> {

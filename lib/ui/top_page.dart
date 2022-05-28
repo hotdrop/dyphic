@@ -22,7 +22,7 @@ class TopPage extends StatefulWidget {
   static const String routeName = '/top';
 
   @override
-  _TopPageState createState() => _TopPageState();
+  State<TopPage> createState() => _TopPageState();
 }
 
 class _TopPageState extends State<TopPage> {

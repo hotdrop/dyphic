@@ -20,7 +20,7 @@ class _SettingsViewModel extends BaseViewModel {
 
   // アプリ情報
   late PackageInfo _packageInfo;
-  String get appVersion => _packageInfo.version + '-' + _packageInfo.buildNumber;
+  String get appVersion => '${_packageInfo.version}-${_packageInfo.buildNumber}';
 
   // 前回イベント情報取得日の文字列表現
   late String _prevLoadEventStr;

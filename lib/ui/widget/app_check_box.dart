@@ -17,7 +17,7 @@ class AppCheckBox extends StatefulWidget {
   final Function(bool) onChanged;
 
   @override
-  _AppCheckBoxState createState() => _AppCheckBoxState();
+  State<AppCheckBox> createState() => _AppCheckBoxState();
 }
 
 class _AppCheckBoxState extends State<AppCheckBox> {

@@ -13,7 +13,7 @@ class MedicineTypeRadio extends StatefulWidget {
   final Function(MedicineType) onChange;
 
   @override
-  _MedicineTypeRadioState createState() => _MedicineTypeRadioState();
+  State<MedicineTypeRadio> createState() => _MedicineTypeRadioState();
 }
 
 class _MedicineTypeRadioState extends State<MedicineTypeRadio> {

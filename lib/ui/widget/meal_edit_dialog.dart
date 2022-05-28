@@ -10,7 +10,7 @@ class MealEditDialog extends ConsumerStatefulWidget {
   final String initValue;
 
   @override
-  _MealEditDialogState createState() => _MealEditDialogState();
+  ConsumerState<MealEditDialog> createState() => _MealEditDialogState();
 
   static Future<String?> show(
     BuildContext context, {

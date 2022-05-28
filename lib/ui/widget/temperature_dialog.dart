@@ -9,7 +9,7 @@ class TemperatureEditDialog extends StatefulWidget {
   final double? initValue;
 
   @override
-  _TemperatureEditDialogState createState() => _TemperatureEditDialogState();
+  State<TemperatureEditDialog> createState() => _TemperatureEditDialogState();
 
   static Future<double?> show(
     BuildContext context, {
