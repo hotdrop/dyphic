@@ -8,7 +8,7 @@ import 'package:dyphic/model/medicine.dart';
 ///
 /// 体調用の選択chips
 ///
-class ConditionSelectChips extends ConsumerStatefulWidget {
+class ConditionSelectChips extends ConsumerWidget {
   const ConditionSelectChips({
     Key? key,
     required this.selectIds,
@@ -19,57 +19,38 @@ class ConditionSelectChips extends ConsumerStatefulWidget {
   final void Function(Set<int>) onChange;
 
   @override
-  ConsumerState<ConditionSelectChips> createState() => _ConditionSelectChipsState();
-}
-
-class _ConditionSelectChipsState extends ConsumerState<ConditionSelectChips> {
-  Set<int> _selectedIds = <int>{};
-
-  @override
-  void initState() {
-    super.initState();
-    if (widget.selectIds.isNotEmpty) {
-      _selectedIds = widget.selectIds;
-    }
-  }
-
-  void updateState(bool isSelect, int id) {
-    setState(() {
-      if (isSelect) {
-        _selectedIds.add(id);
-      } else {
-        _selectedIds.remove(id);
-      }
-      widget.onChange(_selectedIds);
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Wrap(
       direction: Axis.horizontal,
       spacing: 8.0,
-      children: _makeChips(context),
+      children: ref
+          .watch(conditionsProvider)
+          .map((c) => FilterChip(
+                key: ValueKey<String>(c.name),
+                label: Text(c.name, style: const TextStyle(fontSize: 12.0)),
+                selected: selectIds.contains(c.id) ? true : false,
+                onSelected: (isSelect) => _onSelected(isSelect, c.id),
+                selectedColor: AppColors.condition,
+              ))
+          .toList(),
     );
   }
 
-  List<Widget> _makeChips(BuildContext context) {
-    return ref.watch(conditionsProvider).map((condition) {
-      return FilterChip(
-        key: ValueKey<String>(condition.name),
-        label: Text(condition.name, style: const TextStyle(fontSize: 12.0)),
-        selected: _selectedIds.contains(condition.id) ? true : false,
-        onSelected: (isSelect) => updateState(isSelect, condition.id),
-        selectedColor: AppColors.condition,
-      );
-    }).toList();
+  void _onSelected(bool isSelect, int id) {
+    final tmp = selectIds;
+    if (isSelect) {
+      tmp.add(id);
+    } else {
+      tmp.remove(id);
+    }
+    onChange(tmp);
   }
 }
 
 ///
 /// お薬用の選択chips
 ///
-class MedicineSelectChips extends ConsumerStatefulWidget {
+class MedicineSelectChips extends ConsumerWidget {
   const MedicineSelectChips({
     Key? key,
     required this.selectIds,
@@ -80,60 +61,41 @@ class MedicineSelectChips extends ConsumerStatefulWidget {
   final void Function(Set<int>) onChanged;
 
   @override
-  ConsumerState<MedicineSelectChips> createState() => _MedicineSelectChipsState();
-}
-
-class _MedicineSelectChipsState extends ConsumerState<MedicineSelectChips> {
-  Set<int> _selectedIds = <int>{};
-
-  @override
-  void initState() {
-    super.initState();
-    if (widget.selectIds.isNotEmpty) {
-      _selectedIds = widget.selectIds;
-    }
-  }
-
-  void updateState(bool isSelect, int id) {
-    setState(() {
-      if (isSelect) {
-        _selectedIds.add(id);
-      } else {
-        _selectedIds.remove(id);
-      }
-      widget.onChanged(_selectedIds);
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Wrap(
       direction: Axis.horizontal,
       spacing: 4.0,
-      children: _makeChips(context),
+      children: ref
+          .watch(medicineProvider)
+          .map((m) => Tooltip(
+                message: m.overview,
+                child: FilterChip(
+                  avatar: ClipOval(
+                    child: SizedBox(
+                      width: 30.0,
+                      height: 30.0,
+                      child: AppImage.icon(path: m.imagePath),
+                    ),
+                  ),
+                  showCheckmark: false,
+                  key: ValueKey<String>(m.name),
+                  label: Text(m.name, style: const TextStyle(fontSize: 12.0)),
+                  selected: selectIds.contains(m.id) ? true : false,
+                  onSelected: (isSelect) => updateState(isSelect, m.id),
+                  selectedColor: AppColors.medicine,
+                ),
+              ))
+          .toList(),
     );
   }
 
-  List<Widget> _makeChips(BuildContext context) {
-    return ref.watch(medicineProvider).map((medicine) {
-      return Tooltip(
-        message: medicine.overview,
-        child: FilterChip(
-          avatar: ClipOval(
-            child: SizedBox(
-              width: 30.0,
-              height: 30.0,
-              child: AppImage.icon(path: medicine.imagePath),
-            ),
-          ),
-          showCheckmark: false,
-          key: ValueKey<String>(medicine.name),
-          label: Text(medicine.name, style: const TextStyle(fontSize: 12.0)),
-          selected: _selectedIds.contains(medicine.id) ? true : false,
-          onSelected: (isSelect) => updateState(isSelect, medicine.id),
-          selectedColor: AppColors.medicine,
-        ),
-      );
-    }).toList();
+  void updateState(bool isSelect, int id) {
+    final tmp = selectIds;
+    if (isSelect) {
+      tmp.add(id);
+    } else {
+      tmp.remove(id);
+    }
+    onChanged(tmp);
   }
 }
