@@ -18,6 +18,7 @@ import 'package:dyphic/ui/widget/temperature_view.dart';
 class RecordPage extends ConsumerWidget {
   const RecordPage(this.record, {Key? key}) : super(key: key);
 
+  // TODO ここで保持しているレコードでPageViewスライド時の画面初期化を行なっているので、値を更新してスライドすると元の値に戻ってしまう・・
   final Record record;
 
   @override
