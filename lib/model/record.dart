@@ -1,8 +1,6 @@
-import 'package:dyphic/model/event.dart';
 import 'package:dyphic/model/condition.dart';
 import 'package:dyphic/model/dyphic_id.dart';
 import 'package:dyphic/model/medicine.dart';
-import 'package:dyphic/repository/event_repository.dart';
 import 'package:dyphic/repository/record_repository.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -14,31 +12,11 @@ class _RecordsNotifier extends StateNotifier<List<Record>> {
   final Reader _read;
 
   Future<void> onLoad() async {
-    final records = await _read(recordRepositoryProvider).findAll(false);
-    final events = await _read(eventRepositoryProvider).findAll();
-    state = _merge(records, events);
+    state = await _read(recordRepositoryProvider).findAll(false);
   }
 
   Future<void> refresh() async {
-    final records = await _read(recordRepositoryProvider).findAll(true);
-    final events = await _read(eventRepositoryProvider).findAll();
-    state = _merge(records, events);
-  }
-
-  List<Record> _merge(List<Record> records, List<Event> events) {
-    final recordMap = Map.fromIterables(records.map((e) => e.id), records.map((e) => e));
-
-    for (var e in events) {
-      if (recordMap.containsKey(e.id)) {
-        recordMap[e.id]!.event = e;
-      } else {
-        final newRecord = Record.create(id: e.id);
-        newRecord.event = e;
-        recordMap[e.id] = newRecord;
-      }
-    }
-
-    return recordMap.values.toList();
+    state = await _read(recordRepositoryProvider).findAll(true);
   }
 
   ///
@@ -61,6 +39,8 @@ class Record {
     required this.isToilet,
     required this.conditions,
     required this.conditionMemo,
+    required this.eventType,
+    required this.eventName,
     required this.morningTemperature,
     required this.nightTemperature,
     required this.medicines,
@@ -77,6 +57,8 @@ class Record {
         isToilet: false,
         conditions: [],
         conditionMemo: null,
+        eventType: EventType.none,
+        eventName: null,
         morningTemperature: null,
         nightTemperature: null,
         medicines: [],
@@ -99,6 +81,8 @@ class Record {
       isToilet: isToilet,
       conditions: conditions,
       conditionMemo: memo,
+      eventType: EventType.none,
+      eventName: null,
       morningTemperature: null,
       nightTemperature: null,
       medicines: [],
@@ -121,14 +105,15 @@ class Record {
   final List<Condition> conditions;
   final String? conditionMemo;
 
+  final EventType eventType;
+  final String? eventName;
+
   final double? morningTemperature;
   final double? nightTemperature;
 
   final List<Medicine> medicines;
 
   final String? memo;
-
-  Event? event;
 
   static const String _strSeparator = ',';
 
@@ -175,19 +160,19 @@ class Record {
     }
   }
 
-  bool typeMedical() {
-    final type = event?.type;
-    if (type == null) {
-      return false;
-    }
-    return type == EventType.hospital;
-  }
+  bool get typeMedical => eventType == EventType.hospital;
 
-  bool typeInjection() {
-    final type = event?.type;
-    if (type == null) {
-      return false;
+  bool get typeInjection => eventType == EventType.injection;
+
+  static EventType toEventType(int? index) {
+    if (index == EventType.hospital.index) {
+      return EventType.hospital;
+    } else if (index == EventType.injection.index) {
+      return EventType.injection;
+    } else {
+      return EventType.none;
     }
-    return type == EventType.injection;
   }
 }
+
+enum EventType { none, hospital, injection }

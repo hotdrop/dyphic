@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dyphic/model/condition.dart';
 import 'package:dyphic/model/medicine.dart';
 import 'package:dyphic/model/note.dart';
+import 'package:dyphic/model/record.dart';
 import 'package:dyphic/repository/remote/document/record_detail_doc.dart';
 import 'package:dyphic/repository/remote/document/record_overview_doc.dart';
 import 'package:dyphic/repository/remote/document/record_temperature_doc.dart';
@@ -16,9 +17,11 @@ mixin AppFirestoreMixin {
   static const String _recordOverviewCollection = 'overview';
   static const String _recordTemperatureCollection = 'temperature';
   static const String _recordDetailCollection = 'detail';
-
   static const String _recordOverviewIsWalking = 'isWalking';
   static const String _recordOverviewIsToilet = 'isToilet';
+  static const String _recordEventTypeField = 'eventType';
+  static const String _recordEventNameField = 'eventName';
+
   static const String _recordConditionIDsField = 'conditionIDs';
   static const String _recordConditionMemoField = 'conditionMemo';
 
@@ -44,6 +47,8 @@ mixin AppFirestoreMixin {
         isToilet: _getBool(map, _recordOverviewIsToilet),
         conditionStringIds: _getString(map, _recordConditionIDsField),
         conditionMemo: _getString(map, _recordConditionMemoField),
+        eventType: Record.toEventType(_getInt(map, _recordEventTypeField)),
+        eventName: _getString(map, _recordEventNameField),
       );
     }).toList();
   }
@@ -68,6 +73,8 @@ mixin AppFirestoreMixin {
       isToilet: _getBool(map, _recordOverviewIsToilet),
       conditionStringIds: _getString(map, _recordConditionIDsField),
       conditionMemo: _getString(map, _recordConditionMemoField),
+      eventType: Record.toEventType(_getInt(map, _recordEventTypeField)),
+      eventName: _getString(map, _recordEventNameField),
     );
   }
 
@@ -191,6 +198,14 @@ mixin AppFirestoreMixin {
 
   Future<void> saveMemo(int recordId, String memo) async {
     final map = <String, dynamic>{_recordMemoField: memo};
+    await _saveField(recordId.toString(), _recordDetailCollection, map);
+  }
+
+  Future<void> saveEvent(int recordId, EventType type, String eventName) async {
+    final map = <String, dynamic>{
+      _recordEventTypeField: type.index,
+      _recordEventNameField: eventName,
+    };
     await _saveField(recordId.toString(), _recordDetailCollection, map);
   }
 

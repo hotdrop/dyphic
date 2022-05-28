@@ -142,13 +142,13 @@ class _DyphicCalendarState extends ConsumerState<DyphicCalendar> {
     }
 
     final record = argRecords.first;
-    if (record.typeMedical()) {
+    if (record.typeMedical) {
       markers.add(Image.asset(
         AppImages.icHospital,
         width: calendarIconSize,
         height: calendarIconSize,
       ));
-    } else if (record.typeInjection()) {
+    } else if (record.typeInjection) {
       markers.add(Image.asset(
         AppImages.icInject,
         width: calendarIconSize,
@@ -238,10 +238,10 @@ class _DyphicCalendarState extends ConsumerState<DyphicCalendar> {
 
   Widget _labelEventInfo() {
     final dateStr = DateFormat(AppStrings.calenderPageDateFormat).format(_selectedRecord!.date);
-    if (_selectedRecord!.event?.name != null) {
+    if (_selectedRecord!.eventName != null) {
       return Center(
         child: Text(
-          '$dateStr(${_selectedRecord!.event!.name})',
+          '$dateStr(${_selectedRecord!.eventName})',
           style: const TextStyle(color: AppColors.themeColor),
         ),
       );

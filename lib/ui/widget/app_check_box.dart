@@ -1,8 +1,8 @@
 import 'package:dyphic/res/app_strings.dart';
 import 'package:flutter/material.dart';
 
-class AppCheckBox extends StatefulWidget {
-  const AppCheckBox._(this.isWalking, this.initValue, this.onChanged);
+class AppCheckBox extends StatelessWidget {
+  const AppCheckBox._(this.isWalking, this.currentValue, this.onChanged);
 
   factory AppCheckBox.walking({required bool initValue, required Function(bool) onChanged}) {
     return AppCheckBox._(true, initValue, onChanged);
@@ -13,47 +13,27 @@ class AppCheckBox extends StatefulWidget {
   }
 
   final bool isWalking;
-  final bool initValue;
+  final bool currentValue;
   final Function(bool) onChanged;
-
-  @override
-  State<AppCheckBox> createState() => _AppCheckBoxState();
-}
-
-class _AppCheckBoxState extends State<AppCheckBox> {
-  bool _currentValue = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _currentValue = widget.initValue;
-  }
 
   @override
   Widget build(BuildContext context) {
     return Row(
       children: [
         Checkbox(
-          value: _currentValue,
+          value: currentValue,
           onChanged: (bool? isCheck) {
             if (isCheck != null) {
-              setState(() {
-                _currentValue = isCheck;
-              });
-              widget.onChanged(isCheck);
+              onChanged(isCheck);
             }
           },
         ),
-        _viewLabel(),
+        Text(_getLabel(), style: const TextStyle(fontSize: 20)),
       ],
     );
   }
 
-  Widget _viewLabel() {
-    if (widget.isWalking) {
-      return const Text(AppStrings.recordWalkingLabel, style: TextStyle(fontSize: 20));
-    } else {
-      return const Text(AppStrings.recordToiletLabel, style: TextStyle(fontSize: 20));
-    }
+  String _getLabel() {
+    return isWalking ? AppStrings.recordWalkingLabel : AppStrings.recordToiletLabel;
   }
 }

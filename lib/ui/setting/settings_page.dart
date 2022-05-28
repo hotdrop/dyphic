@@ -53,7 +53,6 @@ class SettingsPage extends ConsumerWidget {
         _rowMedicineEdit(context),
         const Divider(),
         _rowLoadRecord(context, ref),
-        _rowLoadEvent(context, ref),
         _rowLoadNote(context, ref),
       ],
     );
@@ -113,31 +112,6 @@ class SettingsPage extends ConsumerWidget {
       subtitle: const Text(AppStrings.settingsEditMedicineSubLabel),
       onTap: () async => await MedicinePage.start(context),
     );
-  }
-
-  Widget _rowLoadEvent(BuildContext context, WidgetRef ref) {
-    final prevDateStr = ref.read(settingsViewModelProvider).prevLoadEventStr;
-    return ListTile(
-      leading: AppIcon.event(size: _iconSize),
-      title: const Text(AppStrings.settingsLoadEventLabel),
-      subtitle: Text('${AppStrings.settingsLoadEventSubLabel} $prevDateStr'),
-      onTap: () async => await _showLoadEventDialog(context, ref),
-    );
-  }
-
-  Future<void> _showLoadEventDialog(BuildContext context, WidgetRef ref) async {
-    await AppDialog.okAndCancel(
-      message: AppStrings.settingsLoadEventConfirmMessage,
-      onOk: () async {
-        const progressDialog = AppProgressDialog<void>();
-        await progressDialog.show(
-          context,
-          execute: ref.read(settingsViewModelProvider).onLoadEvent,
-          onSuccess: (_) => ref.read(settingsViewModelProvider).refresh(),
-          onError: (err) => AppDialog.onlyOk(message: err).show(context),
-        );
-      },
-    ).show(context);
   }
 
   Widget _rowLoadRecord(BuildContext context, WidgetRef ref) {

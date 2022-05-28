@@ -1,6 +1,5 @@
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:dyphic/repository/local/entity/condition_entity.dart';
-import 'package:dyphic/repository/local/entity/event_entity.dart';
 import 'package:dyphic/repository/local/entity/medicine_entity.dart';
 import 'package:dyphic/repository/local/entity/note_entity.dart';
 import 'package:dyphic/repository/local/entity/record_entity.dart';
@@ -17,7 +16,6 @@ class _LocalDataSource {
   Future<void> init() async {
     await Hive.initFlutter();
     Hive.registerAdapter(ConditionEntityAdapter());
-    Hive.registerAdapter(EventEntityAdapter());
     Hive.registerAdapter(MedicineEntityAdapter());
     Hive.registerAdapter(RecordEntityAdapter());
     Hive.registerAdapter(NoteEntityAdapter());
