@@ -22,16 +22,38 @@ import 'package:dyphic/ui/widget/temperature_view.dart';
 /// なるべくスワイプでのページ移動をスムースにするためこのような作りにしている。
 /// （途中、StateProviderを使った方法で試したがどうしてもスムースにページ移動できないのでやめた
 ///
-class RecordPage extends ConsumerStatefulWidget {
+class RecordPage extends StatelessWidget {
   const RecordPage(this.record, {Key? key}) : super(key: key);
 
   final Record record;
 
   @override
-  ConsumerState<ConsumerStatefulWidget> createState() => _RecordPageState();
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(DateFormat(AppStrings.recordPageTitleDateFormat).format(record.date)),
+      ),
+      body: GestureDetector(
+        onTap: () => FocusScope.of(context).unfocus(),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
+          child: _ViewBody(record),
+        ),
+      ),
+    );
+  }
 }
 
-class _RecordPageState extends ConsumerState<RecordPage> {
+class _ViewBody extends ConsumerStatefulWidget {
+  const _ViewBody(this.record, {Key? key}) : super(key: key);
+
+  final Record record;
+
+  @override
+  ConsumerState<ConsumerStatefulWidget> createState() => __ViewBodyState();
+}
+
+class __ViewBodyState extends ConsumerState<_ViewBody> {
   final _controller = ScrollController();
 
   @override
@@ -50,39 +72,29 @@ class _RecordPageState extends ConsumerState<RecordPage> {
         _controller.jumpTo(position);
       }
     });
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(DateFormat(AppStrings.recordPageTitleDateFormat).format(widget.record.date)),
-      ),
-      body: GestureDetector(
-        onTap: () => FocusScope.of(context).unfocus(),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
-          child: ListView(
-            controller: _controller,
-            children: <Widget>[
-              _ViewMealArea(record: widget.record),
-              _ViewTemperature(
-                recordId: widget.record.id,
-                morningTemperature: widget.record.morningTemperature,
-                nightTemperature: widget.record.nightTemperature,
-              ),
-              _ViewCondition(
-                recordId: widget.record.id,
-                conditions: widget.record.conditions,
-                isWalking: widget.record.isWalking,
-                isToilet: widget.record.isToilet,
-                conditionMemo: widget.record.memo,
-              ),
-              const SizedBox(height: 16.0),
-              _ViewMedicine(recordId: widget.record.id, medicines: widget.record.medicines),
-              const SizedBox(height: 16.0),
-              _ViewMemo(recordId: widget.record.id, memo: widget.record.memo),
-              const SizedBox(height: 36),
-            ],
-          ),
+
+    return ListView(
+      controller: _controller,
+      children: <Widget>[
+        _ViewMealArea(record: widget.record),
+        _ViewTemperature(
+          recordId: widget.record.id,
+          morningTemperature: widget.record.morningTemperature,
+          nightTemperature: widget.record.nightTemperature,
         ),
-      ),
+        _ViewCondition(
+          recordId: widget.record.id,
+          conditions: widget.record.conditions,
+          isWalking: widget.record.isWalking,
+          isToilet: widget.record.isToilet,
+          conditionMemo: widget.record.memo,
+        ),
+        const SizedBox(height: 16.0),
+        _ViewMedicine(recordId: widget.record.id, medicines: widget.record.medicines),
+        const SizedBox(height: 16.0),
+        _ViewMemo(recordId: widget.record.id, memo: widget.record.memo),
+        const SizedBox(height: 36),
+      ],
     );
   }
 }
