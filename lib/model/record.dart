@@ -12,11 +12,13 @@ class _RecordsNotifier extends StateNotifier<List<Record>> {
   final Reader _read;
 
   Future<void> onLoad() async {
-    state = await _read(recordRepositoryProvider).findAll(false);
+    final newRecords = await _read(recordRepositoryProvider).findAll(false);
+    state = [...newRecords];
   }
 
   Future<void> refresh() async {
-    state = await _read(recordRepositoryProvider).findAll(true);
+    final newRecords = await _read(recordRepositoryProvider).findAll(true);
+    state = [...newRecords];
   }
 
   ///

@@ -3,7 +3,7 @@ import 'package:dyphic/common/app_logger.dart';
 import 'package:dyphic/model/record.dart';
 import 'package:dyphic/ui/base_view_model.dart';
 
-final calendarViewModelProvider = ChangeNotifierProvider.autoDispose((ref) => _CalendarViewModel(ref.read));
+final calendarViewModelProvider = ChangeNotifierProvider((ref) => _CalendarViewModel(ref.read));
 
 class _CalendarViewModel extends BaseViewModel {
   _CalendarViewModel(this._read) {

@@ -203,11 +203,11 @@ class _DyphicCalendarState extends ConsumerState<DyphicCalendar> {
     final records = _sortedRecords();
     final index = records.indexWhere((e) => _selectedRecord!.id == e.id);
     await RecordsPageView.start(context, records: records, selectedIndex: index);
-    final isUpdate = ref.watch(calendarViewModelProvider).isEditRecord;
+    final isUpdate = ref.read(calendarViewModelProvider).isEditRecord;
     AppLogger.d('記録情報の更新有無: $isUpdate');
     if (isUpdate) {
       await ref.read(recordsProvider.notifier).onLoad();
-      final newRecords = ref.watch(recordsProvider);
+      final newRecords = ref.read(recordsProvider);
       setState(() {
         _recordMap = _createMap(_selectedRecord!.id, newRecords);
       });

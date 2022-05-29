@@ -1,3 +1,5 @@
+import 'package:dyphic/model/condition.dart';
+import 'package:dyphic/model/medicine.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
@@ -15,35 +17,18 @@ import 'package:dyphic/model/record.dart';
 import 'package:dyphic/ui/calender/record/record_view_model.dart';
 import 'package:dyphic/ui/widget/temperature_view.dart';
 
-class RecordPage extends ConsumerWidget {
+///
+/// このページはRecordsPageViewから構築されるのでスワイプでページ移動可能になっている。
+/// なるべくスワイプでのページ移動をスムースにするためこのような作りにしている。
+/// （途中、StateProviderを使った方法で試したがどうしてもスムースにページ移動できないのでやめた
+///
+class RecordPage extends StatelessWidget {
   const RecordPage(this.record, {Key? key}) : super(key: key);
 
-  // TODO ここで保持しているレコードでPageViewスライド時の画面初期化を行なっているので、値を更新してスライドすると元の値に戻ってしまう・・
   final Record record;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    return ProviderScope(
-      overrides: [
-        recordViewModel.overrideWithProvider(recordViewModelFamily(record.id)),
-      ],
-      child: Consumer(
-        builder: (context, ref, child) => _ViewBody(record),
-      ),
-    );
-  }
-}
-
-class _ViewBody extends ConsumerWidget {
-  const _ViewBody(this.record, {Key? key}) : super(key: key);
-
-  final Record record;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    Future<void>.delayed(Duration.zero).then((_) {
-      ref.read(recordViewModel).init(record);
-    });
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text(DateFormat(AppStrings.recordPageTitleDateFormat).format(record.date)),
@@ -53,15 +38,25 @@ class _ViewBody extends ConsumerWidget {
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
           child: ListView(
-            children: const [
-              _ViewMealArea(),
-              _ViewTemperatureArea(),
-              _ViewConditionArea(),
-              SizedBox(height: 16.0),
-              _ViewMedicineArea(),
-              SizedBox(height: 16.0),
-              _ViewSaveMemoArea(),
-              SizedBox(height: 36),
+            children: <Widget>[
+              _ViewMealArea(record: record),
+              _ViewTemperature(
+                recordId: record.id,
+                morningTemperature: record.morningTemperature,
+                nightTemperature: record.nightTemperature,
+              ),
+              _ViewCondition(
+                recordId: record.id,
+                conditions: record.conditions,
+                isWalking: record.isWalking,
+                isToilet: record.isToilet,
+                conditionMemo: record.memo,
+              ),
+              const SizedBox(height: 16.0),
+              _ViewMedicine(recordId: record.id, medicines: record.medicines),
+              const SizedBox(height: 16.0),
+              _ViewMemo(recordId: record.id, memo: record.memo),
+              const SizedBox(height: 36),
             ],
           ),
         ),
@@ -71,7 +66,9 @@ class _ViewBody extends ConsumerWidget {
 }
 
 class _ViewMealArea extends StatelessWidget {
-  const _ViewMealArea({Key? key}) : super(key: key);
+  const _ViewMealArea({Key? key, required this.record}) : super(key: key);
+
+  final Record record;
 
   @override
   Widget build(BuildContext context) {
@@ -82,12 +79,12 @@ class _ViewMealArea extends StatelessWidget {
           width: double.infinity,
           child: ListView(
             scrollDirection: Axis.horizontal,
-            children: const [
-              _ViewBreakfastCard(),
-              SizedBox(width: 4),
-              _ViewLunchCard(),
-              SizedBox(width: 4),
-              _ViewDinnerCard(),
+            children: [
+              _ViewMealMorning(recordId: record.id, breakfast: record.breakfast),
+              const SizedBox(width: 4),
+              _ViewMealLunch(recordId: record.id, lunch: record.lunch),
+              const SizedBox(width: 4),
+              _ViewMealDinner(recordId: record.id, dinner: record.dinner),
             ],
           ),
         ),
@@ -96,56 +93,155 @@ class _ViewMealArea extends StatelessWidget {
   }
 }
 
-class _ViewBreakfastCard extends ConsumerWidget {
-  const _ViewBreakfastCard({Key? key}) : super(key: key);
+///
+/// 朝食
+///
+class _ViewMealMorning extends ConsumerStatefulWidget {
+  const _ViewMealMorning({Key? key, required this.recordId, required this.breakfast}) : super(key: key);
+
+  final int recordId;
+  final String? breakfast;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<ConsumerStatefulWidget> createState() => __ViewMealMorningState();
+}
+
+class __ViewMealMorningState extends ConsumerState<_ViewMealMorning> {
+  String _inputBreakfast = '';
+
+  @override
+  void initState() {
+    _inputBreakfast = widget.breakfast ?? '';
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return MealCard.morning(
-      detail: ref.watch(breakfastProvider),
-      onSubmitted: (String? v) async {
-        if (v != null) {
-          await ref.read(recordViewModel).inputBreakfast(v);
-        }
-      },
+      detail: _inputBreakfast,
+      onSubmitted: _onSubmittetd,
     );
+  }
+
+  Future<void> _onSubmittetd(String? v) async {
+    if (v != null) {
+      await ref.read(recordViewModelProvider).inputBreakfast(id: widget.recordId, newVal: v);
+      setState(() {
+        _inputBreakfast = v;
+      });
+    }
   }
 }
 
-class _ViewLunchCard extends ConsumerWidget {
-  const _ViewLunchCard({Key? key}) : super(key: key);
+///
+/// 昼食
+///
+class _ViewMealLunch extends ConsumerStatefulWidget {
+  const _ViewMealLunch({Key? key, required this.recordId, required this.lunch}) : super(key: key);
+
+  final int recordId;
+  final String? lunch;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<ConsumerStatefulWidget> createState() => __ViewLunchMealState();
+}
+
+class __ViewLunchMealState extends ConsumerState<_ViewMealLunch> {
+  late String _inputLunch;
+
+  @override
+  void initState() {
+    _inputLunch = widget.lunch ?? '';
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return MealCard.lunch(
-      detail: ref.watch(lunchProvider),
-      onSubmitted: (String? v) async {
-        if (v != null) {
-          await ref.read(recordViewModel).inputLunch(v);
-        }
-      },
+      detail: _inputLunch,
+      onSubmitted: _onSubmittetd,
     );
+  }
+
+  Future<void> _onSubmittetd(String? v) async {
+    if (v != null) {
+      await ref.read(recordViewModelProvider).inputLunch(id: widget.recordId, newVal: v);
+      setState(() {
+        _inputLunch = v;
+      });
+    }
   }
 }
 
-class _ViewDinnerCard extends ConsumerWidget {
-  const _ViewDinnerCard({Key? key}) : super(key: key);
+///
+/// 夕食
+///
+class _ViewMealDinner extends ConsumerStatefulWidget {
+  const _ViewMealDinner({Key? key, required this.recordId, required this.dinner}) : super(key: key);
+
+  final int recordId;
+  final String? dinner;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<ConsumerStatefulWidget> createState() => __ViewMealDinnerState();
+}
+
+class __ViewMealDinnerState extends ConsumerState<_ViewMealDinner> {
+  late String _inputDinner;
+
+  @override
+  void initState() {
+    _inputDinner = widget.dinner ?? '';
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return MealCard.dinner(
-      detail: ref.watch(dinnerProvider),
-      onSubmitted: (String? v) {
-        if (v != null) {
-          ref.read(recordViewModel).inputDinner(v);
-        }
-      },
+      detail: _inputDinner,
+      onSubmitted: _onSubmittetd,
     );
+  }
+
+  Future<void> _onSubmittetd(String? v) async {
+    if (v != null) {
+      await ref.read(recordViewModelProvider).inputDinner(id: widget.recordId, newVal: v);
+      setState(() {
+        _inputDinner = v;
+      });
+    }
   }
 }
 
-class _ViewTemperatureArea extends StatelessWidget {
-  const _ViewTemperatureArea({Key? key}) : super(key: key);
+///
+/// 朝の体温と夜の体温
+///
+class _ViewTemperature extends ConsumerStatefulWidget {
+  const _ViewTemperature({
+    Key? key,
+    required this.recordId,
+    required this.morningTemperature,
+    required this.nightTemperature,
+  }) : super(key: key);
+
+  final int recordId;
+  final double? morningTemperature;
+  final double? nightTemperature;
+
+  @override
+  ConsumerState<ConsumerStatefulWidget> createState() => __ViewTemperatureState();
+}
+
+class __ViewTemperatureState extends ConsumerState<_ViewTemperature> {
+  late double _inputMorningTemperature;
+  late double _inputNightTemperature;
+
+  @override
+  void initState() {
+    _inputMorningTemperature = widget.morningTemperature ?? 0;
+    _inputNightTemperature = widget.nightTemperature ?? 0;
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -153,49 +249,72 @@ class _ViewTemperatureArea extends StatelessWidget {
       padding: const EdgeInsets.only(top: 16.0, bottom: 16.0),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: const [
-          _ViewTemperatureMorning(),
-          _ViewTemperatureNight(),
+        children: <Widget>[
+          TemperatureView.morning(
+            temperature: _inputMorningTemperature,
+            onSubmitted: _onSubmittedMorning,
+          ),
+          TemperatureView.night(
+            temperature: _inputNightTemperature,
+            onSubmitted: _onSubmittedNight,
+          ),
         ],
       ),
     );
   }
-}
 
-class _ViewTemperatureMorning extends ConsumerWidget {
-  const _ViewTemperatureMorning({Key? key}) : super(key: key);
+  Future<void> _onSubmittedMorning(double? v) async {
+    if (v != null) {
+      await ref.read(recordViewModelProvider).inputMorningTemperature(id: widget.recordId, newVal: v);
+      setState(() => _inputMorningTemperature = v);
+    }
+  }
 
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    return TemperatureView.morning(
-      temperature: ref.watch(morningTemperatureProvider),
-      onSubmitted: (double? newVal) {
-        if (newVal != null) {
-          ref.read(recordViewModel).inputMorningTemperature(newVal);
-        }
-      },
-    );
+  Future<void> _onSubmittedNight(double? v) async {
+    if (v != null) {
+      await ref.read(recordViewModelProvider).inputNightTemperature(id: widget.recordId, newVal: v);
+      setState(() => _inputNightTemperature = v);
+    }
   }
 }
 
-class _ViewTemperatureNight extends ConsumerWidget {
-  const _ViewTemperatureNight({Key? key}) : super(key: key);
+///
+/// 体調のView
+///
+class _ViewCondition extends ConsumerStatefulWidget {
+  const _ViewCondition({
+    Key? key,
+    required this.recordId,
+    required this.conditions,
+    required this.isWalking,
+    required this.isToilet,
+    required this.conditionMemo,
+  }) : super(key: key);
+
+  final int recordId;
+  final List<Condition> conditions;
+  final bool isWalking;
+  final bool isToilet;
+  final String? conditionMemo;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    return TemperatureView.night(
-      temperature: ref.watch(nightTemperatureProvider),
-      onSubmitted: (double? newVal) async {
-        if (newVal != null) {
-          await ref.read(recordViewModel).inputNightTemperature(newVal);
-        }
-      },
-    );
-  }
+  ConsumerState<ConsumerStatefulWidget> createState() => __ViewConditionState();
 }
 
-class _ViewConditionArea extends StatelessWidget {
-  const _ViewConditionArea({Key? key}) : super(key: key);
+class __ViewConditionState extends ConsumerState<_ViewCondition> {
+  late Set<int> _inputSelectConditionIds;
+  late bool _inputIsWalking;
+  late bool _inputIsToilet;
+  late String _inputConditionMemo;
+
+  @override
+  void initState() {
+    _inputSelectConditionIds = widget.conditions.map((e) => e.id).toSet();
+    _inputIsWalking = widget.isWalking;
+    _inputIsToilet = widget.isToilet;
+    _inputConditionMemo = widget.conditionMemo ?? '';
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -205,102 +324,79 @@ class _ViewConditionArea extends StatelessWidget {
         padding: const EdgeInsets.all(8.0),
         child: Column(
           children: [
-            _ContentsTitle(
-              title: AppStrings.recordConditionTitle,
-              appIcon: AppIcon.condition(),
-            ),
+            _ContentsTitle(title: AppStrings.recordConditionTitle, appIcon: AppIcon.condition()),
             const Divider(),
-            const _ViewConditionSelectChips(),
-            const _ViewConditionCheckBoxes(),
-            const _ViewConditionMemo(),
+            ConditionSelectChips(selectIds: _inputSelectConditionIds, onChange: _onChangeSelectConditionChip),
+            const Divider(),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                AppCheckBox.walking(initValue: _inputIsWalking, onChanged: _onChangeCheckWalking),
+                AppCheckBox.toilet(initValue: _inputIsToilet, onChanged: _onChangeCheckToilet),
+              ],
+            ),
+            MultiLineTextField(
+              label: AppStrings.recordConditionMemoTitle,
+              initValue: _inputConditionMemo,
+              limitLine: 10,
+              hintText: AppStrings.recordConditionMemoHint,
+              onChanged: _onChangeConditionMemo,
+            ),
             const SizedBox(height: 8.0),
-            const _ViewConditionSaveButton(),
+            OutlinedButton(
+              onPressed: ref.watch(appSettingsProvider).isSignIn ? () async => await _save(context) : null,
+              child: const Text(AppStrings.recordConditionSaveButton),
+            ),
           ],
         ),
       ),
     );
   }
-}
 
-class _ViewConditionSelectChips extends ConsumerWidget {
-  const _ViewConditionSelectChips({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    return ConditionSelectChips(
-      selectIds: ref.watch(selectConditionIdsProvider),
-      onChange: (Set<int> ids) {
-        AppLogger.d('選択している症状は $ids です');
-        ref.read(recordViewModel).selectConditionIds(ids);
-      },
-    );
-  }
-}
-
-class _ViewConditionCheckBoxes extends ConsumerWidget {
-  const _ViewConditionCheckBoxes({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      children: [
-        AppCheckBox.walking(
-          initValue: ref.watch(isWalkingProvider),
-          onChanged: (bool isCheck) {
-            AppLogger.d('歩いたチェック: $isCheck');
-            ref.read(recordViewModel).inputIsWalking(isCheck);
-          },
-        ),
-        AppCheckBox.toilet(
-          initValue: ref.watch(isToiletProvider),
-          onChanged: (bool isCheck) {
-            AppLogger.d('トイレチェック: $isCheck');
-            ref.read(recordViewModel).inputIsToilet(isCheck);
-          },
-        ),
-      ],
-    );
-  }
-}
-
-class _ViewConditionMemo extends ConsumerWidget {
-  const _ViewConditionMemo({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    return MultiLineTextField(
-      label: AppStrings.recordConditionMemoTitle,
-      initValue: ref.watch(conditionMemoProvider),
-      limitLine: 10,
-      hintText: AppStrings.recordConditionMemoHint,
-      onChanged: (String? input) {
-        ref.read(recordViewModel).inputMemo(input ?? '');
-      },
-    );
-  }
-}
-
-class _ViewConditionSaveButton extends ConsumerWidget {
-  const _ViewConditionSaveButton({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final isSignIn = ref.watch(appSettingsProvider).isSignIn;
-    return OutlinedButton(
-      onPressed: isSignIn ? () async => await _processSaveCondition(context, ref) : null,
-      child: const Text(AppStrings.recordConditionSaveButton),
-    );
+  void _onChangeSelectConditionChip(Set<int> ids) {
+    setState(() {
+      _inputSelectConditionIds = ids;
+    });
   }
 
-  Future<void> _processSaveCondition(BuildContext context, WidgetRef ref) async {
+  void _onChangeCheckWalking(bool? isCheck) {
+    if (isCheck != null) {
+      setState(() {
+        _inputIsWalking = isCheck;
+      });
+    }
+  }
+
+  void _onChangeCheckToilet(bool? isCheck) {
+    if (isCheck != null) {
+      setState(() {
+        _inputIsToilet = isCheck;
+      });
+    }
+  }
+
+  void _onChangeConditionMemo(String? input) {
+    if (input != null) {
+      setState(() {
+        _inputConditionMemo = input;
+      });
+    }
+  }
+
+  Future<void> _save(BuildContext context) async {
     // キーボードが出ている場合は閉じる
     FocusScope.of(context).unfocus();
     const progressDialog = AppProgressDialog<void>();
     await progressDialog.show(
       context,
       execute: () async {
-        await ref.read(recordViewModel).saveCondition();
+        await ref.read(recordViewModelProvider).saveCondition(
+              id: widget.recordId,
+              conditionIds: _inputSelectConditionIds,
+              isWalking: _inputIsWalking,
+              isToilet: _inputIsToilet,
+              memo: _inputConditionMemo,
+            );
       },
       onSuccess: (_) {/* 成功時は何もしない */},
       onError: (err) => AppDialog.onlyOk(message: err).show(context),
@@ -308,8 +404,27 @@ class _ViewConditionSaveButton extends ConsumerWidget {
   }
 }
 
-class _ViewMedicineArea extends StatelessWidget {
-  const _ViewMedicineArea({Key? key}) : super(key: key);
+///
+/// お薬の選択View
+///
+class _ViewMedicine extends ConsumerStatefulWidget {
+  const _ViewMedicine({Key? key, required this.recordId, required this.medicines}) : super(key: key);
+
+  final int recordId;
+  final List<Medicine> medicines;
+
+  @override
+  ConsumerState<ConsumerStatefulWidget> createState() => __ViewMedicineState();
+}
+
+class __ViewMedicineState extends ConsumerState<_ViewMedicine> {
+  late Set<int> _inputSelectMedicineIds;
+
+  @override
+  void initState() {
+    _inputSelectMedicineIds = widget.medicines.map((e) => e.id).toSet();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -324,50 +439,38 @@ class _ViewMedicineArea extends StatelessWidget {
               appIcon: AppIcon.medicine(),
             ),
             const Divider(),
-            const _ViewMedicineSelectChips(),
-            const _ViewMedicineSaveButton(),
+            MedicineSelectChips(
+              selectIds: _inputSelectMedicineIds,
+              onChanged: (Set<int> ids) {
+                AppLogger.d('選択しているお薬は $ids です');
+                setState(() => _inputSelectMedicineIds = ids);
+              },
+            ),
+            OutlinedButton(
+              onPressed: ref.watch(appSettingsProvider).isSignIn
+                  ? () async {
+                      await _processSaveMedicine(context);
+                    }
+                  : null,
+              child: const Text(AppStrings.recordMedicineSaveButton),
+            ),
           ],
         ),
       ),
     );
   }
-}
 
-class _ViewMedicineSelectChips extends ConsumerWidget {
-  const _ViewMedicineSelectChips({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    return MedicineSelectChips(
-      selectIds: ref.watch(selectMedicineIdsProvider),
-      onChanged: (Set<int> ids) {
-        AppLogger.d('選択しているお薬は $ids です');
-        ref.read(recordViewModel).selectMedicineIds(ids);
-      },
-    );
-  }
-}
-
-class _ViewMedicineSaveButton extends ConsumerWidget {
-  const _ViewMedicineSaveButton({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final isSignIn = ref.watch(appSettingsProvider).isSignIn;
-    return OutlinedButton(
-      onPressed: isSignIn ? () async => await _processSaveMedicine(context, ref) : null,
-      child: const Text(AppStrings.recordMedicineSaveButton),
-    );
-  }
-
-  Future<void> _processSaveMedicine(BuildContext context, WidgetRef ref) async {
+  Future<void> _processSaveMedicine(BuildContext context) async {
     // キーボードが出ている場合は閉じる
     FocusScope.of(context).unfocus();
     const progressDialog = AppProgressDialog<void>();
     await progressDialog.show(
       context,
       execute: () async {
-        await ref.read(recordViewModel).saveMedicine();
+        await ref.read(recordViewModelProvider).saveMedicine(
+              id: widget.recordId,
+              medicineIds: _inputSelectMedicineIds,
+            );
       },
       onSuccess: (_) {/* 成功時は何もしない */},
       onError: (err) => AppDialog.onlyOk(message: err).show(context),
@@ -375,8 +478,27 @@ class _ViewMedicineSaveButton extends ConsumerWidget {
   }
 }
 
-class _ViewSaveMemoArea extends StatelessWidget {
-  const _ViewSaveMemoArea({Key? key}) : super(key: key);
+///
+/// メモ
+///
+class _ViewMemo extends ConsumerStatefulWidget {
+  const _ViewMemo({Key? key, required this.recordId, required this.memo}) : super(key: key);
+
+  final int recordId;
+  final String? memo;
+
+  @override
+  ConsumerState<ConsumerStatefulWidget> createState() => __ViewMemoState();
+}
+
+class __ViewMemoState extends ConsumerState<_ViewMemo> {
+  late String _inputMemo;
+
+  @override
+  void initState() {
+    _inputMemo = widget.memo ?? '';
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -385,53 +507,37 @@ class _ViewSaveMemoArea extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Column(
-          children: const [
-            _ViewMemoTextField(),
-            SizedBox(height: 8.0),
-            _ViewMemoSaveButton(),
+          children: [
+            MultiLineTextField(
+              label: AppStrings.recordMemoTitle,
+              initValue: _inputMemo,
+              limitLine: 10,
+              hintText: AppStrings.recordMemoHint,
+              onChanged: (String? input) {
+                if (input != null) {
+                  setState(() => _inputMemo = input);
+                }
+              },
+            ),
+            const SizedBox(height: 8.0),
+            OutlinedButton(
+              onPressed: ref.watch(appSettingsProvider).isSignIn ? () async => await _saveMemo(context) : null,
+              child: const Text(AppStrings.recordMemoSaveButton),
+            ),
           ],
         ),
       ),
     );
   }
-}
 
-class _ViewMemoTextField extends ConsumerWidget {
-  const _ViewMemoTextField({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    return MultiLineTextField(
-      label: AppStrings.recordMemoTitle,
-      initValue: ref.watch(memoProvider),
-      limitLine: 10,
-      hintText: AppStrings.recordMemoHint,
-      onChanged: (String? input) {
-        ref.read(recordViewModel).inputMemo(input ?? '');
-      },
-    );
-  }
-}
-
-class _ViewMemoSaveButton extends ConsumerWidget {
-  const _ViewMemoSaveButton({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    return OutlinedButton(
-      onPressed: ref.watch(appSettingsProvider).isSignIn ? () async => await _saveMemo(context, ref) : null,
-      child: const Text(AppStrings.recordMemoSaveButton),
-    );
-  }
-
-  Future<void> _saveMemo(BuildContext context, WidgetRef ref) async {
+  Future<void> _saveMemo(BuildContext context) async {
     // キーボードが出ている場合は閉じる
     FocusScope.of(context).unfocus();
     const progressDialog = AppProgressDialog<void>();
     await progressDialog.show(
       context,
       execute: () async {
-        await ref.read(recordViewModel).saveMemo();
+        await ref.read(recordViewModelProvider).saveMemo(id: widget.recordId, memo: _inputMemo);
       },
       onSuccess: (_) {/* 成功時は何もしない */},
       onError: (err) => AppDialog.onlyOk(message: err).show(context),
