@@ -107,3 +107,5 @@ class _RecordViewModel {
     }
   }
 }
+
+final scrollPositionStateProvider = StateProvider<double>((ref) => 0);

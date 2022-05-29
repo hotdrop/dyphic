@@ -22,40 +22,62 @@ import 'package:dyphic/ui/widget/temperature_view.dart';
 /// なるべくスワイプでのページ移動をスムースにするためこのような作りにしている。
 /// （途中、StateProviderを使った方法で試したがどうしてもスムースにページ移動できないのでやめた
 ///
-class RecordPage extends StatelessWidget {
+class RecordPage extends ConsumerStatefulWidget {
   const RecordPage(this.record, {Key? key}) : super(key: key);
 
   final Record record;
 
   @override
+  ConsumerState<ConsumerStatefulWidget> createState() => _RecordPageState();
+}
+
+class _RecordPageState extends ConsumerState<RecordPage> {
+  final _controller = ScrollController();
+
+  @override
+  void initState() {
+    _controller.addListener(() {
+      ref.read(scrollPositionStateProvider.notifier).state = _controller.position.pixels;
+    });
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    Future<void>.delayed(Duration.zero).then((_) {
+      if (_controller.hasClients) {
+        final position = ref.read(scrollPositionStateProvider);
+        _controller.jumpTo(position);
+      }
+    });
     return Scaffold(
       appBar: AppBar(
-        title: Text(DateFormat(AppStrings.recordPageTitleDateFormat).format(record.date)),
+        title: Text(DateFormat(AppStrings.recordPageTitleDateFormat).format(widget.record.date)),
       ),
       body: GestureDetector(
         onTap: () => FocusScope.of(context).unfocus(),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
           child: ListView(
+            controller: _controller,
             children: <Widget>[
-              _ViewMealArea(record: record),
+              _ViewMealArea(record: widget.record),
               _ViewTemperature(
-                recordId: record.id,
-                morningTemperature: record.morningTemperature,
-                nightTemperature: record.nightTemperature,
+                recordId: widget.record.id,
+                morningTemperature: widget.record.morningTemperature,
+                nightTemperature: widget.record.nightTemperature,
               ),
               _ViewCondition(
-                recordId: record.id,
-                conditions: record.conditions,
-                isWalking: record.isWalking,
-                isToilet: record.isToilet,
-                conditionMemo: record.memo,
+                recordId: widget.record.id,
+                conditions: widget.record.conditions,
+                isWalking: widget.record.isWalking,
+                isToilet: widget.record.isToilet,
+                conditionMemo: widget.record.memo,
               ),
               const SizedBox(height: 16.0),
-              _ViewMedicine(recordId: record.id, medicines: record.medicines),
+              _ViewMedicine(recordId: widget.record.id, medicines: widget.record.medicines),
               const SizedBox(height: 16.0),
-              _ViewMemo(recordId: record.id, memo: record.memo),
+              _ViewMemo(recordId: widget.record.id, memo: widget.record.memo),
               const SizedBox(height: 36),
             ],
           ),
