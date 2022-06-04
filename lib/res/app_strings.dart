@@ -31,6 +31,9 @@ class AppStrings {
   static const String recordConditionMemoHint = '細かい体調はこちらに記載しましょう！';
   static const String recordConditionSaveButton = '体調情報を保存する';
 
+  static const String recordEventLabel = '予定名（放射線科、婦人科など）';
+  static const String recordEventSaveButton = '予定を保存する';
+
   static const String recordMemoTitle = '今日のメモ';
   static const String recordMemoHint = 'その他、残しておきたい記録があったらここに記載してください。';
   static const String recordMemoSaveButton = 'メモを保存する';

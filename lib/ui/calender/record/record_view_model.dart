@@ -106,6 +106,16 @@ class _RecordViewModel {
       rethrow;
     }
   }
+
+  Future<void> saveEvent({required int id, required EventType eventType, required String? eventName}) async {
+    try {
+      await _read(recordRepositoryProvider).saveEvent(id, eventType, eventName ?? '');
+      _read(calendarViewModelProvider).markRecordEditted();
+    } catch (e, s) {
+      await AppLogger.e('イベントの保存に失敗しました。', e, s);
+      rethrow;
+    }
+  }
 }
 
 final scrollPositionStateProvider = StateProvider<double>((ref) => 0);

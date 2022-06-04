@@ -23,6 +23,7 @@ dependencies:
   image_picker: ^0.8.4+3
   expansion_tile_card: ^2.0.0
   syncfusion_flutter_charts: ^20.1.55
+  line_icons: ^2.0.1
 
   # network
   http: ^0.13.4

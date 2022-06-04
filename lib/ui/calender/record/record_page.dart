@@ -1,5 +1,6 @@
 import 'package:dyphic/model/condition.dart';
 import 'package:dyphic/model/medicine.dart';
+import 'package:dyphic/ui/widget/app_event_radio_group.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
@@ -89,11 +90,13 @@ class __ViewBodyState extends ConsumerState<_ViewBody> {
           isToilet: widget.record.isToilet,
           conditionMemo: widget.record.memo,
         ),
-        const SizedBox(height: 16.0),
+        const SizedBox(height: 8),
         _ViewMedicine(recordId: widget.record.id, medicines: widget.record.medicines),
-        const SizedBox(height: 16.0),
+        const SizedBox(height: 8),
+        _ViewEvent(recordId: widget.record.id, eventType: widget.record.eventType, eventName: widget.record.eventName),
+        const SizedBox(height: 8),
         _ViewMemo(recordId: widget.record.id, memo: widget.record.memo),
-        const SizedBox(height: 36),
+        const SizedBox(height: 8),
       ],
     );
   }
@@ -353,7 +356,7 @@ class __ViewConditionState extends ConsumerState<_ViewCondition> {
   @override
   Widget build(BuildContext context) {
     return Card(
-      elevation: 4.0,
+      elevation: 1.0,
       child: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Column(
@@ -361,7 +364,6 @@ class __ViewConditionState extends ConsumerState<_ViewCondition> {
             _ContentsTitle(title: AppStrings.recordConditionTitle, appIcon: AppIcon.condition()),
             const Divider(),
             ConditionSelectChips(selectIds: _inputSelectConditionIds, onChange: _onChangeSelectConditionChip),
-            const Divider(),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
@@ -463,7 +465,7 @@ class __ViewMedicineState extends ConsumerState<_ViewMedicine> {
   @override
   Widget build(BuildContext context) {
     return Card(
-      elevation: 4.0,
+      elevation: 1.0,
       child: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Column(
@@ -513,6 +515,91 @@ class __ViewMedicineState extends ConsumerState<_ViewMedicine> {
 }
 
 ///
+/// イベント情報
+///
+class _ViewEvent extends ConsumerStatefulWidget {
+  const _ViewEvent({
+    Key? key,
+    required this.recordId,
+    required this.eventType,
+    required this.eventName,
+  }) : super(key: key);
+
+  final int recordId;
+  final EventType eventType;
+  final String? eventName;
+
+  @override
+  ConsumerState<ConsumerStatefulWidget> createState() => __ViewEventState();
+}
+
+class __ViewEventState extends ConsumerState<_ViewEvent> {
+  late EventType _inputEventType;
+  String? _inputEventName;
+
+  @override
+  void initState() {
+    _inputEventType = widget.eventType;
+    _inputEventName = widget.eventName;
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      elevation: 1.0,
+      child: Padding(
+        padding: const EdgeInsets.all(8),
+        child: Column(
+          children: [
+            EventRadioGroup(
+              selectValue: _inputEventType,
+              onSelected: _onSelectedEventType,
+            ),
+            AppTextField(
+              label: AppStrings.recordEventLabel,
+              onChanged: _onChangeTextField,
+            ),
+            OutlinedButton(
+              onPressed: ref.watch(appSettingsProvider).isSignIn ? () async => await _saveEvent(context) : null,
+              child: const Text(AppStrings.recordEventSaveButton),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _onSelectedEventType(EventType? type) {
+    if (type != null) {
+      setState(() {
+        _inputEventType = type;
+      });
+    }
+  }
+
+  void _onChangeTextField(String? input) {
+    if (input != null) {
+      setState(() => _inputEventName = input);
+    }
+  }
+
+  Future<void> _saveEvent(BuildContext context) async {
+    // キーボードが出ている場合は閉じる
+    FocusScope.of(context).unfocus();
+    const progressDialog = AppProgressDialog<void>();
+    await progressDialog.show(
+      context,
+      execute: () async {
+        await ref.read(recordViewModelProvider).saveEvent(id: widget.recordId, eventType: _inputEventType, eventName: _inputEventName);
+      },
+      onSuccess: (_) {/* 成功時は何もしない */},
+      onError: (err) => AppDialog.onlyOk(message: err).show(context),
+    );
+  }
+}
+
+///
 /// メモ
 ///
 class _ViewMemo extends ConsumerStatefulWidget {
@@ -537,7 +624,7 @@ class __ViewMemoState extends ConsumerState<_ViewMemo> {
   @override
   Widget build(BuildContext context) {
     return Card(
-      elevation: 4.0,
+      elevation: 1.0,
       child: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Column(

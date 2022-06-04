@@ -9,6 +9,7 @@ import 'package:dyphic/ui/widget/app_icon.dart';
 import 'package:dyphic/ui/widget/app_progress_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:line_icons/line_icons.dart';
 
 class SettingsPage extends ConsumerWidget {
   const SettingsPage({Key? key}) : super(key: key);
@@ -70,9 +71,9 @@ class SettingsPage extends ConsumerWidget {
 
   Widget _rowAppLicense(BuildContext context, WidgetRef ref) {
     return ListTile(
-      leading: const Icon(Icons.info, size: _iconSize),
+      leading: const Icon(LineIcons.infoCircle, size: _iconSize),
       title: const Text(AppStrings.settingsLicenseLabel),
-      trailing: const Icon(Icons.arrow_forward_ios),
+      trailing: const Icon(LineIcons.angleRight),
       onTap: () {
         showLicensePage(
           context: context,
