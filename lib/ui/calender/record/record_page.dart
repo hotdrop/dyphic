@@ -93,9 +93,9 @@ class __ViewBodyState extends ConsumerState<_ViewBody> {
         const SizedBox(height: 8),
         _ViewMedicine(recordId: widget.record.id, medicines: widget.record.medicines),
         const SizedBox(height: 8),
-        _ViewEvent(recordId: widget.record.id, eventType: widget.record.eventType, eventName: widget.record.eventName),
-        const SizedBox(height: 8),
         _ViewMemo(recordId: widget.record.id, memo: widget.record.memo),
+        const SizedBox(height: 8),
+        _ViewEvent(recordId: widget.record.id, eventType: widget.record.eventType, eventName: widget.record.eventName),
         const SizedBox(height: 8),
       ],
     );
