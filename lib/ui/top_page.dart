@@ -4,6 +4,7 @@ import 'package:dyphic/ui/graph/graph_page.dart';
 import 'package:dyphic/ui/note/notes_page.dart';
 import 'package:dyphic/ui/setting/settings_page.dart';
 import 'package:flutter/material.dart';
+import 'package:line_icons/line_icons.dart';
 
 class TopPage extends StatefulWidget {
   const TopPage._();
@@ -22,7 +23,7 @@ class TopPage extends StatefulWidget {
   static const String routeName = '/top';
 
   @override
-  _TopPageState createState() => _TopPageState();
+  State<TopPage> createState() => _TopPageState();
 }
 
 class _TopPageState extends State<TopPage> {
@@ -72,8 +73,8 @@ class Destination {
 }
 
 const _allDestinations = <Destination>[
-  Destination(AppStrings.calenderPageTitle, Icons.calendar_today),
-  Destination(AppStrings.graphPageTitle, Icons.bar_chart),
-  Destination(AppStrings.notesPageTitle, Icons.sticky_note_2),
+  Destination(AppStrings.calenderPageTitle, LineIcons.calendar),
+  Destination(AppStrings.graphPageTitle, LineIcons.barChart),
+  Destination(AppStrings.notesPageTitle, LineIcons.edit),
   Destination(AppStrings.settingsPageTitle, Icons.settings),
 ];

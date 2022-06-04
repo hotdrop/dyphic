@@ -3,7 +3,7 @@ import 'package:dyphic/common/app_logger.dart';
 import 'package:dyphic/model/record.dart';
 import 'package:dyphic/ui/base_view_model.dart';
 
-final calendarViewModelProvider = ChangeNotifierProvider.autoDispose((ref) => _CalendarViewModel(ref.read));
+final calendarViewModelProvider = ChangeNotifierProvider((ref) => _CalendarViewModel(ref.read));
 
 class _CalendarViewModel extends BaseViewModel {
   _CalendarViewModel(this._read) {
@@ -12,9 +12,6 @@ class _CalendarViewModel extends BaseViewModel {
 
   final Reader _read;
 
-  // 記録詳細ページで何か編集したらこれをtrueにする。trueだったらカレンダーを更新する。
-  // 記録詳細ページはPageViewで実装しているので、各々のページで更新情報を持つと別のページ切り替え時にその情報が消えてしまう
-  // 消えないように記録詳細ページ全体のStateを作るかベースとなるこのViewModelで持つか迷った結果、一旦ここで持つことにした。
   bool _isEditRecord = false;
   bool get isEditRecord => _isEditRecord;
 
@@ -28,6 +25,9 @@ class _CalendarViewModel extends BaseViewModel {
     }
   }
 
+  /// 記録詳細ページで何か編集したらこれをtrueにする。trueだったらカレンダーを更新する。
+  /// 記録詳細ページはPageViewで実装しているので、各々のページで更新情報を持つと別のページ切り替え時にその情報が消えてしまう
+  /// 消えないように記録詳細ページ全体のStateを作るかベースとなるこのViewModelで持つか迷った結果、一旦ここで持つことにした。
   void markRecordEditted() {
     _isEditRecord = true;
   }

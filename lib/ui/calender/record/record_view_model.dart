@@ -45,6 +45,7 @@ class _RecordViewModel {
   Future<void> inputMorningTemperature({required int id, required double newVal}) async {
     try {
       await _read(recordRepositoryProvider).saveMorningTemperature(id, newVal);
+      _read(calendarViewModelProvider).markRecordEditted();
     } catch (e, s) {
       await AppLogger.e('朝の体温の保存に失敗しました。', e, s);
       rethrow;
@@ -54,6 +55,7 @@ class _RecordViewModel {
   Future<void> inputNightTemperature({required int id, required double newVal}) async {
     try {
       await _read(recordRepositoryProvider).saveNightTemperature(id, newVal);
+      _read(calendarViewModelProvider).markRecordEditted();
     } catch (e, s) {
       await AppLogger.e('夜の体温の保存に失敗しました。', e, s);
       rethrow;
@@ -104,4 +106,16 @@ class _RecordViewModel {
       rethrow;
     }
   }
+
+  Future<void> saveEvent({required int id, required EventType eventType, required String? eventName}) async {
+    try {
+      await _read(recordRepositoryProvider).saveEvent(id, eventType, eventName ?? '');
+      _read(calendarViewModelProvider).markRecordEditted();
+    } catch (e, s) {
+      await AppLogger.e('イベントの保存に失敗しました。', e, s);
+      rethrow;
+    }
+  }
 }
+
+final scrollPositionStateProvider = StateProvider<double>((ref) => 0);

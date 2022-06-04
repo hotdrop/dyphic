@@ -93,11 +93,11 @@ class _TemperatureGraph extends ConsumerWidget {
     // 夜の体温データはほぼ未入力なので一旦無視している
     switch (type) {
       case GraphTemperatureRangeType.threeMonth:
-        return _SfCartesianChart(morningDatas: _extractThreeMonth(morningDatas));
+        return _SfCartesianChart(_extractThreeMonth(morningDatas));
       case GraphTemperatureRangeType.all:
-        return _SfCartesianChart(morningDatas: morningDatas);
+        return _SfCartesianChart(morningDatas);
       default:
-        return _SfCartesianChart(morningDatas: _extractMonth(morningDatas));
+        return _SfCartesianChart(_extractMonth(morningDatas));
     }
   }
 
@@ -143,15 +143,12 @@ class _TemperatureRadio extends ConsumerWidget {
 /// グラフウィジェット
 ///
 class _SfCartesianChart extends StatelessWidget {
-  const _SfCartesianChart({Key? key, this.morningDatas, this.nightDatas}) : super(key: key);
+  const _SfCartesianChart(this.morningDatas);
 
-  final List<GraphTemperature>? morningDatas;
-  final List<GraphTemperature>? nightDatas;
+  final List<GraphTemperature> morningDatas;
 
   @override
   Widget build(BuildContext context) {
-    final palette = <Color>[if (morningDatas != null) AppColors.morningTemperature, if (nightDatas != null) AppColors.nightTemperature];
-
     return SfCartesianChart(
       primaryXAxis: CategoryAxis(
         edgeLabelPlacement: EdgeLabelPlacement.shift,
@@ -164,35 +161,24 @@ class _SfCartesianChart extends StatelessWidget {
         axisLine: const AxisLine(width: 0),
         majorTickLines: const MajorTickLines(color: Colors.transparent),
       ),
-      palette: palette,
+      palette: const <Color>[AppColors.morningTemperature],
       series: _convertLineSeries(),
       tooltipBehavior: TooltipBehavior(enable: true),
     );
   }
 
   List<LineSeries<_ChartData, String>> _convertLineSeries() {
-    final moringChartDatas = morningDatas?.map((d) => _ChartData('${d.month}月${d.day}日', d.morning)).toList();
-    final nightChartDatas = nightDatas?.map((d) => _ChartData('${d.month}月${d.day}日', d.night)).toList();
+    final moringChartDatas = morningDatas.map((d) => _ChartData('${d.month}月${d.day}日', d.morning)).toList();
 
     return <LineSeries<_ChartData, String>>[
-      if (moringChartDatas != null)
-        LineSeries<_ChartData, String>(
-          animationDuration: 2500,
-          dataSource: moringChartDatas,
-          xValueMapper: (_ChartData temp, _) => temp.x,
-          yValueMapper: (_ChartData temp, _) => temp.y,
-          name: AppStrings.graphPageGraphMorningLabel,
-          markerSettings: const MarkerSettings(isVisible: true),
-        ),
-      if (nightChartDatas != null)
-        LineSeries<_ChartData, String>(
-          animationDuration: 2500,
-          dataSource: nightChartDatas,
-          xValueMapper: (_ChartData temp, _) => temp.x,
-          yValueMapper: (_ChartData temp, _) => temp.y,
-          name: AppStrings.graphPageGraphNightLabel,
-          markerSettings: const MarkerSettings(isVisible: true),
-        ),
+      LineSeries<_ChartData, String>(
+        animationDuration: 2500,
+        dataSource: moringChartDatas,
+        xValueMapper: (_ChartData temp, _) => temp.x,
+        yValueMapper: (_ChartData temp, _) => temp.y,
+        name: AppStrings.graphPageGraphMorningLabel,
+        markerSettings: const MarkerSettings(isVisible: true),
+      ),
     ];
   }
 }

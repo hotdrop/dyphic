@@ -14,11 +14,12 @@ class AppProgressDialog<T> {
   }) async {
     _showProgressDialog(context);
     try {
+      final navigator = Navigator.of(context);
       final result = await execute();
-      _closeDialog(context);
+      navigator.pop();
       onSuccess(result);
     } on Exception catch (e) {
-      _closeDialog(context);
+      Navigator.pop(context);
       onError('$e');
     }
   }
@@ -36,9 +37,5 @@ class AppProgressDialog<T> {
         );
       },
     );
-  }
-
-  void _closeDialog(BuildContext context) {
-    Navigator.pop(context);
   }
 }

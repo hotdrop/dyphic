@@ -17,7 +17,7 @@ class DyphicCalendar extends ConsumerStatefulWidget {
   final List<Record> records;
 
   @override
-  _DyphicCalendarState createState() => _DyphicCalendarState();
+  ConsumerState<DyphicCalendar> createState() => _DyphicCalendarState();
 }
 
 class _DyphicCalendarState extends ConsumerState<DyphicCalendar> {
@@ -142,13 +142,13 @@ class _DyphicCalendarState extends ConsumerState<DyphicCalendar> {
     }
 
     final record = argRecords.first;
-    if (record.typeMedical()) {
+    if (record.typeMedical) {
       markers.add(Image.asset(
         AppImages.icHospital,
         width: calendarIconSize,
         height: calendarIconSize,
       ));
-    } else if (record.typeInjection()) {
+    } else if (record.typeInjection) {
       markers.add(Image.asset(
         AppImages.icInject,
         width: calendarIconSize,
@@ -203,11 +203,11 @@ class _DyphicCalendarState extends ConsumerState<DyphicCalendar> {
     final records = _sortedRecords();
     final index = records.indexWhere((e) => _selectedRecord!.id == e.id);
     await RecordsPageView.start(context, records: records, selectedIndex: index);
-    final isUpdate = ref.watch(calendarViewModelProvider).isEditRecord;
+    final isUpdate = ref.read(calendarViewModelProvider).isEditRecord;
     AppLogger.d('記録情報の更新有無: $isUpdate');
     if (isUpdate) {
       await ref.read(recordsProvider.notifier).onLoad();
-      final newRecords = ref.watch(recordsProvider);
+      final newRecords = ref.read(recordsProvider);
       setState(() {
         _recordMap = _createMap(_selectedRecord!.id, newRecords);
       });
@@ -238,10 +238,10 @@ class _DyphicCalendarState extends ConsumerState<DyphicCalendar> {
 
   Widget _labelEventInfo() {
     final dateStr = DateFormat(AppStrings.calenderPageDateFormat).format(_selectedRecord!.date);
-    if (_selectedRecord!.event?.name != null) {
+    if (_selectedRecord!.eventName != null) {
       return Center(
         child: Text(
-          '$dateStr(${_selectedRecord!.event!.name})',
+          '$dateStr(${_selectedRecord!.eventName})',
           style: const TextStyle(color: AppColors.themeColor),
         ),
       );

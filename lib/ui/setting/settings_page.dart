@@ -9,6 +9,7 @@ import 'package:dyphic/ui/widget/app_icon.dart';
 import 'package:dyphic/ui/widget/app_progress_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:line_icons/line_icons.dart';
 
 class SettingsPage extends ConsumerWidget {
   const SettingsPage({Key? key}) : super(key: key);
@@ -53,7 +54,6 @@ class SettingsPage extends ConsumerWidget {
         _rowMedicineEdit(context),
         const Divider(),
         _rowLoadRecord(context, ref),
-        _rowLoadEvent(context, ref),
         _rowLoadNote(context, ref),
       ],
     );
@@ -71,9 +71,9 @@ class SettingsPage extends ConsumerWidget {
 
   Widget _rowAppLicense(BuildContext context, WidgetRef ref) {
     return ListTile(
-      leading: const Icon(Icons.info, size: _iconSize),
+      leading: const Icon(LineIcons.infoCircle, size: _iconSize),
       title: const Text(AppStrings.settingsLicenseLabel),
-      trailing: const Icon(Icons.arrow_forward_ios),
+      trailing: const Icon(LineIcons.angleRight),
       onTap: () {
         showLicensePage(
           context: context,
@@ -113,31 +113,6 @@ class SettingsPage extends ConsumerWidget {
       subtitle: const Text(AppStrings.settingsEditMedicineSubLabel),
       onTap: () async => await MedicinePage.start(context),
     );
-  }
-
-  Widget _rowLoadEvent(BuildContext context, WidgetRef ref) {
-    final prevDateStr = ref.read(settingsViewModelProvider).prevLoadEventStr;
-    return ListTile(
-      leading: AppIcon.event(size: _iconSize),
-      title: const Text(AppStrings.settingsLoadEventLabel),
-      subtitle: Text('${AppStrings.settingsLoadEventSubLabel} $prevDateStr'),
-      onTap: () async => await _showLoadEventDialog(context, ref),
-    );
-  }
-
-  Future<void> _showLoadEventDialog(BuildContext context, WidgetRef ref) async {
-    await AppDialog.okAndCancel(
-      message: AppStrings.settingsLoadEventConfirmMessage,
-      onOk: () async {
-        const progressDialog = AppProgressDialog<void>();
-        await progressDialog.show(
-          context,
-          execute: ref.read(settingsViewModelProvider).onLoadEvent,
-          onSuccess: (_) => ref.read(settingsViewModelProvider).refresh(),
-          onError: (err) => AppDialog.onlyOk(message: err).show(context),
-        );
-      },
-    ).show(context);
   }
 
   Widget _rowLoadRecord(BuildContext context, WidgetRef ref) {

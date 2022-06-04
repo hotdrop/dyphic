@@ -1,6 +1,7 @@
 import 'package:dyphic/res/app_colors.dart';
 import 'package:dyphic/res/app_images.dart';
 import 'package:flutter/material.dart';
+import 'package:line_icons/line_icons.dart';
 
 class AppIcon extends StatelessWidget {
   const AppIcon._(this._iconData, this._iconColor, this.size);
@@ -10,19 +11,15 @@ class AppIcon extends StatelessWidget {
   }
 
   factory AppIcon.medicine({double? size}) {
-    return AppIcon._(Icons.medical_services, AppColors.medicine, size);
+    return AppIcon._(LineIcons.capsules, AppColors.medicine, size);
   }
 
   factory AppIcon.record({double? size}) {
-    return AppIcon._(Icons.calendar_today, Colors.blueAccent, size);
-  }
-
-  factory AppIcon.event({double? size}) {
-    return AppIcon._(Icons.event, Colors.purple, size);
+    return AppIcon._(LineIcons.calendar, Colors.blueAccent, size);
   }
 
   factory AppIcon.note({double? size}) {
-    return AppIcon._(Icons.sticky_note_2, Colors.lime, size);
+    return AppIcon._(LineIcons.edit, Colors.lime, size);
   }
 
   factory AppIcon.changeTheme(bool isDarkMode, {double? size}) {

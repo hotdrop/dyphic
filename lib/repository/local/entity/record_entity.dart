@@ -17,6 +17,8 @@ class RecordEntity extends HiveObject {
     required this.nightTemperature,
     required this.medicineIdsStr,
     required this.memo,
+    required this.eventTypeIndex,
+    required this.eventName,
   });
 
   static const String boxName = 'record';
@@ -56,4 +58,10 @@ class RecordEntity extends HiveObject {
 
   @HiveField(11)
   final String? memo;
+
+  @HiveField(12)
+  final int? eventTypeIndex;
+
+  @HiveField(13)
+  final String? eventName;
 }

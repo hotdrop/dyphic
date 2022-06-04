@@ -57,6 +57,8 @@ class _RecordApi {
       isToilet: overview.isToilet,
       conditions: Record.toConditions(conditions, overview.conditionStringIds),
       conditionMemo: overview.conditionMemo,
+      eventType: overview.eventType,
+      eventName: overview.eventName,
       morningTemperature: temp?.morningTemperature,
       nightTemperature: temp?.nightTemperature,
       medicines: Record.toMedicines(medicines, detail?.medicineStrIds),
@@ -123,6 +125,8 @@ class _RecordApi {
       isToilet: record.isToilet,
       conditionStringIds: record.toConditionIdsStr(),
       conditionMemo: record.conditionMemo ?? '',
+      eventType: record.eventType,
+      eventName: record.eventName ?? '',
     );
     await _read(appFirebaseProvider).saveOverview(doc);
   }
@@ -135,5 +139,10 @@ class _RecordApi {
   Future<void> saveMemo(int recordId, String memo) async {
     AppLogger.d('$recordId のメモを保存します。');
     await _read(appFirebaseProvider).saveMemo(recordId, memo);
+  }
+
+  Future<void> saveEvent(int recordId, EventType eventType, String eventName) async {
+    AppLogger.d('$recordId のイベント情報を保存します。');
+    await _read(appFirebaseProvider).saveEvent(recordId, eventType, eventName);
   }
 }

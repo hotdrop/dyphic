@@ -67,6 +67,8 @@ class _RecordDao {
     double? nightTemperature,
     String? medicineIdsStr,
     String? memo,
+    EventType? eventType,
+    String? eventName,
   }) async {
     final box = await Hive.openBox<RecordEntity>(RecordEntity.boxName);
     final target = box.get(id);
@@ -84,6 +86,8 @@ class _RecordDao {
         nightTemperature: nightTemperature ?? target.nightTemperature,
         medicineIdsStr: medicineIdsStr ?? target.medicineIdsStr,
         memo: memo ?? target.memo,
+        eventTypeIndex: eventType?.index ?? target.eventTypeIndex,
+        eventName: eventName ?? target.eventName,
       );
       await box.put(id, entityUpdate);
     } else {
@@ -100,6 +104,8 @@ class _RecordDao {
         nightTemperature: nightTemperature,
         medicineIdsStr: medicineIdsStr,
         memo: memo,
+        eventTypeIndex: eventType?.index ?? EventType.none.index,
+        eventName: eventName,
       );
       await box.put(id, entityNew);
     }
@@ -122,6 +128,8 @@ class _RecordDao {
       lunch: entity.lunch,
       dinner: entity.dinner,
       memo: entity.memo,
+      eventType: Record.toEventType(entity.eventTypeIndex),
+      eventName: entity.eventName,
     );
   }
 
@@ -139,6 +147,8 @@ class _RecordDao {
       nightTemperature: record.nightTemperature,
       medicineIdsStr: record.toMedicineIdsStr(),
       memo: record.memo,
+      eventTypeIndex: record.eventType.index,
+      eventName: record.eventName,
     );
   }
 }
