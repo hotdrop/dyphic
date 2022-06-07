@@ -88,7 +88,7 @@ class __ViewBodyState extends ConsumerState<_ViewBody> {
           conditions: widget.record.conditions,
           isWalking: widget.record.isWalking,
           isToilet: widget.record.isToilet,
-          conditionMemo: widget.record.memo,
+          conditionMemo: widget.record.conditionMemo,
         ),
         const SizedBox(height: 8),
         _ViewMedicine(recordId: widget.record.id, medicines: widget.record.medicines),
