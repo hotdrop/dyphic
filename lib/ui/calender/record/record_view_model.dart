@@ -19,6 +19,7 @@ class _RecordViewModel {
     _read(breakfastStateProvider.notifier).state = record.breakfast ?? '';
     _read(lunchStateProvider.notifier).state = record.lunch ?? '';
     _read(dinnerStateProvider.notifier).state = record.dinner ?? '';
+    _read(temperatureStateProvider.notifier).state = record.morningTemperature ?? 0;
     _read(conditionStateProvider.notifier).init(record);
     _read(medicineIdsStateProvider.notifier).init(record);
     _read(memoStateProvider.notifier).state = record.memo ?? '';
