@@ -19,6 +19,7 @@ class MealEditDialog extends ConsumerStatefulWidget {
   }) async {
     return await showDialog<String>(
       context: context,
+      barrierDismissible: false,
       builder: (ctx) => MealEditDialog._(title, initValue),
     );
   }

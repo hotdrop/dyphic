@@ -15,7 +15,7 @@ class MealCard extends ConsumerWidget {
     required this.onSubmitted,
   }) : super(key: key);
 
-  factory MealCard.morning({required String detail, required Function(String?) onSubmitted}) {
+  factory MealCard.morning({required String detail, required Function(String) onSubmitted}) {
     return MealCard._(
       color: AppColors.mealBreakFast,
       iconImagePath: AppImages.mealBreakFast,
@@ -25,7 +25,7 @@ class MealCard extends ConsumerWidget {
     );
   }
 
-  factory MealCard.lunch({required String detail, required Function(String?) onSubmitted}) {
+  factory MealCard.lunch({required String detail, required Function(String) onSubmitted}) {
     return MealCard._(
       color: AppColors.mealLunch,
       iconImagePath: AppImages.mealLunch,
@@ -35,7 +35,7 @@ class MealCard extends ConsumerWidget {
     );
   }
 
-  factory MealCard.dinner({required String detail, required Function(String?) onSubmitted}) {
+  factory MealCard.dinner({required String detail, required Function(String) onSubmitted}) {
     return MealCard._(
       color: AppColors.mealDinner,
       iconImagePath: AppImages.mealDinner,
@@ -49,7 +49,7 @@ class MealCard extends ConsumerWidget {
   final String iconImagePath;
   final String detail;
   final String dialogTitle;
-  final Function(String?) onSubmitted;
+  final Function(String) onSubmitted;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -77,10 +77,11 @@ class MealCard extends ConsumerWidget {
 
   Future<void> _showEditDialog(BuildContext context, WidgetRef ref) async {
     final inputValue = await MealEditDialog.show(
-      context,
-      title: dialogTitle,
-      initValue: detail,
-    );
+          context,
+          title: dialogTitle,
+          initValue: detail,
+        ) ??
+        '';
     onSubmitted(inputValue);
   }
 

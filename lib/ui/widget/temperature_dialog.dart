@@ -19,6 +19,7 @@ class TemperatureEditDialog extends StatefulWidget {
   }) async {
     return await showDialog<double>(
       context: context,
+      barrierDismissible: false,
       builder: (_) {
         return TemperatureEditDialog._(dialogTitle, color, initValue);
       },
