@@ -18,7 +18,7 @@ class TemperatureView extends ConsumerWidget {
 
   factory TemperatureView.morning({
     required double temperature,
-    required Function(double?) onSubmitted,
+    required Function(double) onSubmitted,
   }) {
     return TemperatureView._(
       temperature,
@@ -32,7 +32,7 @@ class TemperatureView extends ConsumerWidget {
 
   factory TemperatureView.night({
     required double temperature,
-    required Function(double?) onSubmitted,
+    required Function(double) onSubmitted,
   }) {
     return TemperatureView._(
       temperature,
@@ -49,7 +49,7 @@ class TemperatureView extends ConsumerWidget {
   final String title;
   final ThermometerIcon thermometerIcon;
   final double temperature;
-  final Function(double?) onSubmitted;
+  final Function(double) onSubmitted;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -79,11 +79,12 @@ class TemperatureView extends ConsumerWidget {
 
   Future<void> _showEditDialog(BuildContext context) async {
     final inputValue = await TemperatureEditDialog.show(
-      context,
-      dialogTitle: dialogTitle,
-      color: color,
-      initValue: temperature,
-    );
+          context,
+          dialogTitle: dialogTitle,
+          color: color,
+          initValue: temperature,
+        ) ??
+        0.0;
     onSubmitted(inputValue);
   }
 
