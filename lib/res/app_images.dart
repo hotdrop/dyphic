@@ -9,7 +9,6 @@ class AppImages {
   static const String icInject = '$_rootPath/ic_inject.png';
 
   static const String icThermometerMorning = '$_rootPath/ic_thermometer_morning.png';
-  static const String icThermometerNight = '$_rootPath/ic_thermometer_night.png';
 
   static const String mealBreakFast = '$_rootPath/ic_breakfast.png';
   static const String mealLunch = '$_rootPath/ic_lunch.png';
