@@ -1,10 +1,7 @@
-import 'package:dyphic/model/condition.dart';
-import 'package:dyphic/model/medicine.dart';
 import 'package:dyphic/ui/widget/app_event_radio_group.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
-import 'package:dyphic/common/app_logger.dart';
 import 'package:dyphic/model/app_settings.dart';
 import 'package:dyphic/ui/widget/app_check_box.dart';
 import 'package:dyphic/ui/widget/app_chips.dart';
