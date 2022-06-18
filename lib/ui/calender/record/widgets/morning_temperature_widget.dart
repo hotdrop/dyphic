@@ -1,15 +1,132 @@
-import 'package:flutter/material.dart';
+import 'package:dyphic/model/app_settings.dart';
+import 'package:dyphic/res/app_colors.dart';
 import 'package:dyphic/res/app_strings.dart';
+import 'package:dyphic/ui/widget/app_icon.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class TemperatureEditDialog extends StatefulWidget {
-  const TemperatureEditDialog._(this.title, this.color, this.initValue);
+class MorningTemperatureWidget extends StatelessWidget {
+  const MorningTemperatureWidget({Key? key, required this.currentValue, required this.onSubmitted}) : super(key: key);
+
+  final double? currentValue;
+  final Function(double) onSubmitted;
+
+  @override
+  Widget build(BuildContext context) {
+    return TemperatureView(
+      temperature: currentValue ?? 0,
+      color: AppColors.morningTemperature,
+      title: AppStrings.recordTemperatureMorning,
+      thermometerIcon: ThermometerIcon.morning(),
+      dialogTitle: AppStrings.recordTemperatureMorning,
+      onSubmitted: onSubmitted,
+    );
+  }
+}
+
+class TemperatureView extends ConsumerWidget {
+  const TemperatureView({
+    Key? key,
+    required this.temperature,
+    required this.color,
+    required this.title,
+    required this.thermometerIcon,
+    required this.onSubmitted,
+    required this.dialogTitle,
+  }) : super(key: key);
+
+  final String dialogTitle;
+  final Color color;
+  final String title;
+  final ThermometerIcon thermometerIcon;
+  final double temperature;
+  final Function(double) onSubmitted;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final isSignIn = ref.read(appSettingsProvider).isSignIn;
+    return Card(
+      elevation: 4.0,
+      child: InkWell(
+        onTap: isSignIn ? () async => await _showEditDialog(context) : null,
+        child: Row(
+          children: <Widget>[
+            _VerticalLine(color),
+            const SizedBox(width: 24.0),
+            Column(
+              children: <Widget>[
+                _viewTitle(context),
+                const SizedBox(height: 4),
+                _viewTemperatureLabel(context),
+              ],
+            ),
+            const SizedBox(width: 24.0),
+            _VerticalLine(color),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<void> _showEditDialog(BuildContext context) async {
+    final inputValue = await _TemperatureEditDialog.show(
+          context,
+          dialogTitle: dialogTitle,
+          color: color,
+          initValue: temperature,
+        ) ??
+        0.0;
+    onSubmitted(inputValue);
+  }
+
+  Widget _viewTitle(BuildContext context) {
+    return Text(
+      title,
+      style: TextStyle(color: color),
+    );
+  }
+
+  Widget _viewTemperatureLabel(BuildContext context) {
+    final temperatureStr = (temperature > 0) ? '$temperature ${AppStrings.recordTemperatureUnit}' : AppStrings.recordTemperatureNonSet;
+    final fontColor = (temperature > 0) ? color : Colors.grey;
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.end,
+      children: [
+        thermometerIcon,
+        const SizedBox(width: 4),
+        Text(temperatureStr, style: TextStyle(color: fontColor, fontSize: 24)),
+      ],
+    );
+  }
+}
+
+class _VerticalLine extends StatelessWidget {
+  const _VerticalLine(this.color);
+
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 80,
+      width: 3,
+      decoration: BoxDecoration(
+        color: color,
+        borderRadius: const BorderRadius.all(Radius.circular(4.0)),
+      ),
+    );
+  }
+}
+
+class _TemperatureEditDialog extends StatefulWidget {
+  const _TemperatureEditDialog._(this.title, this.color, this.initValue);
 
   final String title;
   final Color color;
   final double? initValue;
 
   @override
-  State<TemperatureEditDialog> createState() => _TemperatureEditDialogState();
+  State<_TemperatureEditDialog> createState() => _TemperatureEditDialogState();
 
   static Future<double?> show(
     BuildContext context, {
@@ -21,13 +138,13 @@ class TemperatureEditDialog extends StatefulWidget {
       context: context,
       barrierDismissible: false,
       builder: (_) {
-        return TemperatureEditDialog._(dialogTitle, color, initValue);
+        return _TemperatureEditDialog._(dialogTitle, color, initValue);
       },
     );
   }
 }
 
-class _TemperatureEditDialogState extends State<TemperatureEditDialog> {
+class _TemperatureEditDialogState extends State<_TemperatureEditDialog> {
   final _controller = TextEditingController();
   List<String> inputValues = [];
 

@@ -17,7 +17,6 @@ class AppStrings {
   static const String recordMealDialogHint = '食事の内容(簡単に)';
 
   static const String recordTemperatureMorning = '朝の体温';
-  static const String recordTemperatureNight = '夜の体温';
   static const String recordTemperatureUnit = '度';
   static const String recordTemperatureNonSet = '未登録';
 

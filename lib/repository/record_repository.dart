@@ -29,6 +29,14 @@ class _RecordRepository {
   }
 
   ///
+  /// 指定したIDの記録情報をローカルから取得する。
+  /// リモートからは取得しない。
+  ///
+  Future<Record> find(int id) async {
+    return await _read(recordDaoProvider).find(id) ?? Record.create(id: id);
+  }
+
+  ///
   /// リモートから指定した記録情報を更新する
   ///
   Future<void> refresh(int id) async {

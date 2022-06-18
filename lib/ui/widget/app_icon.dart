@@ -53,10 +53,6 @@ class ThermometerIcon extends StatelessWidget {
     return const ThermometerIcon._(AppImages.icThermometerMorning);
   }
 
-  factory ThermometerIcon.night() {
-    return const ThermometerIcon._(AppImages.icThermometerNight);
-  }
-
   final String imagePath;
 
   @override

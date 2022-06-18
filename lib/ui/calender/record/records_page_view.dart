@@ -1,25 +1,20 @@
 import 'package:flutter/material.dart';
-import 'package:dyphic/model/record.dart';
 import 'package:dyphic/ui/calender/record/record_page.dart';
 
 ///
 /// 記録ページはここから呼ぶ
 ///
 class RecordsPageView extends StatelessWidget {
-  const RecordsPageView._(this._records, this._selectedIndex);
+  const RecordsPageView._(this._recordIds, this._selectedIndex);
 
-  static Future<void> start(
-    BuildContext context, {
-    required List<Record> records,
-    required int selectedIndex,
-  }) async {
+  static Future<void> start(BuildContext context, {required List<int> recordIds, required int selectedIndex}) async {
     await Navigator.push<void>(
       context,
-      MaterialPageRoute(builder: (_) => RecordsPageView._(records, selectedIndex)),
+      MaterialPageRoute(builder: (_) => RecordsPageView._(recordIds, selectedIndex)),
     );
   }
 
-  final List<Record> _records;
+  final List<int> _recordIds;
   final int _selectedIndex;
 
   @override
@@ -27,8 +22,8 @@ class RecordsPageView extends StatelessWidget {
     final controller = PageController(initialPage: _selectedIndex, keepPage: false);
     return PageView.builder(
       controller: controller,
-      itemCount: _records.length,
-      itemBuilder: (ctx, index) => RecordPage(_records[index]),
+      itemCount: _recordIds.length,
+      itemBuilder: (ctx, index) => RecordPage(_recordIds[index]),
     );
   }
 }

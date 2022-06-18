@@ -31,4 +31,8 @@ class _CalendarViewModel extends BaseViewModel {
   void markRecordEditted() {
     _isEditRecord = true;
   }
+
+  void clearRecordEditted() {
+    _isEditRecord = false;
+  }
 }

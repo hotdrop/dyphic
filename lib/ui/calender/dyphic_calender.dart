@@ -200,23 +200,25 @@ class _DyphicCalendarState extends ConsumerState<DyphicCalendar> {
 
   Future<void> _onTapCard(BuildContext context) async {
     // indexでページスワイプをするので必ずソートする
-    final records = _sortedRecords();
-    final index = records.indexWhere((e) => _selectedRecord!.id == e.id);
-    await RecordsPageView.start(context, records: records, selectedIndex: index);
+    final ids = _sortedRecords();
+    final index = ids.indexWhere((id) => id == _selectedRecord!.id);
+    await RecordsPageView.start(context, recordIds: ids, selectedIndex: index);
     final isUpdate = ref.read(calendarViewModelProvider).isEditRecord;
+
     AppLogger.d('記録情報の更新有無: $isUpdate');
     if (isUpdate) {
       await ref.read(recordsProvider.notifier).onLoad();
       final newRecords = ref.read(recordsProvider);
+      ref.read(calendarViewModelProvider).clearRecordEditted();
       setState(() {
         _recordMap = _createMap(_selectedRecord!.id, newRecords);
       });
     }
   }
 
-  List<Record> _sortedRecords() {
-    final l = _recordMap.values.toList();
-    l.sort((a, b) => a.id.compareTo(b.id));
+  List<int> _sortedRecords() {
+    final l = _recordMap.keys.toList();
+    l.sort((a, b) => a.compareTo(b));
     return l;
   }
 
