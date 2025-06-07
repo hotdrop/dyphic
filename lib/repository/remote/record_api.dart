@@ -1,6 +1,8 @@
 import 'package:dyphic/common/app_extension.dart';
 import 'package:dyphic/model/condition.dart';
 import 'package:dyphic/model/medicine.dart';
+import 'package:dyphic/repository/local/dao/condition_dao.dart';
+import 'package:dyphic/repository/local/dao/medicine_dao.dart';
 import 'package:dyphic/service/firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:dyphic/common/app_logger.dart';
@@ -36,11 +38,13 @@ class _RecordApi {
       return [];
     }
 
+    final conditions = await _ref.read(conditionDaoProvider).findAll();
+    final medicines = await _ref.read(medicineDaoProvider).findAll();
     List<Record> results = [];
     for (var overview in overviewResponse) {
       final temp = temperatureResponse.firstWhereOrNull((t) => t.recordId == overview.recordId);
       final detail = detailsResponse.firstWhereOrNull((d) => d.recordId == overview.recordId);
-      final record = _merge(overview, temp, detail);
+      final record = _merge(overview, temp, detail, conditions, medicines);
       results.add(record);
     }
     AppLogger.d('記録情報をマージしました。${results.length}件');
@@ -48,9 +52,13 @@ class _RecordApi {
     return results;
   }
 
-  Record _merge(RecordOverviewDoc overview, RecordTemperatureDoc? temp, RecordDetailDoc? detail) {
-    final conditions = _ref.read(conditionsProvider);
-    final medicines = _ref.read(medicineProvider);
+  Record _merge(
+    RecordOverviewDoc overview,
+    RecordTemperatureDoc? temp,
+    RecordDetailDoc? detail,
+    List<Condition> conditions,
+    List<Medicine> medicines,
+  ) {
     return Record(
       id: overview.recordId,
       isWalking: overview.isWalking,
@@ -86,7 +94,9 @@ class _RecordApi {
 
     AppLogger.d('記録情報の取得が完了しました。');
     if (overviewDoc != null) {
-      return _merge(overviewDoc!, temperatureDoc, detailsDoc);
+      final conditions = await _ref.read(conditionDaoProvider).findAll();
+      final medicines = await _ref.read(medicineDaoProvider).findAll();
+      return _merge(overviewDoc!, temperatureDoc, detailsDoc, conditions, medicines);
     } else {
       return null;
     }

@@ -77,7 +77,7 @@ class SettingsPage extends ConsumerWidget {
       onTap: () {
         showLicensePage(
           context: context,
-          applicationName: AppStrings.appTitle,
+          applicationName: '体調管理',
           applicationVersion: ref.watch(settingsViewModelProvider).appVersion,
           applicationIcon: Image.asset(AppImages.icLaunch, width: 50, height: 50),
         );
@@ -107,6 +107,7 @@ class SettingsPage extends ConsumerWidget {
   }
 
   Widget _rowMedicineEdit(BuildContext context) {
+    // TODO お薬データをサーバーから取得する
     return ListTile(
       leading: AppIcon.medicine(size: _iconSize),
       title: const Text(AppStrings.settingsEditMedicineLabel),

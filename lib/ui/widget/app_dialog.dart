@@ -1,4 +1,3 @@
-import 'package:dyphic/res/app_strings.dart';
 import 'package:flutter/material.dart';
 
 class AppDialog {
@@ -43,20 +42,20 @@ class AppDialog {
               Navigator.pop(context);
               _onCancel?.call();
             },
-            child: const Text(AppStrings.dialogCancel),
+            child: const Text('キャンセル'),
           ),
         TextButton(
           onPressed: () {
             Navigator.pop(context);
             _onOk?.call();
           },
-          child: const Text(AppStrings.dialogOk),
+          child: const Text('OK'),
         ),
       ],
     );
   }
 
   Widget? _viewTitle() {
-    return (_title != null) ? Text(_title!) : null;
+    return (_title != null) ? Text(_title) : null;
   }
 }

@@ -1,6 +1,6 @@
+import 'package:dyphic/ui/medicine/widgets/medicine_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:dyphic/ui/widget/app_image.dart';
 import 'package:dyphic/res/app_colors.dart';
 import 'package:dyphic/model/condition.dart';
 import 'package:dyphic/model/medicine.dart';
@@ -10,10 +10,10 @@ import 'package:dyphic/model/medicine.dart';
 ///
 class ConditionSelectChips extends ConsumerStatefulWidget {
   const ConditionSelectChips({
-    Key? key,
+    super.key,
     required this.selectIds,
     required this.onChange,
-  }) : super(key: key);
+  });
 
   final Set<int> selectIds;
   final void Function(Set<int>) onChange;
@@ -71,10 +71,10 @@ class _ConditionSelectChipsState extends ConsumerState<ConditionSelectChips> {
 ///
 class MedicineSelectChips extends ConsumerStatefulWidget {
   const MedicineSelectChips({
-    Key? key,
+    super.key,
     required this.selectIds,
     required this.onChanged,
-  }) : super(key: key);
+  });
 
   final Set<int> selectIds;
   final void Function(Set<int>) onChanged;
@@ -115,6 +115,7 @@ class _MedicineSelectChipsState extends ConsumerState<MedicineSelectChips> {
   }
 
   List<Widget> _makeChips(BuildContext context) {
+    // TODO これおかしい
     return ref.watch(medicineProvider).map((medicine) {
       return Tooltip(
         message: medicine.overview,
@@ -123,7 +124,7 @@ class _MedicineSelectChipsState extends ConsumerState<MedicineSelectChips> {
             child: SizedBox(
               width: 30.0,
               height: 30.0,
-              child: AppImage.icon(path: medicine.imagePath),
+              child: MedicineImage(id: medicine.id),
             ),
           ),
           showCheckmark: false,

@@ -225,14 +225,14 @@ class _TemperatureEditDialogState extends State<_TemperatureEditDialog> {
       actions: <Widget>[
         TextButton(
           onPressed: () => Navigator.pop(context),
-          child: const Text(AppStrings.dialogCancel),
+          child: const Text('キャンセル'),
         ),
         TextButton(
           onPressed: () {
             String v = inputValues.join();
             Navigator.pop<double>(context, double.parse(v));
           },
-          child: const Text(AppStrings.dialogOk),
+          child: const Text('OK'),
         ),
       ],
     );

@@ -181,11 +181,11 @@ class _MealEditDialogState extends ConsumerState<_MealEditDialog> {
       actions: <Widget>[
         TextButton(
           onPressed: () => Navigator.pop(context),
-          child: const Text(AppStrings.dialogCancel),
+          child: const Text('キャンセル'),
         ),
         TextButton(
           onPressed: isSignIn ? () => Navigator.pop<String>(context, _controller.text) : null,
-          child: const Text(AppStrings.dialogOk),
+          child: const Text('OK'),
         ),
       ],
     );

@@ -1,13 +1,12 @@
-import 'package:dyphic/res/app_strings.dart';
-import 'package:dyphic/model/medicine.dart';
 import 'package:flutter/material.dart';
+import 'package:dyphic/model/medicine.dart';
 
 class MedicineTypeRadio extends StatefulWidget {
   const MedicineTypeRadio({
-    Key? key,
+    super.key,
     required this.initSelectedType,
     required this.onChange,
-  }) : super(key: key);
+  });
 
   final MedicineType initSelectedType;
   final Function(MedicineType) onChange;
@@ -49,7 +48,7 @@ class _MedicineTypeRadioState extends State<MedicineTypeRadio> {
             });
           },
         ),
-        const Text(AppStrings.medicineOralLabel),
+        const Text('内服薬'),
         Radio(
             value: radioNotOral,
             groupValue: selectedRadioValue,
@@ -59,7 +58,7 @@ class _MedicineTypeRadioState extends State<MedicineTypeRadio> {
                 selectedRadioValue = radioNotOral;
               });
             }),
-        const Text(AppStrings.medicineNotOralLabel),
+        const Text('頓服薬'),
       ],
     );
   }

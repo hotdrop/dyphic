@@ -1,15 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:dyphic/res/app_strings.dart';
 
 class AppTextField extends StatefulWidget {
   const AppTextField({
-    Key? key,
+    super.key,
     required this.label,
     this.initValue,
     this.isRequired = false,
     this.hintText = '',
     required this.onChanged,
-  }) : super(key: key);
+  });
 
   final String label;
   final String? initValue;
@@ -40,7 +39,7 @@ class _AppTextFieldState extends State<AppTextField> {
           const Padding(
             padding: EdgeInsets.only(left: 8.0),
             child: Text(
-              AppStrings.textFieldRequiredEmptyError,
+              '※必須項目',
               style: TextStyle(color: Colors.red, fontSize: 12.0),
             ),
           ),
@@ -75,13 +74,13 @@ class _AppTextFieldState extends State<AppTextField> {
 ///
 class MultiLineTextField extends StatefulWidget {
   const MultiLineTextField({
-    Key? key,
+    super.key,
     required this.label,
     required this.initValue,
     required this.limitLine,
     required this.hintText,
     required this.onChanged,
-  }) : super(key: key);
+  });
 
   final String label;
   final String? initValue;

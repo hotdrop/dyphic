@@ -1,42 +1,3 @@
-import 'dart:math';
-
-import 'package:dyphic/repository/medicine_repository.dart';
-import 'package:dyphic/res/app_strings.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-
-final medicineProvider = StateNotifierProvider<_MedicineNotifier, List<Medicine>>((ref) => _MedicineNotifier(ref.read));
-
-class _MedicineNotifier extends StateNotifier<List<Medicine>> {
-  _MedicineNotifier(this._ref) : super([]);
-
-  final Ref _ref;
-
-  Future<void> onLoad() async {
-    state = await _ref(medicineRepositoryProvider).findAll(isForceUpdate: false);
-  }
-
-  Future<void> refresh() async {
-    state = await _ref(medicineRepositoryProvider).findAll(isForceUpdate: true);
-  }
-
-  Future<void> save(Medicine medicine, bool isUpdateImage) async {
-    await _ref(medicineRepositoryProvider).save(medicine, isUpdateImage);
-    await onLoad();
-  }
-
-  Medicine newMedicine() {
-    return Medicine.createEmpty(_createNewId(), _createNewOrder());
-  }
-
-  int _createNewId() {
-    return (state.isNotEmpty) ? state.map((e) => e.id).reduce(max) + 1 : 1;
-  }
-
-  int _createNewOrder() {
-    return (state.isNotEmpty) ? state.map((e) => e.order).reduce(max) + 1 : 1;
-  }
-}
-
 class Medicine {
   const Medicine({
     required this.id,
@@ -79,13 +40,11 @@ class Medicine {
   String toTypeString() {
     switch (type) {
       case MedicineType.oral:
-        return AppStrings.medicinePageOralName;
+        return '内服薬';
       case MedicineType.notOral:
-        return AppStrings.medicinePageNotOralName;
+        return '頓服薬';
       case MedicineType.intravenous:
-        return AppStrings.medicinePageTypeIntravenousName;
-      default:
-        return '';
+        return '点滴';
     }
   }
 

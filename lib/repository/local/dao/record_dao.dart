@@ -1,3 +1,5 @@
+import 'package:dyphic/repository/local/dao/condition_dao.dart';
+import 'package:dyphic/repository/local/dao/medicine_dao.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:isar/isar.dart';
 
@@ -20,13 +22,17 @@ class _RecordDao {
     if (record == null) {
       throw Exception('Record not found');
     }
-    return _toRecord(record);
+    final conditions = await _ref.read(conditionDaoProvider).findAll();
+    final medicines = await _ref.read(medicineDaoProvider).findAll();
+    return _toRecord(record, conditions, medicines);
   }
 
   Future<List<Record>> findAll() async {
     final isar = _ref.read(localDataSourceProvider).isar;
     final records = await isar.recordEntitys.where().findAll();
-    return records.map((e) => _toRecord(e)).toList();
+    final conditions = await _ref.read(conditionDaoProvider).findAll();
+    final medicines = await _ref.read(medicineDaoProvider).findAll();
+    return records.map((e) => _toRecord(e, conditions, medicines)).toList();
   }
 
   Future<void> save(Record record) async {
@@ -117,10 +123,7 @@ class _RecordDao {
     }
   }
 
-  Record _toRecord(RecordEntity entity) {
-    final conditions = _ref.read(conditionsProvider);
-    final medicines = _ref.read(medicineProvider);
-
+  Record _toRecord(RecordEntity entity, List<Condition> conditions, List<Medicine> medicines) {
     return Record(
       id: entity.id,
       isWalking: entity.isWalking,

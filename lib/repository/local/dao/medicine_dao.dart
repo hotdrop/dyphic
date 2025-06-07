@@ -11,6 +11,15 @@ class _MedicineDao {
 
   final Ref _ref;
 
+  Future<Medicine?> find(int id) async {
+    final isar = _ref.read(localDataSourceProvider).isar;
+    final medicine = await isar.medicineEntitys.get(id);
+    if (medicine == null) {
+      return null;
+    }
+    return _toMedicine(medicine);
+  }
+
   Future<List<Medicine>> findAll() async {
     final isar = _ref.read(localDataSourceProvider).isar;
     final medicines = await isar.medicineEntitys.where().findAll();

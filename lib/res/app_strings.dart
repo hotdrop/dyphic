@@ -1,13 +1,6 @@
 class AppStrings {
   AppStrings._();
 
-  static const String appTitle = '体調管理';
-
-  static const String calenderPageDateFormat = 'yyyy年MM月dd日';
-  static const String calenderNoEvent = '予定なし';
-  static const String calenderUnRegisterLabel = 'この日の記録は未登録です。\nここをタップして記録しましょう。';
-  static const String calenderDetailMorningTempLabel = '朝の体温:';
-
   // 記録ページ
   static const String recordPageTitleDateFormat = 'yyyy年MM月dd日';
   static const String recordMorningDialogTitle = '朝食';
@@ -36,15 +29,6 @@ class AppStrings {
   static const String recordMemoHint = 'その他、残しておきたい記録があったらここに記載してください。';
   static const String recordMemoSaveButton = 'メモを保存する';
 
-  // グラフページ
-  static const String graphPageTitle = '体温';
-  static const String graphPageRadio1Month = '1ヶ月';
-  static const String graphPageRadio3Month = '3ヶ月';
-  static const String graphPageRadioAll = '全部';
-  static const String graphPageGraphYAxisUnit = '度';
-  static const String graphPageGraphMorningLabel = '朝の体温';
-  static const String graphPageGraphNightLabel = '夜の体温';
-
   // ノートページ
   static const String notesPageTitle = 'ノート';
   static const String notesNotRegisterLabel = 'ノートが1つも登録されていません。';
@@ -54,25 +38,6 @@ class AppStrings {
   static const String noteEditPageLabelDetail = '詳細';
   static const String noteEditPageLabelDetailHint = 'ここに詳細メモを記載してください。';
   static const String noteEditPageSaveButton = 'この内容で保存する';
-
-  // お薬ページ
-  static const String medicinePageTitle = 'お薬';
-  static const String medicinePageNothingItemLabel = 'お薬が登録されていません。\nログインしてお薬を登録しましょう。';
-  static const String medicinePageOralName = '内服薬';
-  static const String medicinePageNotOralName = '頓服薬';
-  static const String medicinePageTypeIntravenousName = '点滴';
-  static const String medicineEditPageTitle = 'お薬情報';
-  static const String medicineNameLabel = 'お薬名';
-  static const String medicineOverviewLabel = '一言メモ';
-  static const String medicineOralLabel = '内服薬';
-  static const String medicineNotOralLabel = '頓服薬';
-  static const String medicineImageOverviewLabel = 'カメラボタンでお薬の写真を撮ってください。';
-  static const String medicineStartCameraLabel = 'カメラを起動する';
-  static const String medicineMemoLabel = '詳細メモ';
-  static const String medicineMemoHint = '詳細な情報を残したい場合はここに記載してください。';
-  static const String medicineSaveButton = 'この内容で保存する';
-  static const String medicineNotSaveAttention = 'お薬の名前が未入力です。';
-  static const String medicineRefreshConfirmMessage = 'サーバーから最新のお薬情報を取得します。\nよろしいですか？';
 
   // 体調ページ
   static const String conditionPageTitle = '体調管理';
@@ -107,13 +72,5 @@ class AppStrings {
   static const String settingsLoadNoteLabel = 'ノート情報を再取得';
   static const String settingsLoadNoteSubLabel = 'タップでノート情報を最新化します。';
   static const String settingsLoadNoteConfirmMessage = 'サーバーから最新のノート情報を取得します。\nよろしいですか？';
-
-  // 共通項目
-  static const String textFieldRequiredEmptyError = '※必須項目';
-
-  // ダイアログ
-  static const String dialogSuccessMessage = '処理が完了しました！';
-  static const String dialogErrorMessage = 'エラーが発生しました(´·ω·`)';
-  static const String dialogOk = 'OK';
-  static const String dialogCancel = 'キャンセル';
+  static const String medicineRefreshConfirmMessage = 'サーバーから最新のお薬情報を取得します。\nよろしいですか？';
 }
