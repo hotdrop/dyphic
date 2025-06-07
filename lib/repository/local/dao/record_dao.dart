@@ -14,11 +14,11 @@ class _RecordDao {
 
   final Ref _ref;
 
-  Future<Record?> find(int id) async {
+  Future<Record> find(int id) async {
     final isar = _ref.read(localDataSourceProvider).isar;
     final record = await isar.recordEntitys.get(id);
     if (record == null) {
-      return null;
+      throw Exception('Record not found');
     }
     return _toRecord(record);
   }

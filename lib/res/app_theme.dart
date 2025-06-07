@@ -4,11 +4,9 @@ import 'package:flutter/material.dart';
 class AppTheme {
   AppTheme._();
 
-  static final ThemeData dark = ThemeData.dark().copyWith(
+  static final ThemeData light = ThemeData.light().copyWith(
     primaryColor: AppColors.themeColor,
     primaryColorDark: AppColors.themeAccent,
-    scaffoldBackgroundColor: const Color(0xFF232323),
-    applyElevationOverlayColor: true,
     dividerColor: AppColors.themeAccent,
     appBarTheme: const AppBarTheme(
       color: AppColors.themeColor,

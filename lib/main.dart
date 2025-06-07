@@ -22,8 +22,8 @@ class App extends ConsumerWidget {
       ],
       supportedLocales: const [Locale('ja', '')],
       title: '体調管理',
-      theme: AppTheme.dark,
-      themeMode: ThemeMode.dark,
+      theme: AppTheme.light,
+      themeMode: ThemeMode.light,
       home: ref.watch(initializerProvider).when(
             data: (_) => const MainPage(),
             error: (error, stackTrace) => _ViewErrorScreen('$error'),

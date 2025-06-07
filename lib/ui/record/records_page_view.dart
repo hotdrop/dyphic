@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:dyphic/ui/calender/record/record_page.dart';
+import 'package:dyphic/ui/record/record_page.dart';
 
 ///
 /// 記録ページはここから呼ぶ

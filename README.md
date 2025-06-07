@@ -8,6 +8,10 @@
 <img src="images/03_note_edit.png" width="200" />
 <img src="images/04_setting.png" width="200" />  
 
+# お薬情報の画像について
+`Firebase Storage`の有料化に伴い、使えなくなったのでローカルで固定にします。
+`/images/medicines`ディレクトリの中に`[id].jpeg`というファイルを置くと自動で読み込みます。
+
 # command
 ```
 // build
@@ -30,3 +34,5 @@ flutter build appbundle
 - BottomNavigationMenuにお薬を追加する
 - お薬の画像はローカルから取得する。png画像はID
   - medicineのidで、ローカルから`/medicine/images/[id].png`の画像を取得。あれば表示する
+- AndroidとiOSのディレクトリは作り直す
+- カレンダーから記録ページに遷移し、いくつか記録情報を編集してカレンダーに戻ってきたとき、今は`calendar_page.dart`の`_ViewSelectedDayInfoCard`でコントローラの`onLoadRecords`を実行しているが、これは無駄な処理。大体は1、2箇所の記録データしか更新しないので、更新したRecordのidをリストで保持しておき、`CalendarController`の`refresh`で1つずつ更新した方がいい。

@@ -3,7 +3,6 @@ class AppStrings {
 
   static const String appTitle = '体調管理';
 
-  static const String calenderPageTitle = 'カレンダー';
   static const String calenderPageDateFormat = 'yyyy年MM月dd日';
   static const String calenderNoEvent = '予定なし';
   static const String calenderUnRegisterLabel = 'この日の記録は未登録です。\nここをタップして記録しましょう。';

@@ -12,20 +12,23 @@ class _RecordRepository {
 
   ///
   /// 記録情報をローカルから取得する。
-  /// データがローカルにない場合はリモートから取得する。
-  /// isForceUpdate がtrueの場合はリモートのデータで最新化する。
+  /// isLoadLatest がtrueの場合は最新データをリモート取得する
   ///
-  Future<List<Record>> findAll(bool isForceUpdate) async {
-    final records = await _ref.read(recordDaoProvider).findAll();
-    if (records.isNotEmpty && !isForceUpdate) {
-      records.sort((a, b) => a.id - b.id);
-      return records;
+  Future<List<Record>> findAll({bool isLoadLatest = false}) async {
+    if (isLoadLatest) {
+      final newRecords = await _ref.read(recordApiProvider).findAll();
+      newRecords.sort((a, b) => a.id - b.id);
+      await _ref.read(recordDaoProvider).saveAll(newRecords);
+      return newRecords;
     }
-    // 0件ならリモートから取得
-    final newRecords = await _ref.read(recordApiProvider).findAll();
-    newRecords.sort((a, b) => a.id - b.id);
-    await _ref.read(recordDaoProvider).saveAll(newRecords);
-    return newRecords;
+
+    final records = await _ref.read(recordDaoProvider).findAll();
+    if (records.isEmpty) {
+      return [];
+    }
+
+    records.sort((a, b) => a.id - b.id);
+    return records;
   }
 
   ///
@@ -33,7 +36,7 @@ class _RecordRepository {
   /// リモートからは取得しない。
   ///
   Future<Record> find(int id) async {
-    return await _ref.read(recordDaoProvider).find(id) ?? Record.create(id: id);
+    return await _ref.read(recordDaoProvider).find(id);
   }
 
   ///
@@ -84,10 +87,5 @@ class _RecordRepository {
   Future<void> saveMemo(int recordId, String memo) async {
     await _ref.read(recordApiProvider).saveMemo(recordId, memo);
     await _ref.read(recordDaoProvider).saveItem(recordId, memo: memo);
-  }
-
-  Future<void> saveEvent(int recordId, EventType eventType, String eventName) async {
-    await _ref.read(recordApiProvider).saveEvent(recordId, eventType, eventName);
-    await _ref.read(recordDaoProvider).saveItem(recordId, eventType: eventType, eventName: eventName);
   }
 }

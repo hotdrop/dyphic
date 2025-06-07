@@ -1,35 +1,7 @@
 import 'package:dyphic/model/condition.dart';
 import 'package:dyphic/model/dyphic_id.dart';
 import 'package:dyphic/model/medicine.dart';
-import 'package:dyphic/repository/record_repository.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-
-final recordsProvider = StateNotifierProvider<_RecordsNotifier, List<Record>>((ref) => _RecordsNotifier(ref.read));
-
-class _RecordsNotifier extends StateNotifier<List<Record>> {
-  _RecordsNotifier(this._read) : super([]);
-
-  final Reader _read;
-
-  Future<void> onLoad() async {
-    final newRecords = await _read(recordRepositoryProvider).findAll(false);
-    state = [...newRecords];
-  }
-
-  Future<void> refresh() async {
-    final newRecords = await _read(recordRepositoryProvider).findAll(true);
-    state = [...newRecords];
-  }
-
-  ///
-  /// 指定したIDの記録情報を最新化する
-  /// 例）他の端末で記録情報を見たときに情報が古くなっているとき、このメソッドで最新化する
-  ///
-  Future<void> reload(int id) async {
-    await _read(recordRepositoryProvider).refresh(id);
-    await onLoad();
-  }
-}
+import 'package:intl/intl.dart';
 
 ///
 /// 記録情報のモデルクラス
@@ -52,22 +24,23 @@ class Record {
     required this.memo,
   }) : date = DyphicID.idToDate(id);
 
-  factory Record.create({required int id}) {
+  factory Record.createEmpty(DateTime idDate) {
     return Record(
-        id: id,
-        isWalking: false,
-        isToilet: false,
-        conditions: [],
-        conditionMemo: null,
-        eventType: EventType.none,
-        eventName: null,
-        morningTemperature: null,
-        nightTemperature: null,
-        medicines: [],
-        breakfast: null,
-        lunch: null,
-        dinner: null,
-        memo: null);
+      id: DyphicID.dateToId(idDate),
+      isWalking: false,
+      isToilet: false,
+      conditions: [],
+      conditionMemo: null,
+      eventType: EventType.none,
+      eventName: null,
+      morningTemperature: null,
+      nightTemperature: null,
+      medicines: [],
+      breakfast: null,
+      lunch: null,
+      dinner: null,
+      memo: null,
+    );
   }
 
   factory Record.condition({
@@ -102,6 +75,7 @@ class Record {
   final String? lunch;
   final String? dinner;
 
+  // TODO ここもヘルスケアで自動にしたい
   final bool isWalking;
   final bool isToilet;
   final List<Condition> conditions;
@@ -118,6 +92,18 @@ class Record {
   final String? memo;
 
   static const String _strSeparator = ',';
+
+  String showFormatDate() {
+    return DateFormat('yyyy年MM月dd日').format(date);
+  }
+
+  bool isSameDay(DateTime targetAt) {
+    return date.year == targetAt.year && date.month == targetAt.month && date.day == targetAt.day;
+  }
+
+  bool notRegister() {
+    return breakfast == null && lunch == null && dinner == null && conditions.isEmpty && conditionMemo == null;
+  }
 
   static List<Condition> toConditions(List<Condition> conditions, String? idsStr) {
     if (idsStr == null) {

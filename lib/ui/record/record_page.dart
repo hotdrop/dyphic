@@ -1,6 +1,6 @@
 import 'package:dyphic/model/dyphic_id.dart';
-import 'package:dyphic/ui/calender/record/widgets/meal_widget.dart';
-import 'package:dyphic/ui/calender/record/widgets/morning_temperature_widget.dart';
+import 'package:dyphic/ui/record/widgets/meal_widget.dart';
+import 'package:dyphic/ui/record/widgets/morning_temperature_widget.dart';
 import 'package:dyphic/ui/widget/app_check_box.dart';
 import 'package:dyphic/ui/widget/app_chips.dart';
 import 'package:dyphic/ui/widget/app_event_radio_group.dart';
@@ -14,7 +14,7 @@ import 'package:dyphic/ui/widget/app_dialog.dart';
 import 'package:dyphic/ui/widget/app_progress_dialog.dart';
 import 'package:dyphic/res/app_strings.dart';
 import 'package:dyphic/model/record.dart';
-import 'package:dyphic/ui/calender/record/record_view_model.dart';
+import 'package:dyphic/ui/record/record_view_model.dart';
 
 ///
 /// このページはRecordsPageViewから構築されるのでスワイプでページ移動可能になっている。
@@ -22,7 +22,7 @@ import 'package:dyphic/ui/calender/record/record_view_model.dart';
 /// （途中、StateProviderを使った方法で試したがどうしてもスムースにページ移動できないのでやめた
 ///
 class RecordPage extends ConsumerWidget {
-  const RecordPage(this.recordId, {Key? key}) : super(key: key);
+  const RecordPage(this.recordId, {super.key});
 
   final int recordId;
 

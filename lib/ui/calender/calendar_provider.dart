@@ -1,8 +1,8 @@
+import 'package:dyphic/model/dyphic_id.dart';
+import 'package:dyphic/repository/record_repository.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:dyphic/common/app_logger.dart';
 import 'package:dyphic/model/record.dart';
-import 'package:dyphic/ui/base_view_model.dart';
 
 part 'calendar_provider.g.dart';
 
@@ -10,30 +10,63 @@ part 'calendar_provider.g.dart';
 class CalendarController extends _$CalendarController {
   @override
   Future<void> build() async {
-    await _read(recordsProvider.notifier).onLoad();
+    await onLoadRecords();
   }
 
-  bool _isEditRecord = false;
-  bool get isEditRecord => _isEditRecord;
+  Future<void> onLoadRecords() async {
+    final records = await ref.read(recordRepositoryProvider).findAll();
 
-  Future<void> _init() async {
-    try {
-      await _read(recordsProvider.notifier).onLoad();
-      onSuccess();
-    } catch (e, s) {
-      await AppLogger.e('カレンダー情報の取得に失敗しました。', e, s);
-      onError('$e');
+    final recordsMap = <int, Record>{};
+    final nowDate = DateTime.now();
+    for (final record in records) {
+      recordsMap[record.id] = record;
+      if (record.isSameDay(nowDate)) {
+        ref.read(calendarSelectedRecordStateProvider.notifier).state = record;
+      }
     }
+
+    ref.read(calendarRecordsMapStateProvder.notifier).state = recordsMap;
   }
 
-  /// 記録詳細ページで何か編集したらこれをtrueにする。trueだったらカレンダーを更新する。
-  /// 記録詳細ページはPageViewで実装しているので、各々のページで更新情報を持つと別のページ切り替え時にその情報が消えてしまう
-  /// 消えないように記録詳細ページ全体のStateを作るかベースとなるこのViewModelで持つか迷った結果、一旦ここで持つことにした。
-  void markRecordEditted() {
-    _isEditRecord = true;
+  List<Record> getRecordForDay(Map<int, Record> mapData, DateTime date) {
+    final id = DyphicID.createId(date);
+    final event = mapData[id];
+    return event != null ? [event] : [];
   }
 
-  void clearRecordEditted() {
-    _isEditRecord = false;
+  void onDaySelected(DateTime selectDate, {Record? selectedItem}) {
+    final id = DyphicID.createId(selectDate);
+    ref.read(calendarSelectedRecordStateProvider.notifier).state = ref.read(calendarRecordsMapStateProvder)[id] ?? Record.createEmpty(selectDate);
+    ref.read(calendarFocusDateStateProvider.notifier).state = selectDate;
+    ref.read(calendarSelectedDateStateProvider.notifier).state = selectDate;
+  }
+
+  Future<void> refresh(int id) async {
+    final updateRecord = await ref.read(recordRepositoryProvider).find(id);
+    final newRecordsMap = {...ref.read(calendarRecordsMapStateProvder)};
+    newRecordsMap[id] = updateRecord;
+    ref.read(calendarRecordsMapStateProvder.notifier).state = newRecordsMap;
+    ref.read(calendarSelectedRecordStateProvider.notifier).state = updateRecord;
+  }
+
+  void clearUpdateRecordFlag() {
+    ref.read(updateEditRecordStateProvider.notifier).state = false;
   }
 }
+
+// カレンダーの記録データ
+final calendarRecordsMapStateProvder = StateProvider<Map<int, Record>>((ref) => {});
+
+// 選択した日付の記録データ
+final calendarSelectedRecordStateProvider = StateProvider<Record>((ref) {
+  return Record.createEmpty(DateTime.now());
+});
+
+// 選択した日付
+final calendarSelectedDateStateProvider = StateProvider<DateTime>((_) => DateTime.now());
+
+// フォーカスが当たっている日付
+final calendarFocusDateStateProvider = StateProvider<DateTime>((_) => DateTime.now());
+
+// 記録ページを更新したか保持する。このProviderはカレンダーではなくRecordContorller関連で設定されるので注意
+final updateEditRecordStateProvider = StateProvider<bool>((_) => false);
