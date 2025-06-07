@@ -1,9 +1,9 @@
-import 'package:hive/hive.dart';
+import 'package:isar/isar.dart';
 
 part 'note_entity.g.dart';
 
-@HiveType(typeId: 5)
-class NoteEntity extends HiveObject {
+@Collection()
+class NoteEntity {
   NoteEntity({
     required this.id,
     required this.title,
@@ -11,17 +11,8 @@ class NoteEntity extends HiveObject {
     required this.detail,
   });
 
-  static const String boxName = 'note';
-
-  @HiveField(0)
-  final int id;
-
-  @HiveField(1)
+  final Id id;
   final String title;
-
-  @HiveField(2)
   final int typeValue;
-
-  @HiveField(3)
   final String detail;
 }

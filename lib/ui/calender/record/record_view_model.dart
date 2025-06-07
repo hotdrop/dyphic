@@ -1,5 +1,5 @@
 import 'package:dyphic/repository/record_repository.dart';
-import 'package:dyphic/ui/calender/calendar_view_model.dart';
+import 'package:dyphic/ui/calender/calendar_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:dyphic/common/app_logger.dart';
 import 'package:dyphic/model/condition.dart';

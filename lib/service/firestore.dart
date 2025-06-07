@@ -1,3 +1,4 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dyphic/model/condition.dart';
 import 'package:dyphic/model/medicine.dart';
@@ -7,7 +8,11 @@ import 'package:dyphic/repository/remote/document/record_detail_doc.dart';
 import 'package:dyphic/repository/remote/document/record_overview_doc.dart';
 import 'package:dyphic/repository/remote/document/record_temperature_doc.dart';
 
-mixin AppFirestoreMixin {
+final firestoreProvider = Provider((_) => const _Firestore());
+
+class _Firestore {
+  const _Firestore();
+
   static const String _recordRootCollection = 'dyphic';
   static const String _recordRootDocument = 'records';
   DocumentReference get _recordRootDoc => FirebaseFirestore.instance //
@@ -229,7 +234,6 @@ mixin AppFirestoreMixin {
         id: int.parse(doc.id),
         name: _getString(map, 'name'),
         overview: _getString(map, 'overview'),
-        imagePath: _getString(map, 'imagePath'),
         type: Medicine.toType(_getInt(map, 'type')),
         memo: _getString(map, 'memo'),
         order: _getInt(map, 'order'),
@@ -248,7 +252,6 @@ mixin AppFirestoreMixin {
       id: int.parse(doc.id),
       name: _getString(map, 'name'),
       overview: _getString(map, 'overview'),
-      imagePath: _getString(map, 'imagePath'),
       type: Medicine.toType(_getInt(map, 'type')),
       memo: _getString(map, 'memo'),
       order: _getInt(map, 'order'),
@@ -261,7 +264,6 @@ mixin AppFirestoreMixin {
       'name': medicine.name,
       'overview': medicine.overview,
       'type': medicine.type.index,
-      'imagePath': medicine.imagePath,
       'memo': medicine.memo,
       'order': medicine.order,
     };

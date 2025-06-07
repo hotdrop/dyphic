@@ -7,20 +7,20 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 final medicineProvider = StateNotifierProvider<_MedicineNotifier, List<Medicine>>((ref) => _MedicineNotifier(ref.read));
 
 class _MedicineNotifier extends StateNotifier<List<Medicine>> {
-  _MedicineNotifier(this._read) : super([]);
+  _MedicineNotifier(this._ref) : super([]);
 
-  final Reader _read;
+  final Ref _ref;
 
   Future<void> onLoad() async {
-    state = await _read(medicineRepositoryProvider).findAll(isForceUpdate: false);
+    state = await _ref(medicineRepositoryProvider).findAll(isForceUpdate: false);
   }
 
   Future<void> refresh() async {
-    state = await _read(medicineRepositoryProvider).findAll(isForceUpdate: true);
+    state = await _ref(medicineRepositoryProvider).findAll(isForceUpdate: true);
   }
 
   Future<void> save(Medicine medicine, bool isUpdateImage) async {
-    await _read(medicineRepositoryProvider).save(medicine, isUpdateImage);
+    await _ref(medicineRepositoryProvider).save(medicine, isUpdateImage);
     await onLoad();
   }
 
@@ -44,7 +44,6 @@ class Medicine {
     required this.overview,
     required this.type,
     this.memo = '',
-    this.imagePath = '',
     required this.order,
   });
 
@@ -55,7 +54,6 @@ class Medicine {
       overview: '',
       type: MedicineType.oral,
       memo: '',
-      imagePath: '',
       order: order,
     );
   }
@@ -65,7 +63,6 @@ class Medicine {
   final String overview;
   final MedicineType type;
   final String memo;
-  final String imagePath;
   final int order;
 
   Medicine copyWith({required String imageUrl}) {
@@ -76,7 +73,6 @@ class Medicine {
       type: type,
       order: order,
       memo: memo,
-      imagePath: imageUrl,
     );
   }
 
@@ -101,7 +97,6 @@ class Medicine {
     overview: $overview
     type: ${toTypeString()}
     memo: $memo
-    imagePath: $imagePath
     order: $order
     ''';
   }

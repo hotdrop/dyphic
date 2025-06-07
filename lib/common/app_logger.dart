@@ -13,7 +13,7 @@ class AppLogger {
 
   static Future<void> e(String message, dynamic exception, StackTrace stackTrace) async {
     if (kDebugMode) {
-      _logger.e(message, exception);
+      _logger.e(message, error: exception, stackTrace: stackTrace);
     } else {
       await FirebaseCrashlytics.instance.setCustomKey('message', message);
       await FirebaseCrashlytics.instance.recordError(exception, stackTrace);

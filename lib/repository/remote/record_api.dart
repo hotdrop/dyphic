@@ -1,20 +1,20 @@
+import 'package:dyphic/common/app_extension.dart';
 import 'package:dyphic/model/condition.dart';
 import 'package:dyphic/model/medicine.dart';
+import 'package:dyphic/service/firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:dyphic/common/app_logger.dart';
 import 'package:dyphic/model/record.dart';
 import 'package:dyphic/repository/remote/document/record_detail_doc.dart';
 import 'package:dyphic/repository/remote/document/record_overview_doc.dart';
 import 'package:dyphic/repository/remote/document/record_temperature_doc.dart';
-import 'package:dyphic/service/app_firebase.dart';
-import 'package:collection/collection.dart';
 
-final recordApiProvider = Provider((ref) => _RecordApi(ref.read));
+final recordApiProvider = Provider((ref) => _RecordApi(ref));
 
 class _RecordApi {
-  const _RecordApi(this._read);
+  const _RecordApi(this._ref);
 
-  final Reader _read;
+  final Ref _ref;
 
   ///
   /// 全日の記録情報を取得する
@@ -26,9 +26,9 @@ class _RecordApi {
     List<RecordDetailDoc> detailsResponse = [];
 
     await Future.wait<void>([
-      _read(appFirebaseProvider).findAllRecordOverview().then((r) => overviewResponse = r),
-      _read(appFirebaseProvider).findAllTemperature().then((r) => temperatureResponse = r),
-      _read(appFirebaseProvider).findAllDetails().then((r) => detailsResponse = r),
+      _ref.read(firestoreProvider).findAllRecordOverview().then((r) => overviewResponse = r),
+      _ref.read(firestoreProvider).findAllTemperature().then((r) => temperatureResponse = r),
+      _ref.read(firestoreProvider).findAllDetails().then((r) => detailsResponse = r),
     ]);
 
     AppLogger.d('記録情報の取得が完了しました。記録概要: ${overviewResponse.length}件');
@@ -49,8 +49,8 @@ class _RecordApi {
   }
 
   Record _merge(RecordOverviewDoc overview, RecordTemperatureDoc? temp, RecordDetailDoc? detail) {
-    final conditions = _read(conditionsProvider);
-    final medicines = _read(medicineProvider);
+    final conditions = _ref.read(conditionsProvider);
+    final medicines = _ref.read(medicineProvider);
     return Record(
       id: overview.recordId,
       isWalking: overview.isWalking,
@@ -79,9 +79,9 @@ class _RecordApi {
     RecordDetailDoc? detailsDoc;
 
     await Future.wait<void>([
-      _read(appFirebaseProvider).findOverviewRecord(id).then((r) => overviewDoc = r),
-      _read(appFirebaseProvider).findTemperatureRecord(id).then((r) => temperatureDoc = r),
-      _read(appFirebaseProvider).findDetailRecord(id).then((r) => detailsDoc = r),
+      _ref.read(firestoreProvider).findOverviewRecord(id).then((r) => overviewDoc = r),
+      _ref.read(firestoreProvider).findTemperatureRecord(id).then((r) => temperatureDoc = r),
+      _ref.read(firestoreProvider).findDetailRecord(id).then((r) => detailsDoc = r),
     ]);
 
     AppLogger.d('記録情報の取得が完了しました。');
@@ -94,27 +94,27 @@ class _RecordApi {
 
   Future<void> saveBreakFast(int recordId, String breakFast) async {
     AppLogger.d('$recordId の朝食を保存します。');
-    await _read(appFirebaseProvider).saveBreakFast(recordId, breakFast);
+    await _ref.read(firestoreProvider).saveBreakFast(recordId, breakFast);
   }
 
   Future<void> saveLunch(int recordId, String lunch) async {
     AppLogger.d('$recordId の昼食を保存します。');
-    await _read(appFirebaseProvider).saveLunch(recordId, lunch);
+    await _ref.read(firestoreProvider).saveLunch(recordId, lunch);
   }
 
   Future<void> saveDinner(int recordId, String dinner) async {
     AppLogger.d('$recordId の夕食を保存します。');
-    await _read(appFirebaseProvider).saveDinner(recordId, dinner);
+    await _ref.read(firestoreProvider).saveDinner(recordId, dinner);
   }
 
   Future<void> saveMorningTemperature(int recordId, double temperature) async {
     AppLogger.d('$recordId の朝体温を保存します。');
-    await _read(appFirebaseProvider).saveMorningTemperature(recordId, temperature);
+    await _ref.read(firestoreProvider).saveMorningTemperature(recordId, temperature);
   }
 
   Future<void> saveNightTemperature(int recordId, double temperature) async {
     AppLogger.d('$recordId の夜体温を保存します。');
-    await _read(appFirebaseProvider).saveNightTemperature(recordId, temperature);
+    await _ref.read(firestoreProvider).saveNightTemperature(recordId, temperature);
   }
 
   Future<void> saveCondition(Record record) async {
@@ -128,21 +128,21 @@ class _RecordApi {
       eventType: record.eventType,
       eventName: record.eventName ?? '',
     );
-    await _read(appFirebaseProvider).saveOverview(doc);
+    await _ref.read(firestoreProvider).saveOverview(doc);
   }
 
   Future<void> saveMedicineIds(int recordId, String idsStr) async {
     AppLogger.d('$recordId のお薬情報を保存します。');
-    await _read(appFirebaseProvider).saveMedicineIds(recordId, idsStr);
+    await _ref.read(firestoreProvider).saveMedicineIds(recordId, idsStr);
   }
 
   Future<void> saveMemo(int recordId, String memo) async {
     AppLogger.d('$recordId のメモを保存します。');
-    await _read(appFirebaseProvider).saveMemo(recordId, memo);
+    await _ref.read(firestoreProvider).saveMemo(recordId, memo);
   }
 
   Future<void> saveEvent(int recordId, EventType eventType, String eventName) async {
     AppLogger.d('$recordId のイベント情報を保存します。');
-    await _read(appFirebaseProvider).saveEvent(recordId, eventType, eventName);
+    await _ref.read(firestoreProvider).saveEvent(recordId, eventType, eventName);
   }
 }

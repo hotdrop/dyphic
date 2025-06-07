@@ -1,22 +1,22 @@
 import 'package:dyphic/common/app_logger.dart';
+import 'package:dyphic/service/firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:dyphic/model/condition.dart';
-import 'package:dyphic/service/app_firebase.dart';
 
-final conditionApiProvider = Provider((ref) => _ConditionApi(ref.read));
+final conditionApiProvider = Provider((ref) => _ConditionApi(ref));
 
 class _ConditionApi {
-  const _ConditionApi(this._read);
+  const _ConditionApi(this._ref);
 
-  final Reader _read;
+  final Ref _ref;
 
   Future<List<Condition>> findAll() async {
     AppLogger.d('サーバーから体調情報を全取得します。');
-    return await _read(appFirebaseProvider).findConditions();
+    return await _ref.read(firestoreProvider).findConditions();
   }
 
   Future<void> save(Condition condition) async {
     AppLogger.d('サーバーに体調情報を保存します。');
-    await _read(appFirebaseProvider).saveCondition(condition);
+    await _ref.read(firestoreProvider).saveCondition(condition);
   }
 }

@@ -1,8 +1,11 @@
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-mixin AppCrashlytics {
-  Future<void> initCrashlytics() async {
+final firebaseCrashlyticsProvider = Provider((ref) => _FirebaseCrashlyticsProvider());
+
+class _FirebaseCrashlyticsProvider {
+  Future<void> init() async {
     if (kDebugMode) {
       await FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(false);
     } else {

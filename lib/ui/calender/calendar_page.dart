@@ -3,12 +3,12 @@ import 'package:dyphic/ui/widget/app_dialog.dart';
 import 'package:flutter/material.dart';
 
 import 'package:dyphic/ui/calender/dyphic_calender.dart';
-import 'package:dyphic/ui/calender/calendar_view_model.dart';
+import 'package:dyphic/ui/calender/calendar_provider.dart';
 import 'package:dyphic/res/app_strings.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class CalenderPage extends ConsumerWidget {
-  const CalenderPage({Key? key}) : super(key: key);
+  const CalenderPage({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

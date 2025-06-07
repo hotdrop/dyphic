@@ -1,16 +1,17 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:dyphic/common/app_logger.dart';
 import 'package:dyphic/model/record.dart';
 import 'package:dyphic/ui/base_view_model.dart';
 
-final calendarViewModelProvider = ChangeNotifierProvider((ref) => _CalendarViewModel(ref.read));
+part 'calendar_provider.g.dart';
 
-class _CalendarViewModel extends BaseViewModel {
-  _CalendarViewModel(this._read) {
-    _init();
+@riverpod
+class CalendarController extends _$CalendarController {
+  @override
+  Future<void> build() async {
+    await _read(recordsProvider.notifier).onLoad();
   }
-
-  final Reader _read;
 
   bool _isEditRecord = false;
   bool get isEditRecord => _isEditRecord;

@@ -1,11 +1,15 @@
-import 'package:dyphic/common/app_logger.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:dyphic/common/app_logger.dart';
 
-mixin AppAuthMixin {
+final firebaseAuthProvider = Provider((ref) => _FirebaseAuthProvider());
+
+class _FirebaseAuthProvider {
   bool get isSignIn => FirebaseAuth.instance.currentUser != null;
-  String? get uid => FirebaseAuth.instance.currentUser?.uid;
+
+  String? get userId => FirebaseAuth.instance.currentUser?.uid;
   String? get userName => FirebaseAuth.instance.currentUser?.displayName;
   String? get email => FirebaseAuth.instance.currentUser?.email;
 
@@ -40,7 +44,7 @@ mixin AppAuthMixin {
     }
   }
 
-  Future<void> signOut() async {
+  Future<void> signOutWithGoogle() async {
     GoogleSignIn().disconnect();
     await FirebaseAuth.instance.signOut();
   }
