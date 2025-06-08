@@ -31,8 +31,7 @@ flutter build appbundle
 リリースビルドで作ったアプリでCrashlyticsへレポートを送信するようにしているので、有効にすることでクラッシュ情報がみれます。
 
 # やること
-- BottomNavigationMenuにお薬を追加する
-- お薬の画像はローカルから取得する。png画像はID
-  - medicineのidで、ローカルから`/medicine/images/[id].png`の画像を取得。あれば表示する
 - AndroidとiOSのディレクトリは作り直す
 - カレンダーから記録ページに遷移し、いくつか記録情報を編集してカレンダーに戻ってきたとき、今は`calendar_page.dart`の`_ViewSelectedDayInfoCard`でコントローラの`onLoadRecords`を実行しているが、これは無駄な処理。大体は1、2箇所の記録データしか更新しないので、更新したRecordのidをリストで保持しておき、`CalendarController`の`refresh`で1つずつ更新した方がいい。
+- お薬画面で今使っている薬と今は服用していない薬の2択を区別できるようにして、それを記録入力画面では「今服用していない薬」をExpanded/collespondで閉じるようにしたい
+- お薬一覧でリストのアイテムを並び替えられるようにしてorderを更新する。記録入力画面で並び順を反映する

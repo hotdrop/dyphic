@@ -11,17 +11,18 @@ class _RecordRepository {
   final Ref _ref;
 
   ///
-  /// 記録情報をローカルから取得する。
-  /// isLoadLatest がtrueの場合は最新データをリモート取得する
+  /// 指定したIDの記録情報を取得する
+  /// 取得先: ローカルストレージ
   ///
-  Future<List<Record>> findAll({bool isLoadLatest = false}) async {
-    if (isLoadLatest) {
-      final newRecords = await _ref.read(recordApiProvider).findAll();
-      newRecords.sort((a, b) => a.id - b.id);
-      await _ref.read(recordDaoProvider).saveAll(newRecords);
-      return newRecords;
-    }
+  Future<Record> find(int id) async {
+    return await _ref.read(recordDaoProvider).find(id);
+  }
 
+  ///
+  /// 全記録情報をローカルから取得する
+  /// 取得先: ローカルストレージ
+  ///
+  Future<List<Record>> findAll() async {
     final records = await _ref.read(recordDaoProvider).findAll();
     if (records.isEmpty) {
       return [];
@@ -32,15 +33,18 @@ class _RecordRepository {
   }
 
   ///
-  /// 指定したIDの記録情報をローカルから取得する。
-  /// リモートからは取得しない。
+  /// 記録情報を最新のものに更新する
+  /// 取得先: サーバー
   ///
-  Future<Record> find(int id) async {
-    return await _ref.read(recordDaoProvider).find(id);
+  Future<void> onLoadLatest() async {
+    final newRecords = await _ref.read(recordApiProvider).findAll();
+    newRecords.sort((a, b) => a.id - b.id);
+    await _ref.read(recordDaoProvider).saveAll(newRecords);
   }
 
   ///
-  /// リモートから指定した記録情報を更新する
+  /// 指定IDの記録情報を更新する
+  /// 取得先: サーバー
   ///
   Future<void> refresh(int id) async {
     final record = await _ref.read(recordApiProvider).find(id);

@@ -11,27 +11,51 @@ class _MedicineRepository {
   final Ref _ref;
 
   ///
-  /// お薬情報をローカルから取得する。
-  /// データがローカルにない場合はリモートから取得する。
-  /// isForceUpdate がtrueの場合はリモートのデータで最新化する。
+  /// 指定したIDのお薬情報を取得する
+  /// 取得先: ローカルストレージ
   ///
-  Future<List<Medicine>> findAll({bool isForceUpdate = false}) async {
-    final medicines = await _ref.read(medicineDaoProvider).findAll();
-    if (medicines.isNotEmpty && !isForceUpdate) {
-      medicines.sort((a, b) => a.order - b.order);
-      return medicines;
-    }
-
-    final newMedicines = await _ref.read(medicineApiProvider).findAll();
-    newMedicines.sort((a, b) => a.order - b.order);
-    await _ref.read(medicineDaoProvider).saveAll(newMedicines);
-    return newMedicines;
-  }
-
   Future<Medicine?> find(int id) async {
     return await _ref.read(medicineDaoProvider).find(id);
   }
 
+  ///
+  /// 保持している全お薬情報を取得する
+  /// 取得先: ローカルストレージ
+  ///
+  Future<List<Medicine>> findAll() async {
+    final medicines = await _ref.read(medicineDaoProvider).findAll();
+    if (medicines.isEmpty) {
+      return [];
+    }
+
+    medicines.sort((a, b) => a.order - b.order);
+    return medicines;
+  }
+
+  ///
+  /// お薬情報がローカルストレージにロード済みであればtrue、ローカルのデータが0件であればfalse
+  ///
+  Future<bool> isLoaded() async {
+    final medicines = await _ref.read(medicineDaoProvider).findAll();
+    if (medicines.isEmpty) {
+      return false;
+    }
+    return true;
+  }
+
+  ///
+  /// お薬情報を最新データに更新する
+  /// 取得先: サーバー
+  ///
+  Future<void> onLoadLatest() async {
+    final newMedicines = await _ref.read(medicineApiProvider).findAll();
+    await _ref.read(medicineDaoProvider).saveAll(newMedicines);
+  }
+
+  ///
+  /// お薬情報を保存する
+  /// 保存先: ローカルストレージ, サーバー
+  ///
   Future<void> save(Medicine newMedicine) async {
     await _ref.read(medicineApiProvider).save(newMedicine);
     await _ref.read(medicineDaoProvider).save(newMedicine);

@@ -1,9 +1,9 @@
 import 'package:dyphic/model/dyphic_id.dart';
 import 'package:dyphic/ui/record/widgets/meal_widget.dart';
 import 'package:dyphic/ui/record/widgets/morning_temperature_widget.dart';
-import 'package:dyphic/ui/widget/app_check_box.dart';
+import 'package:dyphic/ui/record/widgets/app_check_box.dart';
 import 'package:dyphic/ui/widget/app_chips.dart';
-import 'package:dyphic/ui/widget/app_event_radio_group.dart';
+import 'package:dyphic/ui/record/widgets/event_radio_group.dart';
 import 'package:dyphic/ui/widget/app_icon.dart';
 import 'package:dyphic/ui/widget/app_text_field.dart';
 import 'package:flutter/material.dart';

@@ -11,12 +11,17 @@ part 'medicine_controller.g.dart';
 class MedicineController extends _$MedicineController {
   @override
   Future<void> build() async {
-    await refresh();
+    await onLoad();
+  }
+
+  Future<void> onLoad() async {
+    final medicines = await ref.read(medicineRepositoryProvider).findAll();
+    ref.read(medicineUiStateProvider.notifier).state = medicines;
   }
 
   Future<void> refresh() async {
-    final medicines = await ref.read(medicineRepositoryProvider).findAll();
-    ref.read(medicineUiStateProvider.notifier).state = medicines;
+    await ref.read(medicineRepositoryProvider).onLoadLatest();
+    await onLoad();
   }
 
   int createNewId() {

@@ -1,3 +1,5 @@
+import 'package:dyphic/ui/widget/app_dialog.dart';
+import 'package:dyphic/ui/widget/app_progress_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -38,6 +40,7 @@ class _ViewBody extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('お薬'),
+        actions: const [_RefreshIcon()],
       ),
       body: NotificationListener<UserScrollNotification>(
         onNotification: ((notification) {
@@ -63,6 +66,35 @@ class _ViewBody extends ConsumerWidget {
   }
 }
 
+class _RefreshIcon extends ConsumerWidget {
+  const _RefreshIcon();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return IconButton(
+      onPressed: () async => await _showRefreshDialog(context, ref),
+      icon: const Icon(Icons.refresh),
+    );
+  }
+
+  Future<void> _showRefreshDialog(BuildContext context, WidgetRef ref) async {
+    AppDialog.okAndCancel(
+      message: 'サーバーから最新のお薬情報を取得します。\nよろしいですか？',
+      onOk: () async => await _refresh(context, ref),
+    ).show(context);
+  }
+
+  Future<void> _refresh(BuildContext context, WidgetRef ref) async {
+    const progressDialog = AppProgressDialog<void>();
+    await progressDialog.show(
+      context,
+      execute: ref.read(medicineControllerProvider.notifier).refresh,
+      onSuccess: (_) => {/* 成功時は何もしない */},
+      onError: (err) => AppDialog.onlyOk(message: err).show(context),
+    );
+  }
+}
+
 class _MedicineAddFab extends ConsumerWidget {
   const _MedicineAddFab();
 
@@ -78,7 +110,7 @@ class _MedicineAddFab extends ConsumerWidget {
     final newId = ref.read(medicineControllerProvider.notifier).createNewId();
     final isUpdate = await MedicineEditPage.start(context, newId);
     if (isUpdate) {
-      ref.read(medicineControllerProvider.notifier).refresh();
+      ref.read(medicineControllerProvider.notifier).onLoad();
     }
   }
 }
@@ -105,7 +137,7 @@ class _ViewContents extends ConsumerWidget {
           onTapEvent: () async {
             final isUpdate = await MedicineEditPage.start(context, medicines[index].id);
             if (isUpdate) {
-              ref.read(medicineControllerProvider.notifier).refresh();
+              ref.read(medicineControllerProvider.notifier).onLoad();
             }
           },
         );

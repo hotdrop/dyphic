@@ -1,15 +1,20 @@
-import 'package:dyphic/model/app_settings.dart';
+import 'package:dyphic/service/firebase_auth.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import 'package:dyphic/res/app_colors.dart';
 import 'package:dyphic/res/app_images.dart';
 import 'package:dyphic/res/app_strings.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 ///
 /// 朝食
 ///
 class MealBreakfastWidget extends StatelessWidget {
-  const MealBreakfastWidget({Key? key, required this.currentValue, required this.onSubmitted}) : super(key: key);
+  const MealBreakfastWidget({
+    super.key,
+    required this.currentValue,
+    required this.onSubmitted,
+  });
 
   final String? currentValue;
   final Function(String) onSubmitted;
@@ -30,7 +35,11 @@ class MealBreakfastWidget extends StatelessWidget {
 /// 昼食
 ///
 class MealLunchWidget extends StatelessWidget {
-  const MealLunchWidget({Key? key, required this.currentValue, required this.onSubmitted}) : super(key: key);
+  const MealLunchWidget({
+    super.key,
+    required this.currentValue,
+    required this.onSubmitted,
+  });
 
   final String? currentValue;
   final Function(String) onSubmitted;
@@ -51,7 +60,11 @@ class MealLunchWidget extends StatelessWidget {
 /// 夕食
 ///
 class MealDinnerWidget extends StatelessWidget {
-  const MealDinnerWidget({Key? key, required this.currentValue, required this.onSubmitted}) : super(key: key);
+  const MealDinnerWidget({
+    super.key,
+    required this.currentValue,
+    required this.onSubmitted,
+  });
 
   final String? currentValue;
   final Function(String) onSubmitted;
@@ -70,13 +83,12 @@ class MealDinnerWidget extends StatelessWidget {
 
 class _MealCard extends StatelessWidget {
   const _MealCard({
-    Key? key,
     required this.color,
     required this.iconImagePath,
     required this.initValue,
     required this.dialogTitle,
     required this.onSubmitted,
-  }) : super(key: key);
+  });
 
   final Color color;
   final String iconImagePath;
@@ -165,7 +177,7 @@ class _MealEditDialogState extends ConsumerState<_MealEditDialog> {
 
   @override
   Widget build(BuildContext context) {
-    final isSignIn = ref.watch(appSettingsProvider).isSignIn;
+    final isSignIn = ref.watch(firebaseAuthProvider).isSignIn;
     return AlertDialog(
       title: Text(widget.title),
       content: TextField(

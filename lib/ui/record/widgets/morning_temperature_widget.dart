@@ -1,12 +1,15 @@
-import 'package:dyphic/model/app_settings.dart';
-import 'package:dyphic/res/app_colors.dart';
-import 'package:dyphic/res/app_strings.dart';
-import 'package:dyphic/ui/widget/app_icon.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:dyphic/res/app_colors.dart';
+import 'package:dyphic/service/firebase_auth.dart';
+import 'package:dyphic/ui/record/widgets/thermomenter_icon.dart';
 
 class MorningTemperatureWidget extends StatelessWidget {
-  const MorningTemperatureWidget({Key? key, required this.currentValue, required this.onSubmitted}) : super(key: key);
+  const MorningTemperatureWidget({
+    super.key,
+    required this.currentValue,
+    required this.onSubmitted,
+  });
 
   final double? currentValue;
   final Function(double) onSubmitted;
@@ -16,9 +19,9 @@ class MorningTemperatureWidget extends StatelessWidget {
     return TemperatureView(
       temperature: currentValue ?? 0,
       color: AppColors.morningTemperature,
-      title: AppStrings.recordTemperatureMorning,
+      title: '朝の体温',
       thermometerIcon: ThermometerIcon.morning(),
-      dialogTitle: AppStrings.recordTemperatureMorning,
+      dialogTitle: '朝の体温',
       onSubmitted: onSubmitted,
     );
   }
@@ -26,14 +29,14 @@ class MorningTemperatureWidget extends StatelessWidget {
 
 class TemperatureView extends ConsumerWidget {
   const TemperatureView({
-    Key? key,
+    super.key,
     required this.temperature,
     required this.color,
     required this.title,
     required this.thermometerIcon,
     required this.onSubmitted,
     required this.dialogTitle,
-  }) : super(key: key);
+  });
 
   final String dialogTitle;
   final Color color;
@@ -44,7 +47,7 @@ class TemperatureView extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final isSignIn = ref.read(appSettingsProvider).isSignIn;
+    final isSignIn = ref.read(firebaseAuthProvider).isSignIn;
     return Card(
       elevation: 4.0,
       child: InkWell(
@@ -87,7 +90,7 @@ class TemperatureView extends ConsumerWidget {
   }
 
   Widget _viewTemperatureLabel(BuildContext context) {
-    final temperatureStr = (temperature > 0) ? '$temperature ${AppStrings.recordTemperatureUnit}' : AppStrings.recordTemperatureNonSet;
+    final temperatureStr = (temperature > 0) ? '$temperature 度' : '未登録';
     final fontColor = (temperature > 0) ? color : Colors.grey;
     return Row(
       crossAxisAlignment: CrossAxisAlignment.end,
@@ -289,11 +292,6 @@ class _NumberCircleButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ElevatedButton(
-      style: ElevatedButton.styleFrom(
-        primary: Colors.white,
-        onPrimary: Theme.of(context).primaryColor,
-        shape: const CircleBorder(),
-      ),
       onPressed: onTap,
       child: Center(child: Text('$number')),
     );
@@ -312,11 +310,6 @@ class _IconCircleButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ElevatedButton(
-      style: ElevatedButton.styleFrom(
-        primary: Colors.white,
-        onPrimary: Theme.of(context).primaryColor,
-        shape: const CircleBorder(),
-      ),
       onPressed: onTap,
       child: Center(child: Icon(icon)),
     );

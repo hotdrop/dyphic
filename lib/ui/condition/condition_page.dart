@@ -1,89 +1,122 @@
-import 'package:dyphic/model/app_settings.dart';
-import 'package:dyphic/model/condition.dart';
-import 'package:dyphic/res/app_strings.dart';
-import 'package:dyphic/ui/condition/condition_view_model.dart';
-import 'package:dyphic/ui/widget/app_dialog.dart';
-import 'package:dyphic/ui/widget/app_progress_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:dyphic/service/firebase_auth.dart';
+import 'package:dyphic/ui/condition/condition_controller.dart';
+import 'package:dyphic/ui/widget/app_dialog.dart';
+import 'package:dyphic/ui/widget/app_progress_dialog.dart';
 
 class ConditionPage extends ConsumerWidget {
-  const ConditionPage._();
-
-  static Future<void> start(BuildContext context) async {
-    await Navigator.push<void>(
-      context,
-      MaterialPageRoute(builder: (_) => const ConditionPage._()),
-    );
-  }
+  const ConditionPage({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final uiState = ref.watch(conditionViewModelProvider).uiState;
+    return ref.watch(conditionControllerProvider).when(
+          data: (_) => const _ViewBody(),
+          error: (err, stackTrace) {
+            return Center(
+              child: Text('$err', style: const TextStyle(color: Colors.red)),
+            );
+          },
+          loading: () {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          },
+        );
+  }
+}
+
+class _ViewBody extends ConsumerWidget {
+  const _ViewBody();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final isSigniIn = ref.watch(firebaseAuthProvider).isSignIn;
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text(AppStrings.conditionPageTitle),
-        actions: [
-          IconButton(
-            onPressed: () async => await _showRefreshDialog(context, ref),
-            icon: const Icon(Icons.refresh),
-          ),
-        ],
+        title: const Text('体調管理'),
+        actions: const [_RefreshIcon()],
       ),
       body: GestureDetector(
         onTap: () {
           FocusScope.of(context).unfocus();
         },
-        child: uiState.when(
-          loading: (err) => _onLoading(context, err),
-          success: () => _onSuccess(context, ref),
+        child: ListView(
+          children: [
+            const _ViewOverview(),
+            const _ViewClearButton(),
+            const Divider(),
+            const _ViewConditionArea(),
+            const Divider(),
+            const SizedBox(height: 16),
+            const _ViewInputTextField(),
+            const SizedBox(height: 16),
+            if (isSigniIn) const _ViewSaveButton(),
+            const SizedBox(height: 36),
+          ],
         ),
       ),
     );
   }
+}
 
-  Widget _onLoading(BuildContext context, String? errorMsg) {
-    Future.delayed(Duration.zero).then((_) async {
-      if (errorMsg != null) {
-        await AppDialog.onlyOk(message: errorMsg).show(context);
-      }
-    });
-    return const Center(
-      child: CircularProgressIndicator(),
+class _RefreshIcon extends ConsumerWidget {
+  const _RefreshIcon();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return IconButton(
+      onPressed: () async => await _showRefreshDialog(context, ref),
+      icon: const Icon(Icons.refresh),
     );
   }
 
-  Widget _onSuccess(BuildContext context, WidgetRef ref) {
-    return ListView(
-      children: [
-        _overview(context),
-        _clearButton(ref),
-        const Divider(),
-        _conditionArea(ref),
-        const Divider(),
-        _inputArea(context, ref),
-      ],
-    );
+  Future<void> _showRefreshDialog(BuildContext context, WidgetRef ref) async {
+    AppDialog.okAndCancel(
+      message: 'サーバーから最新の体調情報を取得します。\nよろしいですか？',
+      onOk: () async => await _refresh(context, ref),
+    ).show(context);
   }
 
-  Widget _overview(BuildContext context) {
+  Future<void> _refresh(BuildContext context, WidgetRef ref) async {
+    const progressDialog = AppProgressDialog<void>();
+    await progressDialog.show(
+      context,
+      execute: ref.read(conditionControllerProvider.notifier).refresh,
+      onSuccess: (_) => {/* 成功時は何もしない */},
+      onError: (err) => AppDialog.onlyOk(message: err).show(context),
+    );
+  }
+}
+
+class _ViewOverview extends StatelessWidget {
+  const _ViewOverview();
+
+  @override
+  Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(left: 16, right: 16, top: 16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(AppStrings.conditionOverview),
+          const Text('この画面では体調に関する症状を登録・編集できます。'),
           const SizedBox(height: 8),
           Text(
-            AppStrings.conditionDetail,
-            style: Theme.of(context).textTheme.caption,
+            '「頭痛」や「腹痛」など大まかな症状を登録し、細かい症状は日々の記録画面にある体調メモに書いていくことをオススメします。',
+            style: Theme.of(context).textTheme.bodySmall,
           ),
         ],
       ),
     );
   }
+}
 
-  Widget _clearButton(WidgetRef ref) {
+class _ViewClearButton extends ConsumerWidget {
+  const _ViewClearButton();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.end,
       mainAxisSize: MainAxisSize.max,
@@ -91,68 +124,67 @@ class ConditionPage extends ConsumerWidget {
         Padding(
           padding: const EdgeInsets.only(right: 16),
           child: OutlinedButton(
-            onPressed: () => ref.read(conditionViewModelProvider).clear(),
-            child: const Text(AppStrings.conditionClearSelectedLabel),
+            onPressed: () => ref.read(conditionControllerProvider.notifier).clear(),
+            child: const Text('選択をクリアする'),
           ),
         ),
       ],
     );
   }
+}
 
-  Widget _conditionArea(WidgetRef ref) {
-    final selectName = ref.watch(conditionViewModelProvider).selectedConditionName;
-    final conditions = ref.watch(conditionsProvider);
+class _ViewConditionArea extends ConsumerWidget {
+  const _ViewConditionArea();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final uiState = ref.watch(conditionUiStateProvider);
+    final selectName = uiState.getSelectName();
+
     return Container(
       margin: const EdgeInsets.only(left: 16, right: 16),
       height: 200,
       child: Wrap(
         direction: Axis.horizontal,
         spacing: 8.0,
-        children: conditions.map((c) {
+        children: uiState.conditions.map((c) {
           return ChoiceChip(
             label: Text(c.name),
             selected: selectName == c.name,
-            onSelected: (_) => ref.read(conditionViewModelProvider).selectCondition(c),
+            onSelected: (_) => ref.read(conditionControllerProvider.notifier).selectCondition(c),
           );
         }).toList(),
       ),
     );
   }
+}
 
-  Widget _inputArea(BuildContext context, WidgetRef ref) {
-    final isSigniIn = ref.watch(appSettingsProvider).isSignIn;
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 36.0),
-      child: Column(
-        children: [
-          const SizedBox(height: 16),
-          _textFieldOnInputArea(context, ref),
-          const SizedBox(height: 16),
-          if (isSigniIn) _saveButtonOnInputArea(context, ref),
-          const SizedBox(height: 36),
-        ],
-      ),
-    );
-  }
+class _ViewInputTextField extends ConsumerWidget {
+  const _ViewInputTextField();
 
-  Widget _textFieldOnInputArea(BuildContext context, WidgetRef ref) {
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
     return TextFormField(
       textCapitalization: TextCapitalization.words,
-      controller: ref.watch(conditionViewModelProvider).editController,
+      controller: ref.watch(conditionNameEditController),
       decoration: const InputDecoration(
-        labelText: AppStrings.conditionInputLabel,
+        labelText: '症状名',
         border: OutlineInputBorder(),
         filled: true,
       ),
       autovalidateMode: AutovalidateMode.always,
-      validator: (String? inputVal) => ref.read(conditionViewModelProvider).inputValidator(inputVal),
-      onFieldSubmitted: (String value) => ref.read(conditionViewModelProvider).input(value),
     );
   }
+}
 
-  Widget _saveButtonOnInputArea(BuildContext context, WidgetRef ref) {
-    final buttonName = ref.watch(conditionViewModelProvider).isSelected ? AppStrings.conditionEditButton : AppStrings.conditionNewButton;
-    final canSaved = ref.watch(conditionViewModelProvider).enableOnSave;
+class _ViewSaveButton extends ConsumerWidget {
+  const _ViewSaveButton();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final uiState = ref.watch(conditionUiStateProvider);
+    final buttonName = uiState.isSelected() ? '症状名を修正する' : '新しく登録する';
+    final canSaved = ref.watch(enableSaveConditionProvider);
 
     return ElevatedButton(
       onPressed: canSaved ? () async => await _save(context, ref) : null,
@@ -164,25 +196,8 @@ class ConditionPage extends ConsumerWidget {
     const progressDialog = AppProgressDialog<void>();
     await progressDialog.show(
       context,
-      execute: ref.read(conditionViewModelProvider).save,
-      onSuccess: (_) => ref.read(conditionViewModelProvider).clear(),
-      onError: (err) => AppDialog.onlyOk(message: err).show(context),
-    );
-  }
-
-  Future<void> _showRefreshDialog(BuildContext context, WidgetRef ref) async {
-    AppDialog.okAndCancel(
-      message: AppStrings.conditionRefreshConfirmMessage,
-      onOk: () async => await _refresh(context, ref),
-    ).show(context);
-  }
-
-  Future<void> _refresh(BuildContext context, WidgetRef ref) async {
-    const progressDialog = AppProgressDialog<void>();
-    await progressDialog.show(
-      context,
-      execute: ref.read(conditionViewModelProvider).refresh,
-      onSuccess: (_) => {/* 成功時は何もしない */},
+      execute: ref.read(conditionControllerProvider.notifier).save,
+      onSuccess: (_) => ref.read(conditionControllerProvider.notifier).clear(),
       onError: (err) => AppDialog.onlyOk(message: err).show(context),
     );
   }

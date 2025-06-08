@@ -8,10 +8,6 @@ class AppStrings {
   static const String recordDinnerDialogTitle = '夕食';
   static const String recordMealDialogHint = '食事の内容(簡単に)';
 
-  static const String recordTemperatureMorning = '朝の体温';
-  static const String recordTemperatureUnit = '度';
-  static const String recordTemperatureNonSet = '未登録';
-
   static const String recordMedicalTitle = '服用した薬';
   static const String recordMedicineSaveButton = '選択した薬を保存する';
 
@@ -39,17 +35,6 @@ class AppStrings {
   static const String noteEditPageLabelDetailHint = 'ここに詳細メモを記載してください。';
   static const String noteEditPageSaveButton = 'この内容で保存する';
 
-  // 体調ページ
-  static const String conditionPageTitle = '体調管理';
-  static const String conditionOverview = 'この画面では体調に関する症状を登録・編集できます。';
-  static const String conditionDetail = '「頭痛」や「腹痛」など大まかな症状を登録し、細かい症状は日々の記録画面にある体調メモに書いていくことをオススメします。';
-  static const String conditionClearSelectedLabel = '選択をクリアする';
-  static const String conditionInputLabel = '症状名';
-  static const String conditionInputDuplicateMessage = 'この症状名は既に登録されています。';
-  static const String conditionNewButton = '新しく登録する';
-  static const String conditionEditButton = '症状名を修正する';
-  static const String conditionRefreshConfirmMessage = 'サーバーから最新の体調情報を取得します。\nよろしいですか？';
-
   // 設定ページ
   static const String settingsPageTitle = '設定';
   static const String settingsNotSignInEmailLabel = '未ログイン';
@@ -72,5 +57,4 @@ class AppStrings {
   static const String settingsLoadNoteLabel = 'ノート情報を再取得';
   static const String settingsLoadNoteSubLabel = 'タップでノート情報を最新化します。';
   static const String settingsLoadNoteConfirmMessage = 'サーバーから最新のノート情報を取得します。\nよろしいですか？';
-  static const String medicineRefreshConfirmMessage = 'サーバーから最新のお薬情報を取得します。\nよろしいですか？';
 }
