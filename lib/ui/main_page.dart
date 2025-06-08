@@ -1,3 +1,4 @@
+import 'package:dyphic/ui/condition/condition_page.dart';
 import 'package:dyphic/ui/medicine/medicine_page.dart';
 import 'package:flutter/material.dart';
 import 'package:dyphic/ui/calender/calendar_page.dart';
@@ -46,6 +47,8 @@ class _MainPageState extends State<MainPage> {
       case 1:
         return const MedicinePage();
       case 2:
+        return const ConditionPage();
+      case 3:
         return const NotesPage();
       default:
         return const SettingsPage();
@@ -62,6 +65,7 @@ class Destination {
 const _allDestinations = <Destination>[
   Destination('カレンダー', Icons.calendar_today),
   Destination('お薬', Icons.medication),
+  Destination('体調', Icons.sentiment_satisfied_alt_sharp),
   Destination('ノート', Icons.note),
   Destination('設定', Icons.settings),
 ];

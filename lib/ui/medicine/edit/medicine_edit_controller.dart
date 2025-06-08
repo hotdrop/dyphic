@@ -9,15 +9,10 @@ part 'medicine_edit_controller.g.dart';
 @riverpod
 class MedicineEditController extends _$MedicineEditController {
   @override
-  Future<Medicine> build(int id) async {
+  Future<void> build(int id) async {
     final target = await ref.read(medicineRepositoryProvider).find(id);
-    if (target == null) {
-      ref.read(_uiStateProvider.notifier).state = _UiState.createEmpty(id: id);
-      return Medicine.createEmpty(id, id);
-    } else {
-      ref.read(_uiStateProvider.notifier).state = _UiState.create(target);
-      return target;
-    }
+    final uiState = (target == null) ? _UiState.createEmpty(id: id) : _UiState.create(target);
+    ref.read(medicineUiStateProvider.notifier).state = uiState;
   }
 }
 
@@ -28,39 +23,33 @@ class _MedicineEditMethods {
 
   final Ref ref;
 
-  void inputName(String? newVal) {
-    if (newVal != null) {
-      ref.read(_uiStateProvider.notifier).update(
-            (state) => state.copyWith(name: newVal),
-          );
-    }
+  void inputName(String newVal) {
+    ref.read(medicineUiStateProvider.notifier).update(
+          (state) => state.copyWith(name: newVal),
+        );
   }
 
-  void inputOverview(String? newVal) {
-    if (newVal != null) {
-      ref.read(_uiStateProvider.notifier).update(
-            (state) => state.copyWith(overview: newVal),
-          );
-    }
+  void inputOverview(String newVal) {
+    ref.read(medicineUiStateProvider.notifier).update(
+          (state) => state.copyWith(overview: newVal),
+        );
   }
 
   void inputOral(MedicineType newVal) {
-    ref.read(_uiStateProvider.notifier).update(
+    ref.read(medicineUiStateProvider.notifier).update(
           (state) => state.copyWith(type: newVal),
         );
   }
 
-  void inputMemo(String? newVal) {
-    if (newVal != null) {
-      ref.read(_uiStateProvider.notifier).update(
-            (state) => state.copyWith(memo: newVal),
-          );
-    }
+  void inputMemo(String newVal) {
+    ref.read(medicineUiStateProvider.notifier).update(
+          (state) => state.copyWith(memo: newVal),
+        );
   }
 
   Future<void> save() async {
-    final medicine = ref.read(_uiStateProvider).toMedicine();
     try {
+      final medicine = ref.read(medicineUiStateProvider).toMedicine();
       await ref.read(medicineRepositoryProvider).save(medicine);
     } catch (e, s) {
       await AppLogger.e('お薬情報の保存に失敗しました。', e, s);
@@ -69,11 +58,11 @@ class _MedicineEditMethods {
   }
 }
 
-final _uiStateProvider = StateProvider<_UiState>((_) => _UiState.createEmpty());
+final medicineUiStateProvider = StateProvider<_UiState>((_) => _UiState.createEmpty());
 
 // お薬情報の登録可能条件。これがtrueになれば登録ボタンを押せる
 final canSaveMedicineEditStateProvider = Provider<bool>((ref) {
-  final name = ref.watch(_uiStateProvider).name;
+  final name = ref.watch(medicineUiStateProvider).name;
   return name.isNotEmpty;
 });
 

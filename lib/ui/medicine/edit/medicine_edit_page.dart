@@ -31,7 +31,7 @@ class MedicineEditPage extends ConsumerWidget {
           FocusScope.of(context).unfocus();
         },
         child: ref.watch(medicineEditControllerProvider(medicineId)).when(
-              data: (data) => _ViewBody(data),
+              data: (_) => const _ViewBody(),
               error: (err, stackTrace) {
                 return Center(
                   child: Text('$err', style: const TextStyle(color: Colors.red)),
@@ -49,27 +49,25 @@ class MedicineEditPage extends ConsumerWidget {
 }
 
 class _ViewBody extends ConsumerWidget {
-  const _ViewBody(this.medicine);
-
-  final Medicine medicine;
+  const _ViewBody();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Padding(
       padding: const EdgeInsets.only(left: 16.0, right: 16.0),
       child: ListView(
-        children: [
-          const SizedBox(height: 16.0),
-          _ViewEditFieldName(medicine.name),
-          const SizedBox(height: 8.0),
-          _ViewEditFieldOverview(medicine.overview),
-          const SizedBox(height: 8.0),
-          _ViewSelectType(medicine.type),
-          const SizedBox(height: 8.0),
-          _ViewEditFieldMemo(medicine.memo),
-          const SizedBox(height: 8.0),
-          const _ViewSaveButton(),
-          const SizedBox(height: 16.0),
+        children: const [
+          SizedBox(height: 16.0),
+          _ViewEditFieldName(),
+          SizedBox(height: 8.0),
+          _ViewEditFieldOverview(),
+          SizedBox(height: 8.0),
+          _ViewSelectType(),
+          SizedBox(height: 8.0),
+          _ViewEditFieldMemo(),
+          SizedBox(height: 8.0),
+          _ViewSaveButton(),
+          SizedBox(height: 16.0),
         ],
       ),
     );
@@ -77,15 +75,13 @@ class _ViewBody extends ConsumerWidget {
 }
 
 class _ViewEditFieldName extends ConsumerWidget {
-  const _ViewEditFieldName(this.name);
-
-  final String name;
+  const _ViewEditFieldName();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return AppTextField(
       label: 'お薬名',
-      initValue: name,
+      initValue: ref.read(medicineUiStateProvider).name,
       isRequired: true,
       onChanged: (String v) => ref.read(medicineEditMethodsProvider).inputName(v),
     );
@@ -93,15 +89,13 @@ class _ViewEditFieldName extends ConsumerWidget {
 }
 
 class _ViewEditFieldOverview extends ConsumerWidget {
-  const _ViewEditFieldOverview(this.overview);
-
-  final String overview;
+  const _ViewEditFieldOverview();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return AppTextField(
       label: '一言メモ',
-      initValue: overview,
+      initValue: ref.read(medicineUiStateProvider).overview,
       isRequired: true,
       onChanged: (String v) => ref.read(medicineEditMethodsProvider).inputOverview(v),
     );
@@ -109,29 +103,25 @@ class _ViewEditFieldOverview extends ConsumerWidget {
 }
 
 class _ViewSelectType extends ConsumerWidget {
-  const _ViewSelectType(this.type);
-
-  final MedicineType type;
+  const _ViewSelectType();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return MedicineTypeRadio(
-      initSelectedType: type,
+      initSelectedType: ref.read(medicineUiStateProvider).type,
       onChange: (MedicineType t) => ref.read(medicineEditMethodsProvider).inputOral(t),
     );
   }
 }
 
 class _ViewEditFieldMemo extends ConsumerWidget {
-  const _ViewEditFieldMemo(this.memo);
-
-  final String memo;
+  const _ViewEditFieldMemo();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return MultiLineTextField(
       label: '詳細メモ',
-      initValue: memo,
+      initValue: ref.read(medicineUiStateProvider).memo,
       limitLine: 3,
       hintText: '詳細な情報を残したい場合はここに記載してください。',
       onChanged: (String v) => ref.read(medicineEditMethodsProvider).inputMemo(v),

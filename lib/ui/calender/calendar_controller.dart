@@ -4,7 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:dyphic/model/record.dart';
 
-part 'calendar_provider.g.dart';
+part 'calendar_controller.g.dart';
 
 @riverpod
 class CalendarController extends _$CalendarController {

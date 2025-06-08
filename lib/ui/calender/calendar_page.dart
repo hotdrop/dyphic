@@ -5,7 +5,7 @@ import 'package:dyphic/res/app_images.dart';
 import 'package:dyphic/ui/record/records_page_view.dart';
 import 'package:dyphic/common/app_logger.dart';
 import 'package:dyphic/model/record.dart';
-import 'package:dyphic/ui/calender/calendar_provider.dart';
+import 'package:dyphic/ui/calender/calendar_controller.dart';
 
 class CalenderPage extends ConsumerWidget {
   const CalenderPage({super.key});

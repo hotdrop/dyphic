@@ -8,17 +8,6 @@ class Medicine {
     required this.order,
   });
 
-  factory Medicine.createEmpty(int id, int order) {
-    return Medicine(
-      id: id,
-      name: '',
-      overview: '',
-      type: MedicineType.oral,
-      memo: '',
-      order: order,
-    );
-  }
-
   final int id;
   final String name;
   final String overview;

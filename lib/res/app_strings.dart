@@ -25,16 +25,6 @@ class AppStrings {
   static const String recordMemoHint = 'その他、残しておきたい記録があったらここに記載してください。';
   static const String recordMemoSaveButton = 'メモを保存する';
 
-  // ノートページ
-  static const String notesPageTitle = 'ノート';
-  static const String notesNotRegisterLabel = 'ノートが1つも登録されていません。';
-  static const String noteEditPageTitle = 'ノート編集';
-  static const String noteEditPageSelectIconLabel = 'イメージアイコンを選択してください';
-  static const String noteEditPageLabelTitle = 'タイトル';
-  static const String noteEditPageLabelDetail = '詳細';
-  static const String noteEditPageLabelDetailHint = 'ここに詳細メモを記載してください。';
-  static const String noteEditPageSaveButton = 'この内容で保存する';
-
   // 設定ページ
   static const String settingsPageTitle = '設定';
   static const String settingsNotSignInEmailLabel = '未ログイン';

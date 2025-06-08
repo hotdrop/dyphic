@@ -11,6 +11,15 @@ class _NoteDao {
 
   final Ref _ref;
 
+  Future<Note?> find(int id) async {
+    final isar = _ref.read(localDataSourceProvider).isar;
+    final note = await isar.noteEntitys.get(id);
+    if (note == null) {
+      return null;
+    }
+    return _toNote(note);
+  }
+
   Future<List<Note>> findAll() async {
     final isar = _ref.read(localDataSourceProvider).isar;
     final notes = await isar.noteEntitys.where().findAll();

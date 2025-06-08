@@ -45,9 +45,8 @@ class ConditionController extends _$ConditionController {
   // }
 
   Future<void> save() async {
-    final inputName = ref.read(conditionNameEditController).text;
-    AppLogger.d('$inputName を保存します。');
     try {
+      final inputName = ref.read(conditionNameEditController).text;
       final newCondition = ref.read(conditionUiStateProvider).createCondition(inputName);
       await ref.read(conditionRepositoryProvider).save(newCondition);
     } catch (e, s) {
