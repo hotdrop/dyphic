@@ -1,4 +1,4 @@
-package com.example.dyphic
+package jp.hotdrop.dyphic
 
 import io.flutter.embedding.android.FlutterActivity
 
