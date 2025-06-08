@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:dyphic/res/app_colors.dart';
-import 'package:dyphic/service/firebase_auth.dart';
+import 'package:dyphic/res/app_theme.dart';
+import 'package:dyphic/ui/record/record_view_model.dart';
 import 'package:dyphic/ui/record/widgets/thermomenter_icon.dart';
 
 class MorningTemperatureWidget extends StatelessWidget {
@@ -18,7 +18,7 @@ class MorningTemperatureWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return TemperatureView(
       temperature: currentValue ?? 0,
-      color: AppColors.morningTemperature,
+      color: AppTheme.morningTemperature,
       title: '朝の体温',
       thermometerIcon: ThermometerIcon.morning(),
       dialogTitle: '朝の体温',
@@ -47,7 +47,7 @@ class TemperatureView extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final isSignIn = ref.read(firebaseAuthProvider).isSignIn;
+    final isSignIn = ref.read(isSignInProvider);
     return Card(
       elevation: 4.0,
       child: InkWell(

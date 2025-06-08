@@ -1,4 +1,3 @@
-import 'package:dyphic/res/app_strings.dart';
 import 'package:flutter/material.dart';
 
 class AppCheckBox extends StatelessWidget {
@@ -34,6 +33,6 @@ class AppCheckBox extends StatelessWidget {
   }
 
   String _getLabel() {
-    return isWalking ? AppStrings.recordWalkingLabel : AppStrings.recordToiletLabel;
+    return isWalking ? '🚶‍♀️散歩' : '💩排便';
   }
 }

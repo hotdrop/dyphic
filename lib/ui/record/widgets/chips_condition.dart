@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:dyphic/res/app_colors.dart';
+import 'package:dyphic/res/app_theme.dart';
 import 'package:dyphic/model/condition.dart';
 
 ///
@@ -60,7 +60,7 @@ class _ConditionSelectChipsState extends ConsumerState<ConditionSelectChips> {
         label: Text(condition.name, style: const TextStyle(fontSize: 12.0)),
         selected: _selectedIds.contains(condition.id) ? true : false,
         onSelected: (isSelect) => updateState(isSelect, condition.id),
-        selectedColor: AppColors.condition,
+        selectedColor: AppTheme.condition,
       );
     }).toList();
   }

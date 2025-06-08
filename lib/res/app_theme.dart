@@ -1,44 +1,58 @@
-import 'package:dyphic/res/app_colors.dart';
 import 'package:flutter/material.dart';
 
 class AppTheme {
   AppTheme._();
 
+  // アプリで使用するカラーはここに定義する
+  static const Color themeColor = Color(0xFFF48FB1);
+  static const Color themeAccent = Colors.pinkAccent;
+
+  static const Color morningTemperature = Color(0xFFF892B2);
+
+  static const Color condition = Color(0xFF28A305);
+  static const Color medicine = Color(0xFFC68407);
+  static const Color walking = Color(0xFF365FEF);
+
+  static const Color mealBreakFast = Color(0xFFFA6B72);
+  static const Color mealLunch = Color(0xFFFCA41F);
+  static const Color mealDinner = Color(0xFF3D2EAD);
+
+  // テーマ
   static final ThemeData light = ThemeData.light().copyWith(
-    primaryColor: AppColors.themeColor,
-    primaryColorDark: AppColors.themeAccent,
-    dividerColor: AppColors.themeAccent,
+    primaryColor: themeColor,
+    primaryColorDark: themeAccent,
+    dividerColor: themeAccent,
     appBarTheme: const AppBarTheme(
-      color: AppColors.themeColor,
+      color: themeColor,
       centerTitle: true,
     ),
     toggleButtonsTheme: const ToggleButtonsThemeData(
-      color: AppColors.themeAccent,
+      color: themeAccent,
     ),
     bottomNavigationBarTheme: const BottomNavigationBarThemeData(
-      selectedItemColor: AppColors.themeColor,
+      selectedItemColor: themeColor,
     ),
     outlinedButtonTheme: OutlinedButtonThemeData(
       style: OutlinedButton.styleFrom(
-        backgroundColor: AppColors.themeAccent,
+        backgroundColor: themeAccent,
       ),
     ),
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
-        backgroundColor: AppColors.themeColor,
+        backgroundColor: themeColor,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.0)),
       ),
     ),
     textButtonTheme: TextButtonThemeData(
       style: TextButton.styleFrom(
-        backgroundColor: AppColors.themeAccent,
+        backgroundColor: themeAccent,
       ),
     ),
     floatingActionButtonTheme: const FloatingActionButtonThemeData(
-      backgroundColor: AppColors.themeColor,
+      backgroundColor: themeColor,
     ),
     progressIndicatorTheme: const ProgressIndicatorThemeData(
-      color: AppColors.themeColor,
+      color: themeColor,
     ),
   );
 }

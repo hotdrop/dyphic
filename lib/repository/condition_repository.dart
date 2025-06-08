@@ -11,19 +11,10 @@ class _ConditionRepository {
   final Ref _ref;
 
   ///
-  /// 全ての体調情報を取得する
-  /// isLoadLatest がtrueの場合は強制でサーバーからデータを取得する
-  /// 取得先:
-  ///   ローカルストレージ: 体調情報がロード済みの場合
-  ///   サーバー: 体調情報がローカルストレージに存在しない場合
+  /// 保持している全ての体調情報を取得する
+  /// 取得先: ローカルストレージ
   ///
-  Future<List<Condition>> findAll({bool isLoadLatest = false}) async {
-    if (isLoadLatest) {
-      final newConditions = await _ref.read(conditionApiProvider).findAll();
-      await _ref.read(conditionDaoProvider).saveAll(newConditions);
-      return newConditions;
-    }
-
+  Future<List<Condition>> findAll() async {
     final conditions = await _ref.read(conditionDaoProvider).findAll();
     if (conditions.isEmpty) {
       return [];
@@ -44,11 +35,11 @@ class _ConditionRepository {
   }
 
   ///
-  /// 体調情報を最新データに更新する
+  /// 体調情報をサーバーから取得してローカルストレージのデータを最新化する
   /// 取得先: サーバー
   ///
   Future<void> onLoadLatest() async {
-    final newConditions = await _ref.read(conditionDaoProvider).findAll();
+    final newConditions = await _ref.read(conditionApiProvider).findAll();
     await _ref.read(conditionDaoProvider).saveAll(newConditions);
   }
 

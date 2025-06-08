@@ -19,18 +19,10 @@ class _NoteRepository {
   }
 
   ///
-  /// 全てのノート情報を取得する
-  /// isLoadLatest がtrueの場合は強制でサーバーからデータを取得する
-  /// 取得先:
-  ///   ローカルストレージ: ノート情報がロード済みの場合
-  ///   サーバー: ノート情報がローカルストレージに存在しない場合
+  /// 保持している全てのノート情報を取得する
+  /// 取得先: ローカルストレージ
   ///
-  Future<List<Note>> findAll({bool isLoadLatest = false}) async {
-    if (isLoadLatest) {
-      final newNotes = await _ref.read(noteApiProvider).findAll();
-      await _ref.read(noteDaoProvider).saveAll(newNotes);
-      return newNotes;
-    }
+  Future<List<Note>> findAll() async {
     final notes = await _ref.read(noteDaoProvider).findAll();
     if (notes.isEmpty) {
       return [];
@@ -39,7 +31,16 @@ class _NoteRepository {
   }
 
   ///
-  /// 体調情報を保存する
+  /// ノート情報をサーバーから取得してローカルストレージのデータを最新化する
+  /// 取得先: サーバー
+  ///
+  Future<void> onLoadLatest() async {
+    final newNotes = await _ref.read(noteApiProvider).findAll();
+    await _ref.read(noteDaoProvider).saveAll(newNotes);
+  }
+
+  ///
+  /// ノート情報を保存する
   /// 保存先: ローカルストレージ, サーバー
   ///
   Future<void> save(Note newNote) async {

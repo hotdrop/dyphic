@@ -1,18 +1,16 @@
 import 'package:dyphic/model/dyphic_id.dart';
+import 'package:dyphic/ui/record/widgets/chips_condition.dart';
+import 'package:dyphic/ui/record/widgets/chips_medicine.dart';
 import 'package:dyphic/ui/record/widgets/meal_widget.dart';
 import 'package:dyphic/ui/record/widgets/morning_temperature_widget.dart';
 import 'package:dyphic/ui/record/widgets/app_check_box.dart';
-import 'package:dyphic/ui/widget/app_chips.dart';
 import 'package:dyphic/ui/record/widgets/event_radio_group.dart';
-import 'package:dyphic/ui/widget/app_icon.dart';
 import 'package:dyphic/ui/widget/app_text_field.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
-import 'package:dyphic/model/app_settings.dart';
 import 'package:dyphic/ui/widget/app_dialog.dart';
 import 'package:dyphic/ui/widget/app_progress_dialog.dart';
-import 'package:dyphic/res/app_strings.dart';
 import 'package:dyphic/model/record.dart';
 import 'package:dyphic/ui/record/record_view_model.dart';
 
@@ -32,7 +30,7 @@ class RecordPage extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          DateFormat(AppStrings.recordPageTitleDateFormat).format(recordDate),
+          DateFormat('yyyy年MM月dd日').format(recordDate),
         ),
       ),
       body: GestureDetector(
@@ -52,7 +50,7 @@ class RecordPage extends ConsumerWidget {
 }
 
 class _ViewLoading extends ConsumerWidget {
-  const _ViewLoading({Key? key}) : super(key: key);
+  const _ViewLoading();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -159,10 +157,11 @@ class _ViewBodyState extends ConsumerState<_ViewBody> {
           // 体調
           _ViewConditionArea(
             children: [
-              _ContentsTitle(title: AppStrings.recordConditionTitle, appIcon: AppIcon.condition()),
+              const _ContentsTitle(title: '体調', appIcon: Icon(Icons.sentiment_satisfied_alt_sharp)),
               const Divider(),
               ConditionSelectChips(
                 selectIds: _inputSelectConditionIds,
+                conditions: ,
                 onChange: (Set<int> ids) {
                   setState(() => _inputSelectConditionIds = ids);
                 },
@@ -185,10 +184,10 @@ class _ViewBodyState extends ConsumerState<_ViewBody> {
                 ],
               ),
               MultiLineTextField(
-                label: AppStrings.recordConditionMemoTitle,
+                label: '体調メモ',
                 initValue: _inputConditionMemo,
                 limitLine: 10,
-                hintText: AppStrings.recordConditionMemoHint,
+                hintText: '細かい体調はこちらに記載しましょう！',
                 onChanged: (String newVal) {
                   setState(() => _inputConditionMemo = newVal);
                 },
@@ -196,7 +195,7 @@ class _ViewBodyState extends ConsumerState<_ViewBody> {
               const SizedBox(height: 8),
               OutlinedButton(
                 onPressed: (isSignIn) ? () async => await _processSaveCondition(context) : null,
-                child: const Text(AppStrings.recordConditionSaveButton),
+                child: const Text('体調情報を保存する'),
               ),
             ],
           ),
@@ -204,17 +203,18 @@ class _ViewBodyState extends ConsumerState<_ViewBody> {
           // お薬
           _ViewMedicineArea(
             children: [
-              _ContentsTitle(title: AppStrings.recordMedicalTitle, appIcon: AppIcon.medicine()),
+              const _ContentsTitle(title: '服用した薬', appIcon: Icon(Icons.medication)),
               const Divider(),
               MedicineSelectChips(
                 selectIds: _inputSelectMedicineIds,
+                medicines: ref.read(medicine),
                 onChanged: (Set<int> ids) {
                   setState(() => _inputSelectMedicineIds = ids);
                 },
               ),
               OutlinedButton(
                 onPressed: isSignIn ? () async => await _processSaveMedicine(context) : null,
-                child: const Text(AppStrings.recordMedicineSaveButton),
+                child: const Text('選択した薬を保存する'),
               ),
             ],
           ),
@@ -223,10 +223,10 @@ class _ViewBodyState extends ConsumerState<_ViewBody> {
           _ViewMemoArea(
             children: [
               MultiLineTextField(
-                label: AppStrings.recordMemoTitle,
+                label: '今日のメモ',
                 initValue: _inputMemo,
                 limitLine: 10,
-                hintText: AppStrings.recordMemoHint,
+                hintText: 'その他、残しておきたい記録があったらここに記載してください。',
                 onChanged: (String? input) {
                   if (input != null) {
                     setState(() => _inputMemo = input);
@@ -236,7 +236,7 @@ class _ViewBodyState extends ConsumerState<_ViewBody> {
               const SizedBox(height: 8),
               OutlinedButton(
                 onPressed: (isSignIn) ? () async => await _processSaveMemo(context) : null,
-                child: const Text(AppStrings.recordMemoSaveButton),
+                child: const Text('メモを保存する'),
               ),
             ],
           ),
@@ -253,7 +253,7 @@ class _ViewBodyState extends ConsumerState<_ViewBody> {
                 },
               ),
               AppTextField(
-                label: AppStrings.recordEventLabel,
+                label: '予定名（放射線科、婦人科など）',
                 initValue: _inputEventName,
                 onChanged: (String newVal) {
                   setState(() => _inputEventName = newVal);
@@ -261,7 +261,7 @@ class _ViewBodyState extends ConsumerState<_ViewBody> {
               ),
               OutlinedButton(
                 onPressed: (isSignIn) ? () async => await _processSaveEvent(context) : null,
-                child: const Text(AppStrings.recordEventSaveButton),
+                child: const Text('予定を保存する'),
               ),
             ],
           ),
@@ -368,7 +368,7 @@ class _ViewBodyState extends ConsumerState<_ViewBody> {
 }
 
 class _ViewMealArea extends StatelessWidget {
-  const _ViewMealArea({Key? key, required this.children}) : super(key: key);
+  const _ViewMealArea({required this.children});
 
   final List<Widget> children;
 
@@ -390,7 +390,7 @@ class _ViewMealArea extends StatelessWidget {
 }
 
 class _ViewConditionArea extends StatelessWidget {
-  const _ViewConditionArea({Key? key, required this.children}) : super(key: key);
+  const _ViewConditionArea({required this.children});
 
   final List<Widget> children;
 
@@ -409,7 +409,7 @@ class _ViewConditionArea extends StatelessWidget {
 }
 
 class _ViewMedicineArea extends StatelessWidget {
-  const _ViewMedicineArea({Key? key, required this.children}) : super(key: key);
+  const _ViewMedicineArea({required this.children});
 
   final List<Widget> children;
 
@@ -428,7 +428,7 @@ class _ViewMedicineArea extends StatelessWidget {
 }
 
 class _ViewMemoArea extends StatelessWidget {
-  const _ViewMemoArea({Key? key, required this.children}) : super(key: key);
+  const _ViewMemoArea({required this.children});
 
   final List<Widget> children;
 
@@ -447,7 +447,7 @@ class _ViewMemoArea extends StatelessWidget {
 }
 
 class _ViewEventArea extends StatelessWidget {
-  const _ViewEventArea({Key? key, required this.children}) : super(key: key);
+  const _ViewEventArea({required this.children});
 
   final List<Widget> children;
 
@@ -467,13 +467,12 @@ class _ViewEventArea extends StatelessWidget {
 
 class _ContentsTitle extends StatelessWidget {
   const _ContentsTitle({
-    Key? key,
     required this.title,
     required this.appIcon,
-  }) : super(key: key);
+  });
 
   final String title;
-  final AppIcon appIcon;
+  final Icon appIcon;
 
   @override
   Widget build(BuildContext context) {

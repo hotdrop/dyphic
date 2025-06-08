@@ -1,9 +1,6 @@
-import 'package:dyphic/ui/widget/app_dialog.dart';
-import 'package:dyphic/ui/widget/app_progress_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:dyphic/service/firebase_auth.dart';
 import 'package:dyphic/ui/medicine/edit/medicine_edit_page.dart';
 import 'package:dyphic/ui/medicine/widgets/medicine_card_view.dart';
 import 'package:dyphic/ui/medicine/medicine_controller.dart';
@@ -34,13 +31,12 @@ class _ViewBody extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final isSignIn = ref.watch(firebaseAuthProvider).isSignIn;
+    final isSignIn = ref.watch(isSignInProvider);
     final isShowFab = ref.watch(isShowFabStateProvider);
 
     return Scaffold(
       appBar: AppBar(
         title: const Text('お薬'),
-        actions: const [_RefreshIcon()],
       ),
       body: NotificationListener<UserScrollNotification>(
         onNotification: ((notification) {
@@ -62,35 +58,6 @@ class _ViewBody extends ConsumerWidget {
               child: const _MedicineAddFab(),
             )
           : null,
-    );
-  }
-}
-
-class _RefreshIcon extends ConsumerWidget {
-  const _RefreshIcon();
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    return IconButton(
-      onPressed: () async => await _showRefreshDialog(context, ref),
-      icon: const Icon(Icons.refresh),
-    );
-  }
-
-  Future<void> _showRefreshDialog(BuildContext context, WidgetRef ref) async {
-    AppDialog.okAndCancel(
-      message: 'サーバーから最新のお薬情報を取得します。\nよろしいですか？',
-      onOk: () async => await _refresh(context, ref),
-    ).show(context);
-  }
-
-  Future<void> _refresh(BuildContext context, WidgetRef ref) async {
-    const progressDialog = AppProgressDialog<void>();
-    await progressDialog.show(
-      context,
-      execute: ref.read(medicineControllerProvider.notifier).refresh,
-      onSuccess: (_) => {/* 成功時は何もしない */},
-      onError: (err) => AppDialog.onlyOk(message: err).show(context),
     );
   }
 }
@@ -127,7 +94,7 @@ class _ViewContents extends ConsumerWidget {
       );
     }
 
-    final isSignIn = ref.watch(firebaseAuthProvider).isSignIn;
+    final isSignIn = ref.watch(isSignInProvider);
     return ListView.builder(
       itemCount: medicines.length,
       itemBuilder: (BuildContext context, int index) {

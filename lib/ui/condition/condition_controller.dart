@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:dyphic/repository/account_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -23,13 +24,6 @@ class ConditionController extends _$ConditionController {
       conditions: conditions,
       selectId: _UiState.emptyId,
     );
-  }
-
-  Future<void> refresh() async {
-    final conditions = await ref.read(conditionRepositoryProvider).findAll(isLoadLatest: true);
-    ref.read(conditionUiStateProvider.notifier).update((c) => c.copyWith(
-          conditions: conditions,
-        ));
   }
 
   void selectCondition(Condition condition) {
@@ -62,6 +56,9 @@ class ConditionController extends _$ConditionController {
     ref.read(conditionNameEditController).clear();
   }
 }
+
+// 現在、アプリにサインインしているか？
+final isSignInProvider = Provider((ref) => ref.read(accountRepositoryProvider).isSignIn);
 
 // 体調名のTextEditingController
 final conditionNameEditController = Provider((_) => TextEditingController());

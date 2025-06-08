@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:dyphic/repository/account_repository.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:dyphic/repository/note_repository.dart';
@@ -19,15 +20,13 @@ class NotesController extends _$NotesController {
     ref.read(notesUiStateProvider.notifier).state = notes;
   }
 
-  Future<void> refresh() async {
-    final notes = await ref.read(noteRepositoryProvider).findAll(isLoadLatest: true);
-    ref.read(notesUiStateProvider.notifier).state = notes;
-  }
-
   int createNewId() {
     final notes = ref.read(notesUiStateProvider);
     return (notes.isNotEmpty) ? notes.map((e) => e.id).reduce(max) + 1 : 1;
   }
 }
+
+// 現在、アプリにサインインしているか？
+final isSignInProvider = Provider((ref) => ref.read(accountRepositoryProvider).isSignIn);
 
 final notesUiStateProvider = StateProvider<List<Note>>((_) => []);

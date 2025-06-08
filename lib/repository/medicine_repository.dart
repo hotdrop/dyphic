@@ -44,7 +44,7 @@ class _MedicineRepository {
   }
 
   ///
-  /// お薬情報を最新データに更新する
+  /// お薬情報をサーバーから取得してローカルストレージのデータを最新化する
   /// 取得先: サーバー
   ///
   Future<void> onLoadLatest() async {

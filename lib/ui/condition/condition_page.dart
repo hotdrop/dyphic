@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:dyphic/service/firebase_auth.dart';
 import 'package:dyphic/ui/condition/condition_controller.dart';
 import 'package:dyphic/ui/widget/app_dialog.dart';
 import 'package:dyphic/ui/widget/app_progress_dialog.dart';
@@ -31,12 +30,11 @@ class _ViewBody extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final isSigniIn = ref.watch(firebaseAuthProvider).isSignIn;
+    final isSigniIn = ref.watch(isSignInProvider);
 
     return Scaffold(
       appBar: AppBar(
         title: const Text('体調管理'),
-        actions: const [_RefreshIcon()],
       ),
       body: GestureDetector(
         onTap: () {
@@ -57,35 +55,6 @@ class _ViewBody extends ConsumerWidget {
           ],
         ),
       ),
-    );
-  }
-}
-
-class _RefreshIcon extends ConsumerWidget {
-  const _RefreshIcon();
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    return IconButton(
-      onPressed: () async => await _showRefreshDialog(context, ref),
-      icon: const Icon(Icons.refresh),
-    );
-  }
-
-  Future<void> _showRefreshDialog(BuildContext context, WidgetRef ref) async {
-    AppDialog.okAndCancel(
-      message: 'サーバーから最新の体調情報を取得します。\nよろしいですか？',
-      onOk: () async => await _refresh(context, ref),
-    ).show(context);
-  }
-
-  Future<void> _refresh(BuildContext context, WidgetRef ref) async {
-    const progressDialog = AppProgressDialog<void>();
-    await progressDialog.show(
-      context,
-      execute: ref.read(conditionControllerProvider.notifier).refresh,
-      onSuccess: (_) => {/* 成功時は何もしない */},
-      onError: (err) => AppDialog.onlyOk(message: err).show(context),
     );
   }
 }

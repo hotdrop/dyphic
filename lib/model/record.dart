@@ -75,7 +75,6 @@ class Record {
   final String? lunch;
   final String? dinner;
 
-  // TODO ここもヘルスケアで自動にしたい
   final bool isWalking;
   final bool isToilet;
   final List<Condition> conditions;

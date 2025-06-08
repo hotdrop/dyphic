@@ -1,7 +1,7 @@
-import 'package:dyphic/ui/medicine/widgets/medicine_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:dyphic/res/app_colors.dart';
+import 'package:dyphic/res/app_theme.dart';
+import 'package:dyphic/ui/medicine/widgets/medicine_image.dart';
 import 'package:dyphic/model/medicine.dart';
 
 ///
@@ -71,7 +71,7 @@ class _MedicineSelectChipsState extends ConsumerState<MedicineSelectChips> {
           label: Text(medicine.name, style: const TextStyle(fontSize: 12.0)),
           selected: _selectedIds.contains(medicine.id) ? true : false,
           onSelected: (isSelect) => updateState(isSelect, medicine.id),
-          selectedColor: AppColors.medicine,
+          selectedColor: AppTheme.medicine,
         ),
       );
     }).toList();

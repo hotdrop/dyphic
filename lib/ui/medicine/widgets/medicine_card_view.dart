@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:expansion_tile_card/expansion_tile_card.dart';
-import 'package:dyphic/res/app_colors.dart';
 import 'package:dyphic/ui/medicine/widgets/medicine_image.dart';
 import 'package:dyphic/model/medicine.dart';
 
@@ -36,7 +35,7 @@ class MedicineCardView extends StatelessWidget {
               if (isEditable)
                 TextButton(
                   onPressed: () => onTapEvent(),
-                  child: const Icon(Icons.edit, color: AppColors.themeColor),
+                  child: Icon(Icons.edit, color: Theme.of(context).primaryColor),
                 ),
             ],
           ),

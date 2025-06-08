@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:dyphic/service/firebase_auth.dart';
 import 'package:dyphic/model/note.dart';
 import 'package:dyphic/ui/note/edit/note_edit_page.dart';
 import 'package:dyphic/ui/note/notes_controller.dart';
@@ -32,7 +31,7 @@ class _ViewBody extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final isSignIn = ref.watch(firebaseAuthProvider).isSignIn;
+    final isSignIn = ref.watch(isSignInProvider);
 
     return Scaffold(
       appBar: AppBar(

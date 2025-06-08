@@ -1,3 +1,4 @@
+import 'package:dyphic/repository/account_repository.dart';
 import 'package:dyphic/repository/record_repository.dart';
 import 'package:dyphic/ui/calender/calendar_controller.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -114,3 +115,6 @@ class _RecordViewModel {
     }
   }
 }
+
+// 現在、アプリにサインインしているか？
+final isSignInProvider = Provider((ref) => ref.read(accountRepositoryProvider).isSignIn);

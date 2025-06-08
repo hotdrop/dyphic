@@ -1,10 +1,8 @@
-import 'package:dyphic/service/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
-import 'package:dyphic/res/app_colors.dart';
+import 'package:dyphic/res/app_theme.dart';
+import 'package:dyphic/ui/record/record_view_model.dart';
 import 'package:dyphic/res/app_images.dart';
-import 'package:dyphic/res/app_strings.dart';
 
 ///
 /// 朝食
@@ -22,10 +20,10 @@ class MealBreakfastWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return _MealCard(
-      color: AppColors.mealBreakFast,
+      color: AppTheme.mealBreakFast,
       iconImagePath: AppImages.mealBreakFast,
       initValue: currentValue ?? '',
-      dialogTitle: AppStrings.recordMorningDialogTitle,
+      dialogTitle: '朝食',
       onSubmitted: onSubmitted,
     );
   }
@@ -47,10 +45,10 @@ class MealLunchWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return _MealCard(
-      color: AppColors.mealLunch,
+      color: AppTheme.mealLunch,
       iconImagePath: AppImages.mealLunch,
       initValue: currentValue ?? '',
-      dialogTitle: AppStrings.recordLunchDialogTitle,
+      dialogTitle: '昼食',
       onSubmitted: onSubmitted,
     );
   }
@@ -72,10 +70,10 @@ class MealDinnerWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return _MealCard(
-      color: AppColors.mealDinner,
+      color: AppTheme.mealDinner,
       iconImagePath: AppImages.mealDinner,
       initValue: currentValue ?? '',
-      dialogTitle: AppStrings.recordDinnerDialogTitle,
+      dialogTitle: '夕食',
       onSubmitted: onSubmitted,
     );
   }
@@ -177,7 +175,7 @@ class _MealEditDialogState extends ConsumerState<_MealEditDialog> {
 
   @override
   Widget build(BuildContext context) {
-    final isSignIn = ref.watch(firebaseAuthProvider).isSignIn;
+    final isSignIn = ref.watch(isSignInProvider);
     return AlertDialog(
       title: Text(widget.title),
       content: TextField(
@@ -186,7 +184,7 @@ class _MealEditDialogState extends ConsumerState<_MealEditDialog> {
         enabled: isSignIn,
         maxLines: 7,
         decoration: const InputDecoration(
-          labelText: AppStrings.recordMealDialogHint,
+          labelText: '食事の内容(簡単に)',
           border: OutlineInputBorder(),
         ),
       ),

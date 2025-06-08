@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:dyphic/repository/account_repository.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:dyphic/model/medicine.dart';
@@ -19,17 +20,16 @@ class MedicineController extends _$MedicineController {
     ref.read(medicineUiStateProvider.notifier).state = medicines;
   }
 
-  Future<void> refresh() async {
-    await ref.read(medicineRepositoryProvider).onLoadLatest();
-    await onLoad();
-  }
-
   int createNewId() {
     final medicines = ref.read(medicineUiStateProvider);
     return (medicines.isNotEmpty) ? medicines.map((e) => e.id).reduce(max) + 1 : 1;
   }
 }
 
+// 現在、アプリにサインインしているか？
+final isSignInProvider = Provider((ref) => ref.read(accountRepositoryProvider).isSignIn);
+
+// 画面の状態保持
 final medicineUiStateProvider = StateProvider<List<Medicine>>((_) => []);
 
 // スクロールでFabの表示非表示を切り替える
