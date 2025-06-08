@@ -92,4 +92,9 @@ class _RecordRepository {
     await _ref.read(recordApiProvider).saveMemo(recordId, memo);
     await _ref.read(recordDaoProvider).saveItem(recordId, memo: memo);
   }
+
+  Future<void> saveEvent(int recordId, EventType eventType, String eventName) async {
+    await _ref.read(recordApiProvider).saveEvent(recordId, eventType, eventName);
+    await _ref.read(recordDaoProvider).saveItem(recordId, eventType: eventType, eventName: eventName);
+  }
 }

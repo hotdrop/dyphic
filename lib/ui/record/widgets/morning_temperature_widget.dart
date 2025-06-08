@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:dyphic/res/app_theme.dart';
-import 'package:dyphic/ui/record/record_view_model.dart';
+import 'package:dyphic/ui/record/record_controller.dart';
 import 'package:dyphic/ui/record/widgets/thermomenter_icon.dart';
 
 class MorningTemperatureWidget extends StatelessWidget {

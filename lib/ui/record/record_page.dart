@@ -1,3 +1,6 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/intl.dart';
 import 'package:dyphic/model/dyphic_id.dart';
 import 'package:dyphic/ui/record/widgets/chips_condition.dart';
 import 'package:dyphic/ui/record/widgets/chips_medicine.dart';
@@ -6,13 +9,10 @@ import 'package:dyphic/ui/record/widgets/morning_temperature_widget.dart';
 import 'package:dyphic/ui/record/widgets/app_check_box.dart';
 import 'package:dyphic/ui/record/widgets/event_radio_group.dart';
 import 'package:dyphic/ui/widget/app_text_field.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:intl/intl.dart';
 import 'package:dyphic/ui/widget/app_dialog.dart';
 import 'package:dyphic/ui/widget/app_progress_dialog.dart';
 import 'package:dyphic/model/record.dart';
-import 'package:dyphic/ui/record/record_view_model.dart';
+import 'package:dyphic/ui/record/record_controller.dart';
 
 ///
 /// このページはRecordsPageViewから構築されるのでスワイプでページ移動可能になっている。
@@ -36,7 +36,7 @@ class RecordPage extends ConsumerWidget {
       body: GestureDetector(
         onTap: () => FocusScope.of(context).unfocus(),
         child: FutureBuilder(
-          future: ref.read(recordViewModelProvider).find(recordId),
+          future: ref.read(recordControllerProvider.notifier).find(recordId),
           builder: (BuildContext context, AsyncSnapshot<Record> snapshot) {
             if (snapshot.hasData) {
               return _ViewBody(snapshot.data!);
@@ -61,7 +61,7 @@ class _ViewLoading extends ConsumerWidget {
 }
 
 class _ViewBody extends ConsumerStatefulWidget {
-  const _ViewBody(this.record, {Key? key}) : super(key: key);
+  const _ViewBody(this.record);
 
   final Record record;
 
@@ -125,7 +125,7 @@ class _ViewBodyState extends ConsumerState<_ViewBody> {
 
   @override
   Widget build(BuildContext context) {
-    final isSignIn = ref.read(appSettingsProvider).isSignIn;
+    final isSignIn = ref.read(isSignInProvider);
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
@@ -161,7 +161,7 @@ class _ViewBodyState extends ConsumerState<_ViewBody> {
               const Divider(),
               ConditionSelectChips(
                 selectIds: _inputSelectConditionIds,
-                conditions: ,
+                conditions: ref.watch(conditionsStateProvier),
                 onChange: (Set<int> ids) {
                   setState(() => _inputSelectConditionIds = ids);
                 },
@@ -207,7 +207,7 @@ class _ViewBodyState extends ConsumerState<_ViewBody> {
               const Divider(),
               MedicineSelectChips(
                 selectIds: _inputSelectMedicineIds,
-                medicines: ref.read(medicine),
+                medicines: ref.watch(medicinesStateProvier),
                 onChanged: (Set<int> ids) {
                   setState(() => _inputSelectMedicineIds = ids);
                 },
@@ -272,29 +272,29 @@ class _ViewBodyState extends ConsumerState<_ViewBody> {
   }
 
   Future<void> _processSaveBreakfast(String newVal) async {
-    if (ref.read(appSettingsProvider).isSignIn) {
-      ref.read(recordViewModelProvider).inputBreakfast(id: widget.record.id, newVal: newVal);
+    if (ref.read(isSignInProvider)) {
+      ref.read(recordControllerProvider.notifier).inputBreakfast(id: widget.record.id, newVal: newVal);
     }
     setState(() => _inputBreakfast = newVal);
   }
 
   Future<void> _processSaveLunch(String newVal) async {
-    if (ref.read(appSettingsProvider).isSignIn) {
-      ref.read(recordViewModelProvider).inputLunch(id: widget.record.id, newVal: newVal);
+    if (ref.read(isSignInProvider)) {
+      ref.read(recordControllerProvider.notifier).inputLunch(id: widget.record.id, newVal: newVal);
     }
     setState(() => _inputLunch = newVal);
   }
 
   Future<void> _processSaveDinner(String newVal) async {
-    if (ref.read(appSettingsProvider).isSignIn) {
-      ref.read(recordViewModelProvider).inputDinner(id: widget.record.id, newVal: newVal);
+    if (ref.read(isSignInProvider)) {
+      ref.read(recordControllerProvider.notifier).inputDinner(id: widget.record.id, newVal: newVal);
     }
     setState(() => _inputDinner = newVal);
   }
 
   Future<void> _processSaveMorningTemperature(double? v) async {
-    if (v != null && ref.read(appSettingsProvider).isSignIn) {
-      ref.read(recordViewModelProvider).inputMorningTemperature(id: widget.record.id, newVal: v);
+    if (v != null && ref.read(isSignInProvider)) {
+      ref.read(recordControllerProvider.notifier).inputMorningTemperature(id: widget.record.id, newVal: v);
       setState(() {
         _inputMorningTemperature = v;
       });
@@ -308,7 +308,7 @@ class _ViewBodyState extends ConsumerState<_ViewBody> {
     await progressDialog.show(
       context,
       execute: () async {
-        await ref.read(recordViewModelProvider).saveCondition(
+        await ref.read(recordControllerProvider.notifier).saveCondition(
               id: widget.record.id,
               conditionIds: _inputSelectConditionIds,
               isWalking: _inputIsWalking,
@@ -328,7 +328,7 @@ class _ViewBodyState extends ConsumerState<_ViewBody> {
     await progressDialog.show(
       context,
       execute: () async {
-        await ref.read(recordViewModelProvider).saveMedicine(
+        await ref.read(recordControllerProvider.notifier).saveMedicine(
               id: widget.record.id,
               medicineIds: _inputSelectMedicineIds,
             );
@@ -345,7 +345,7 @@ class _ViewBodyState extends ConsumerState<_ViewBody> {
     await progressDialog.show(
       context,
       execute: () async {
-        await ref.read(recordViewModelProvider).saveMemo(id: widget.record.id, memo: _inputMemo);
+        await ref.read(recordControllerProvider.notifier).saveMemo(id: widget.record.id, memo: _inputMemo);
       },
       onSuccess: (_) {/* 成功時は何もしない */},
       onError: (err) => AppDialog.onlyOk(message: err).show(context),
@@ -359,7 +359,7 @@ class _ViewBodyState extends ConsumerState<_ViewBody> {
     await progressDialog.show(
       context,
       execute: () async {
-        await ref.read(recordViewModelProvider).saveEvent(id: widget.record.id, eventType: _inputEventType, eventName: _inputEventName);
+        await ref.read(recordControllerProvider.notifier).saveEvent(id: widget.record.id, eventType: _inputEventType, eventName: _inputEventName);
       },
       onSuccess: (_) {/* 成功時は何もしない */},
       onError: (err) => AppDialog.onlyOk(message: err).show(context),
