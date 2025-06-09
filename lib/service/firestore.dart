@@ -146,7 +146,7 @@ class _Firestore {
         .doc(id.toString())
         .get();
 
-    if (snapshot.exists) {
+    if (!snapshot.exists) {
       return null;
     }
 
@@ -243,7 +243,7 @@ class _Firestore {
 
   Future<Medicine> findMedicine(int id) async {
     final doc = await FirebaseFirestore.instance //
-        .collection(_conditionRootName)
+        .collection(_medicineRootName)
         .doc(id.toString())
         .get();
 
