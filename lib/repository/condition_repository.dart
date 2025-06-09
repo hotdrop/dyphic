@@ -3,32 +3,52 @@ import 'package:dyphic/repository/local/dao/condition_dao.dart';
 import 'package:dyphic/repository/remote/condition_api.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-final conditionRepositoryProvider = Provider((ref) => _ConditionRepository(ref.read));
+final conditionRepositoryProvider = Provider((ref) => _ConditionRepository(ref));
 
 class _ConditionRepository {
-  const _ConditionRepository(this._read);
+  const _ConditionRepository(this._ref);
 
-  final Reader _read;
+  final Ref _ref;
 
   ///
-  /// 体調情報をローカルから取得する。
-  /// データがローカルにない場合はリモートから取得する。
-  /// isForceUpdate がtrueの場合はリモートのデータで最新化する。
+  /// 保持している全ての体調情報を取得する
+  /// 取得先: ローカルストレージ
   ///
-  Future<List<Condition>> findAll({required bool isForceUpdate}) async {
-    final conditions = await _read(conditionDaoProvider).findAll();
-    if (conditions.isNotEmpty && !isForceUpdate) {
-      return conditions;
+  Future<List<Condition>> findAll() async {
+    final conditions = await _ref.read(conditionDaoProvider).findAll();
+    if (conditions.isEmpty) {
+      return [];
     }
 
-    // API経由でデータ取得
-    final newConditions = await _read(conditionApiProvider).findAll();
-    await _read(conditionDaoProvider).saveAll(newConditions);
-    return newConditions;
+    return conditions;
   }
 
-  Future<void> save(Condition condition) async {
-    await _read(conditionApiProvider).save(condition);
-    await _read(conditionDaoProvider).save(condition);
+  ///
+  /// 体調情報がローカルストレージにロード済みであればtrue、ローカルのデータが0件であればfalse
+  ///
+  Future<bool> isLoaded() async {
+    final conditions = await _ref.read(conditionDaoProvider).findAll();
+    if (conditions.isEmpty) {
+      return false;
+    }
+    return true;
+  }
+
+  ///
+  /// 体調情報をサーバーから取得してローカルストレージのデータを最新化する
+  /// 取得先: サーバー
+  ///
+  Future<void> onLoadLatest() async {
+    final newConditions = await _ref.read(conditionApiProvider).findAll();
+    await _ref.read(conditionDaoProvider).saveAll(newConditions);
+  }
+
+  ///
+  /// 体調情報を保存する
+  /// 保存先: ローカルストレージ, サーバー
+  ///
+  Future<void> save(Condition newCondition) async {
+    await _ref.read(conditionApiProvider).save(newCondition);
+    await _ref.read(conditionDaoProvider).save(newCondition);
   }
 }

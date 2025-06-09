@@ -1,194 +1,187 @@
-import 'package:dyphic/res/app_images.dart';
-import 'package:dyphic/res/app_strings.dart';
-import 'package:dyphic/model/app_settings.dart';
-import 'package:dyphic/ui/condition/condition_page.dart';
-import 'package:dyphic/ui/medicine/medicine_page.dart';
-import 'package:dyphic/ui/setting/settings_view_model.dart';
-import 'package:dyphic/ui/widget/app_dialog.dart';
-import 'package:dyphic/ui/widget/app_icon.dart';
-import 'package:dyphic/ui/widget/app_progress_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:line_icons/line_icons.dart';
+import 'package:dyphic/res/app_images.dart';
+import 'package:dyphic/ui/setting/settings_controller.dart';
+import 'package:dyphic/ui/widget/app_dialog.dart';
+import 'package:dyphic/ui/widget/app_progress_dialog.dart';
 
 class SettingsPage extends ConsumerWidget {
-  const SettingsPage({Key? key}) : super(key: key);
-
-  static const double _iconSize = 30;
+  const SettingsPage({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final uiState = ref.watch(settingsViewModelProvider).uiState;
     return Scaffold(
       appBar: AppBar(
-        title: const Text(AppStrings.settingsPageTitle),
+        title: const Text('設定'),
       ),
-      body: uiState.when(
-        loading: (errMsg) => _onLoading(context, errMsg),
-        success: () => _onSuccess(context, ref),
-      ),
+      body: ref.watch(settingsControllerProvider).when(
+            data: (_) => const _ViewBody(),
+            error: (err, stackTrace) {
+              return Center(
+                child: Text('$err', style: const TextStyle(color: Colors.red)),
+              );
+            },
+            loading: () {
+              return const Center(
+                child: CircularProgressIndicator(),
+              );
+            },
+          ),
     );
   }
+}
 
-  Widget _onLoading(BuildContext context, String? errMsg) {
-    Future.delayed(Duration.zero).then((_) async {
-      if (errMsg != null) {
-        await AppDialog.onlyOk(message: errMsg).show(context);
-      }
-    });
-    return const Center(
-      child: CircularProgressIndicator(),
-    );
-  }
+class _ViewBody extends ConsumerWidget {
+  const _ViewBody();
 
-  Widget _onSuccess(BuildContext context, WidgetRef ref) {
-    final signIn = ref.watch(appSettingsProvider).isSignIn;
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final signIn = ref.watch(settingUiStateProvider).isSignIn;
     return ListView(
       children: [
-        _rowAccountInfo(context, ref),
-        if (!signIn) _viewSignInLabel(context),
-        _rowAppLicense(context, ref),
-        _rowSwitchTheme(context, ref),
+        const _ViewAccountInfo(),
+        if (!signIn)
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Text(
+              '※Googleアカウントでログインできます。ログインすると各データの登録/編集が可能になります。',
+              style: Theme.of(context).textTheme.bodySmall,
+            ),
+          ),
+        const _ViewAppLicense(),
         const Divider(),
-        _rowConditionEdit(context),
-        _rowMedicineEdit(context),
-        const Divider(),
-        _rowLoadRecord(context, ref),
-        _rowLoadNote(context, ref),
+        const _ViewOnRefreshRecord(),
+        const _ViewOnRefreshData(),
       ],
     );
   }
+}
 
-  Widget _rowAccountInfo(BuildContext context, WidgetRef ref) {
-    final isSignIn = ref.watch(appSettingsProvider).isSignIn;
+class _ViewAccountInfo extends ConsumerWidget {
+  const _ViewAccountInfo();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final uiState = ref.watch(settingUiStateProvider);
+
     return ListTile(
-      leading: const Icon(Icons.account_circle, size: _iconSize),
-      title: Text(ref.watch(settingsViewModelProvider).userName),
-      subtitle: Text(ref.watch(settingsViewModelProvider).email),
-      trailing: (isSignIn) ? _buttonSignOut(context, ref) : _buttonSignIn(ref),
+      leading: const Icon(Icons.account_circle, size: 30),
+      title: Text(uiState.userName),
+      subtitle: Text(uiState.email),
+      trailing: (uiState.isSignIn) ? const _ViewSignOutButton() : const _ViewSignInButton(),
     );
   }
+}
 
-  Widget _rowAppLicense(BuildContext context, WidgetRef ref) {
+class _ViewSignInButton extends ConsumerWidget {
+  const _ViewSignInButton();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return ElevatedButton(
+      onPressed: () => ref.read(settingsControllerProvider.notifier).signIn(),
+      child: const Text('ログイン'),
+    );
+  }
+}
+
+class _ViewSignOutButton extends ConsumerWidget {
+  const _ViewSignOutButton();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return OutlinedButton(
+      onPressed: () async {
+        const progressDialog = AppProgressDialog<void>();
+        await progressDialog.show(
+          context,
+          execute: ref.read(settingsControllerProvider.notifier).signOut,
+          onSuccess: (_) {/* 成功時は何もしない */},
+          onError: (err) async => await AppDialog.onlyOk(message: err).show(context),
+        );
+      },
+      child: const Text('ログアウト'),
+    );
+  }
+}
+
+class _ViewAppLicense extends ConsumerWidget {
+  const _ViewAppLicense();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
     return ListTile(
-      leading: const Icon(LineIcons.infoCircle, size: _iconSize),
-      title: const Text(AppStrings.settingsLicenseLabel),
-      trailing: const Icon(LineIcons.angleRight),
+      leading: const Icon(Icons.info_outline, size: 30),
+      title: const Text('ライセンス'),
+      trailing: const Icon(Icons.arrow_forward_ios),
       onTap: () {
         showLicensePage(
           context: context,
-          applicationName: AppStrings.appTitle,
-          applicationVersion: ref.watch(settingsViewModelProvider).appVersion,
+          applicationName: '体調管理',
+          applicationVersion: ref.watch(settingUiStateProvider).appVersion,
           applicationIcon: Image.asset(AppImages.icLaunch, width: 50, height: 50),
         );
       },
     );
   }
+}
 
-  Widget _rowSwitchTheme(BuildContext context, WidgetRef ref) {
-    final isDarkMode = ref.watch(appSettingsProvider).isDarkMode;
-    return ListTile(
-      leading: AppIcon.changeTheme(isDarkMode, size: _iconSize),
-      title: const Text(AppStrings.settingsChangeAppThemeLabel),
-      trailing: Switch(
-        onChanged: (isDark) => ref.read(appSettingsProvider.notifier).changeTheme(isDark),
-        value: isDarkMode,
-      ),
-    );
-  }
+class _ViewOnRefreshRecord extends ConsumerWidget {
+  const _ViewOnRefreshRecord();
 
-  Widget _rowConditionEdit(BuildContext context) {
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
     return ListTile(
-      leading: AppIcon.condition(size: _iconSize),
-      title: const Text(AppStrings.settingsEditConditionLabel),
-      subtitle: const Text(AppStrings.settingsEditConditionSubLabel),
-      onTap: () async => await ConditionPage.start(context),
-    );
-  }
-
-  Widget _rowMedicineEdit(BuildContext context) {
-    return ListTile(
-      leading: AppIcon.medicine(size: _iconSize),
-      title: const Text(AppStrings.settingsEditMedicineLabel),
-      subtitle: const Text(AppStrings.settingsEditMedicineSubLabel),
-      onTap: () async => await MedicinePage.start(context),
-    );
-  }
-
-  Widget _rowLoadRecord(BuildContext context, WidgetRef ref) {
-    return ListTile(
-      leading: AppIcon.record(size: _iconSize),
-      title: const Text(AppStrings.settingsLoadRecordLabel),
-      subtitle: const Text(AppStrings.settingsLoadRecordSubLabel),
+      leading: const Icon(Icons.calendar_month_outlined, size: 30),
+      title: const Text('記録情報の更新'),
+      subtitle: const Text('日々の記録情報を最新データを取得'),
       onTap: () async => await _showLoadRecordDialog(context, ref),
     );
   }
 
   Future<void> _showLoadRecordDialog(BuildContext context, WidgetRef ref) async {
     await AppDialog.okAndCancel(
-      message: AppStrings.settingsLoadRecordConfirmMessage,
+      message: 'サーバーから最新の記録情報を取得します。\nよろしいですか？\n\n※注意！\nこの操作は通常行う必要はありません。他の人がデータを更新した場合に実行してください。',
       onOk: () async {
         const progressDialog = AppProgressDialog<void>();
         await progressDialog.show(
           context,
-          execute: ref.read(settingsViewModelProvider).onLoadRecord,
+          execute: ref.read(settingsControllerProvider.notifier).onLoadRecord,
           onSuccess: (_) => {/* 成功時は何もしない */},
           onError: (err) => AppDialog.onlyOk(message: err).show(context),
         );
       },
     ).show(context);
   }
+}
 
-  Widget _rowLoadNote(BuildContext context, WidgetRef ref) {
+class _ViewOnRefreshData extends ConsumerWidget {
+  const _ViewOnRefreshData();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
     return ListTile(
-      leading: AppIcon.note(size: _iconSize),
-      title: const Text(AppStrings.settingsLoadNoteLabel),
-      subtitle: const Text(AppStrings.settingsLoadNoteSubLabel),
-      onTap: () async => await _showLoadNoteDialog(context, ref),
+      leading: const Icon(Icons.download, size: 30),
+      title: const Text('各種データ更新'),
+      subtitle: const Text('お薬、体調、ノートの最新データ取得'),
+      onTap: () async => await _showRefreshDialog(context, ref),
     );
   }
 
-  Future<void> _showLoadNoteDialog(BuildContext context, WidgetRef ref) async {
-    await AppDialog.okAndCancel(
-      message: AppStrings.settingsLoadNoteConfirmMessage,
-      onOk: () async {
-        const progressDialog = AppProgressDialog<void>();
-        await progressDialog.show(
-          context,
-          execute: ref.read(settingsViewModelProvider).onLoadNote,
-          onSuccess: (_) => {/* 成功時は何もしない */},
-          onError: (err) => AppDialog.onlyOk(message: err).show(context),
-        );
-      },
+  Future<void> _showRefreshDialog(BuildContext context, WidgetRef ref) async {
+    AppDialog.okAndCancel(
+      message: 'サーバーから最新のお薬、体調、ノート情報を取得します。\nよろしいですか？',
+      onOk: () async => await _refresh(context, ref),
     ).show(context);
   }
 
-  Widget _buttonSignIn(WidgetRef ref) {
-    return ElevatedButton(
-      onPressed: () => ref.read(settingsViewModelProvider).signIn(),
-      child: const Text(AppStrings.settingsLoginWithGoogle),
-    );
-  }
-
-  Widget _viewSignInLabel(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: Text(AppStrings.settingsLoginInfo, style: Theme.of(context).textTheme.caption),
-    );
-  }
-
-  Widget _buttonSignOut(BuildContext context, WidgetRef ref) {
-    return OutlinedButton(
-      onPressed: () async {
-        const progressDialog = AppProgressDialog<void>();
-        await progressDialog.show(
-          context,
-          execute: ref.read(settingsViewModelProvider).signOut,
-          onSuccess: (_) {/* 成功時は何もしない */},
-          onError: (err) async => await AppDialog.onlyOk(message: err).show(context),
-        );
-      },
-      child: const Text(AppStrings.settingsLogoutLabel),
+  Future<void> _refresh(BuildContext context, WidgetRef ref) async {
+    const progressDialog = AppProgressDialog<void>();
+    await progressDialog.show(
+      context,
+      execute: ref.read(settingsControllerProvider.notifier).onLoadLatestData,
+      onSuccess: (_) => {/* 成功時は何もしない */},
+      onError: (err) => AppDialog.onlyOk(message: err).show(context),
     );
   }
 }

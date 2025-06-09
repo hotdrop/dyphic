@@ -1,48 +1,43 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:dyphic/model/app_settings.dart';
-import 'package:dyphic/res/app_strings.dart';
 import 'package:dyphic/model/note.dart';
 import 'package:dyphic/ui/note/edit/note_edit_page.dart';
-import 'package:dyphic/ui/note/notes_view_model.dart';
+import 'package:dyphic/ui/note/notes_controller.dart';
 import 'package:dyphic/ui/note/widget_note_type_icon.dart';
-import 'package:dyphic/ui/widget/app_dialog.dart';
 
 class NotesPage extends ConsumerWidget {
-  const NotesPage({Key? key}) : super(key: key);
+  const NotesPage({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final uiState = ref.watch(notesViewModelProvider).uiState;
-    return uiState.when(
-      loading: (String? errorMsg) => _onLoading(context, errorMsg),
-      success: () => _onSuccess(context, ref),
-    );
+    return ref.watch(notesControllerProvider).when(
+          data: (_) => const _ViewBody(),
+          error: (err, stackTrace) {
+            return Center(
+              child: Text('$err', style: const TextStyle(color: Colors.red)),
+            );
+          },
+          loading: () {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          },
+        );
   }
+}
 
-  Widget _onLoading(BuildContext context, String? errorMsg) {
-    Future.delayed(Duration.zero).then((_) async {
-      if (errorMsg != null) {
-        await AppDialog.onlyOk(message: errorMsg).show(context);
-      }
-    });
+class _ViewBody extends ConsumerWidget {
+  const _ViewBody();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final isSignIn = ref.watch(isSignInProvider);
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text(AppStrings.notesPageTitle),
+        title: const Text('ノート'),
       ),
-      body: const Center(
-        child: CircularProgressIndicator(),
-      ),
-    );
-  }
-
-  Widget _onSuccess(BuildContext context, WidgetRef ref) {
-    final isSignIn = ref.watch(appSettingsProvider).isSignIn;
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text(AppStrings.notesPageTitle),
-      ),
-      body: _viewBody(context, ref),
+      body: const _ViewNoteListView(),
       floatingActionButton: isSignIn
           ? FloatingActionButton(
               onPressed: () async => await _onTapFab(context, ref),
@@ -52,11 +47,21 @@ class NotesPage extends ConsumerWidget {
     );
   }
 
-  Widget _viewBody(BuildContext context, WidgetRef ref) {
-    final notes = ref.watch(notesProvider);
+  Future<void> _onTapFab(BuildContext context, WidgetRef ref) async {
+    final newId = ref.read(notesControllerProvider.notifier).createNewId();
+    await NoteEditPage.start(context, newId);
+  }
+}
+
+class _ViewNoteListView extends ConsumerWidget {
+  const _ViewNoteListView();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final notes = ref.watch(notesUiStateProvider);
     if (notes.isEmpty) {
       return const Center(
-        child: Text(AppStrings.notesNotRegisterLabel),
+        child: Text('ノートが1つも登録されていません。'),
       );
     }
 
@@ -65,27 +70,22 @@ class NotesPage extends ConsumerWidget {
       itemBuilder: (ctx, index) => _RowNote(notes[index]),
     );
   }
-
-  Future<void> _onTapFab(BuildContext context, WidgetRef ref) async {
-    final emptyNote = ref.read(notesProvider.notifier).newNote();
-    await NoteEditPage.start(context, emptyNote);
-  }
 }
 
 class _RowNote extends StatelessWidget {
-  const _RowNote(this._note, {Key? key}) : super(key: key);
+  const _RowNote(this.note);
 
-  final Note _note;
+  final Note note;
 
   @override
   Widget build(BuildContext context) {
     return Card(
       elevation: 1.0,
       child: ListTile(
-        leading: NoteTypeIcon.createNote(_note),
-        title: Text(_note.title),
+        leading: NoteTypeIcon.createNote(note),
+        title: Text(note.title),
         onTap: () async {
-          await NoteEditPage.start(context, _note);
+          await NoteEditPage.start(context, note.id);
         },
       ),
     );

@@ -1,9 +1,9 @@
-import 'package:hive/hive.dart';
+import 'package:isar/isar.dart';
 
 part 'record_entity.g.dart';
 
-@HiveType(typeId: 4)
-class RecordEntity extends HiveObject {
+@Collection()
+class RecordEntity {
   RecordEntity({
     required this.id,
     required this.breakfast,
@@ -21,47 +21,18 @@ class RecordEntity extends HiveObject {
     required this.eventName,
   });
 
-  static const String boxName = 'record';
-
-  @HiveField(0)
-  final int id;
-
-  @HiveField(1)
+  final Id id;
   final String? breakfast;
-
-  @HiveField(2)
   final String? lunch;
-
-  @HiveField(3)
   final String? dinner;
-
-  @HiveField(4)
   final bool isWalking;
-
-  @HiveField(5)
   final bool isToilet;
-
-  @HiveField(6)
   final String? conditionIdsStr;
-
-  @HiveField(7)
   final String? conditionMemo;
-
-  @HiveField(8)
   final double? morningTemperature;
-
-  @HiveField(9)
   final double? nightTemperature;
-
-  @HiveField(10)
   final String? medicineIdsStr;
-
-  @HiveField(11)
   final String? memo;
-
-  @HiveField(12)
   final int? eventTypeIndex;
-
-  @HiveField(13)
   final String? eventName;
 }

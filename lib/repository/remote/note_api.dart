@@ -1,22 +1,22 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:dyphic/common/app_logger.dart';
 import 'package:dyphic/model/note.dart';
-import 'package:dyphic/service/app_firebase.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:dyphic/service/firestore.dart';
 
-final noteApiProvider = Provider((ref) => _NoteApi(ref.read));
+final noteApiProvider = Provider((ref) => _NoteApi(ref));
 
 class _NoteApi {
-  const _NoteApi(this._read);
+  const _NoteApi(this._ref);
 
-  final Reader _read;
+  final Ref _ref;
 
   Future<List<Note>> findAll() async {
     AppLogger.d('サーバーからノート情報を全取得します。');
-    return await _read(appFirebaseProvider).findNotes();
+    return await _ref.read(firestoreProvider).findNotes();
   }
 
   Future<void> save(Note note) async {
     AppLogger.d('サーバーにノート情報を保存します。');
-    await _read(appFirebaseProvider).saveNote(note);
+    await _ref.read(firestoreProvider).saveNote(note);
   }
 }

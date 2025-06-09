@@ -1,79 +1,65 @@
-import 'package:dyphic/res/app_colors.dart';
 import 'package:flutter/material.dart';
 
 class AppTheme {
   AppTheme._();
 
-  static final ThemeData light = ThemeData.light().copyWith(
-    primaryColor: AppColors.themeColor,
-    primaryColorDark: AppColors.themeAccent,
-    dividerColor: AppColors.themeAccent,
-    toggleableActiveColor: AppColors.themeColor,
-    appBarTheme: const AppBarTheme(
-      color: AppColors.themeColor,
-      centerTitle: true,
-    ),
-    bottomNavigationBarTheme: const BottomNavigationBarThemeData(
-      selectedItemColor: AppColors.themeColor,
-    ),
-    outlinedButtonTheme: OutlinedButtonThemeData(
-      style: OutlinedButton.styleFrom(
-        primary: AppColors.themeAccent,
-      ),
-    ),
-    elevatedButtonTheme: ElevatedButtonThemeData(
-      style: ElevatedButton.styleFrom(
-        primary: AppColors.themeColor,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.0)),
-      ),
-    ),
-    textButtonTheme: TextButtonThemeData(
-      style: TextButton.styleFrom(
-        primary: AppColors.themeAccent,
-      ),
-    ),
-    floatingActionButtonTheme: const FloatingActionButtonThemeData(
-      backgroundColor: AppColors.themeColor,
-    ),
-    progressIndicatorTheme: const ProgressIndicatorThemeData(
-      color: AppColors.themeColor,
-    ),
-  );
+  // アプリで使用するカラーはここに定義する
+  static const Color themeColor = Color(0xFFF48FB1);
+  static const Color themeAccent = Colors.pinkAccent;
 
-  static final ThemeData dark = ThemeData.dark().copyWith(
-    primaryColor: AppColors.themeColor,
-    scaffoldBackgroundColor: const Color(0xFF232323),
-    applyElevationOverlayColor: true,
-    dividerColor: AppColors.themeAccent,
-    toggleableActiveColor: AppColors.themeAccent,
+  static const Color morningTemperature = Color(0xFFF892B2);
+
+  static const Color condition = Color(0xFF28A305);
+  static const Color medicine = Color(0xFFC68407);
+  static const Color walking = Color(0xFF365FEF);
+
+  static const Color mealBreakFast = Color(0xFFFA6B72);
+  static const Color mealLunch = Color(0xFFFCA41F);
+  static const Color mealDinner = Color(0xFF3D2EAD);
+
+  // テーマ
+  static final ThemeData light = ThemeData.light().copyWith(
+    primaryColor: themeColor,
+    primaryColorDark: themeAccent,
+    dividerColor: themeAccent,
     appBarTheme: const AppBarTheme(
-      color: AppColors.themeColor,
+      color: themeColor,
       centerTitle: true,
     ),
+    toggleButtonsTheme: const ToggleButtonsThemeData(
+      color: themeAccent,
+    ),
     bottomNavigationBarTheme: const BottomNavigationBarThemeData(
-      selectedItemColor: AppColors.themeColor,
+      selectedItemColor: themeColor,
     ),
     outlinedButtonTheme: OutlinedButtonThemeData(
-      style: OutlinedButton.styleFrom(
-        primary: AppColors.themeAccent,
+      style: ButtonStyle(
+        foregroundColor: WidgetStateProperty.resolveWith<Color>((states) {
+          return states.contains(WidgetState.disabled) ? Colors.grey : themeColor;
+        }),
+        side: WidgetStateProperty.resolveWith<BorderSide>((states) {
+          return states.contains(WidgetState.disabled) ? const BorderSide(color: Colors.grey) : const BorderSide(color: themeColor);
+        }),
       ),
     ),
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
-        primary: AppColors.themeColor,
+        backgroundColor: themeColor,
+        foregroundColor: Colors.white,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.0)),
       ),
     ),
     textButtonTheme: TextButtonThemeData(
       style: TextButton.styleFrom(
-        primary: AppColors.themeAccent,
+        foregroundColor: themeAccent,
       ),
     ),
     floatingActionButtonTheme: const FloatingActionButtonThemeData(
-      backgroundColor: AppColors.themeColor,
+      backgroundColor: themeColor,
+      foregroundColor: Colors.white,
     ),
     progressIndicatorTheme: const ProgressIndicatorThemeData(
-      color: AppColors.themeColor,
+      color: themeColor,
     ),
   );
 }

@@ -1,47 +1,55 @@
+import 'package:dyphic/repository/local/dao/condition_dao.dart';
+import 'package:dyphic/repository/local/dao/medicine_dao.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:hive/hive.dart';
-import 'package:collection/collection.dart';
+import 'package:isar/isar.dart';
+
+import 'package:dyphic/repository/local/local_data_source.dart';
 import 'package:dyphic/model/condition.dart';
 import 'package:dyphic/model/medicine.dart';
 import 'package:dyphic/model/record.dart';
 import 'package:dyphic/repository/local/entity/record_entity.dart';
 
-final recordDaoProvider = Provider((ref) => _RecordDao(ref.read));
+final recordDaoProvider = Provider((ref) => _RecordDao(ref));
 
 class _RecordDao {
-  const _RecordDao(this._read);
+  const _RecordDao(this._ref);
 
-  final Reader _read;
-
-  Future<List<Record>> findAll() async {
-    final box = await Hive.openBox<RecordEntity>(RecordEntity.boxName);
-    if (box.isEmpty) {
-      return [];
-    }
-    return box.values.map((e) => _toRecord(e)).toList();
-  }
+  final Ref _ref;
 
   Future<Record?> find(int id) async {
-    final box = await Hive.openBox<RecordEntity>(RecordEntity.boxName);
-    final entity = box.values.firstWhereOrNull((e) => e.id == id);
-    if (entity == null) {
+    final isar = _ref.read(localDataSourceProvider).isar;
+    final record = await isar.recordEntitys.get(id);
+    if (record == null) {
       return null;
     }
-    return _toRecord(entity);
+    final conditions = await _ref.read(conditionDaoProvider).findAll();
+    final medicines = await _ref.read(medicineDaoProvider).findAll();
+    return _toRecord(record, conditions, medicines);
   }
 
-  Future<void> saveAll(List<Record> records) async {
-    final box = await Hive.openBox<RecordEntity>(RecordEntity.boxName);
-    final entities = records.map((r) => _toEntity(r)).toList();
-    for (var entity in entities) {
-      await box.put(entity.id, entity);
-    }
+  Future<List<Record>> findAll() async {
+    final isar = _ref.read(localDataSourceProvider).isar;
+    final records = await isar.recordEntitys.where().findAll();
+    final conditions = await _ref.read(conditionDaoProvider).findAll();
+    final medicines = await _ref.read(medicineDaoProvider).findAll();
+    return records.map((e) => _toRecord(e, conditions, medicines)).toList();
   }
 
   Future<void> save(Record record) async {
-    final box = await Hive.openBox<RecordEntity>(RecordEntity.boxName);
-    final entity = _toEntity(record);
-    await box.put(entity.id, entity);
+    final isar = _ref.read(localDataSourceProvider).isar;
+    await isar.writeTxn(() async {
+      final entity = _toEntity(record);
+      await isar.recordEntitys.put(entity);
+    });
+  }
+
+  Future<void> saveAll(List<Record> records) async {
+    final isar = _ref.read(localDataSourceProvider).isar;
+    await isar.writeTxn(() async {
+      final entities = records.map((r) => _toEntity(r)).toList();
+      await isar.recordEntitys.clear();
+      await isar.recordEntitys.putAll(entities);
+    });
   }
 
   Future<void> saveCondition(Record record) async {
@@ -70,10 +78,10 @@ class _RecordDao {
     EventType? eventType,
     String? eventName,
   }) async {
-    final box = await Hive.openBox<RecordEntity>(RecordEntity.boxName);
-    final target = box.get(id);
+    final isar = _ref.read(localDataSourceProvider).isar;
+    final target = await isar.recordEntitys.get(id);
     if (target != null) {
-      final entityUpdate = RecordEntity(
+      final newVal = RecordEntity(
         id: id,
         breakfast: breakfast ?? target.breakfast,
         lunch: lunch ?? target.lunch,
@@ -89,9 +97,11 @@ class _RecordDao {
         eventTypeIndex: eventType?.index ?? target.eventTypeIndex,
         eventName: eventName ?? target.eventName,
       );
-      await box.put(id, entityUpdate);
+      await isar.writeTxn(() async {
+        await isar.recordEntitys.put(newVal);
+      });
     } else {
-      final entityNew = RecordEntity(
+      final newVal = RecordEntity(
         id: id,
         breakfast: breakfast,
         lunch: lunch,
@@ -107,14 +117,13 @@ class _RecordDao {
         eventTypeIndex: eventType?.index ?? EventType.none.index,
         eventName: eventName,
       );
-      await box.put(id, entityNew);
+      await isar.writeTxn(() async {
+        await isar.recordEntitys.put(newVal);
+      });
     }
   }
 
-  Record _toRecord(RecordEntity entity) {
-    final conditions = _read(conditionsProvider);
-    final medicines = _read(medicineProvider);
-
+  Record _toRecord(RecordEntity entity, List<Condition> conditions, List<Medicine> medicines) {
     return Record(
       id: entity.id,
       isWalking: entity.isWalking,

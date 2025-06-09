@@ -14,5 +14,7 @@ class AppImages {
   static const String mealLunch = '$_rootPath/ic_lunch.png';
   static const String mealDinner = '$_rootPath/ic_dinner.png';
 
+  static const String medicineImagePath = '$_rootPath/medicines';
+
   static const String noImage = '$_rootPath/no_image.png';
 }

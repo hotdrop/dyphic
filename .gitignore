@@ -51,3 +51,7 @@ app.*.map.json
 *.g.dart
 *.freezed.dart
 *.mocks.dart
+
+/lib/firebase_options.dart
+*.dylib
+/assets/images/medicines/*

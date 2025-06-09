@@ -1,163 +1,151 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:dyphic/common/app_logger.dart';
-import 'package:dyphic/res/app_strings.dart';
 import 'package:dyphic/model/medicine.dart';
-import 'package:dyphic/ui/medicine/edit/medicine_edit_view_model.dart';
-import 'package:dyphic/ui/medicine/edit/widget_medicine_type_radio.dart';
+import 'package:dyphic/ui/medicine/edit/medicine_edit_controller.dart';
+import 'package:dyphic/ui/medicine/widgets/medicine_type_radio.dart';
 import 'package:dyphic/ui/widget/app_dialog.dart';
-import 'package:dyphic/ui/widget/app_image.dart';
 import 'package:dyphic/ui/widget/app_progress_dialog.dart';
 import 'package:dyphic/ui/widget/app_text_field.dart';
-import 'package:image_picker/image_picker.dart';
 
 class MedicineEditPage extends ConsumerWidget {
-  const MedicineEditPage._(this._medicine);
+  const MedicineEditPage._(this.medicineId);
 
-  static Future<bool> start(BuildContext context, Medicine m) async {
+  static Future<bool> start(BuildContext context, int medicineId) async {
     return await Navigator.push<bool>(
           context,
-          MaterialPageRoute(builder: (_) => MedicineEditPage._(m)),
+          MaterialPageRoute(builder: (_) => MedicineEditPage._(medicineId)),
         ) ??
         false;
   }
 
-  final Medicine _medicine;
+  final int medicineId;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final uiState = ref.watch(medicineEditViewModelProvider).uiState;
     return Scaffold(
       appBar: AppBar(
-        title: const Text(AppStrings.medicineEditPageTitle),
+        title: const Text('お薬情報'),
       ),
       body: GestureDetector(
         onTap: () {
           FocusScope.of(context).unfocus();
         },
-        child: uiState.when(
-          loading: (_) => _onLoading(context, ref),
-          success: () => _onSuccess(context, ref),
-        ),
+        child: ref.watch(medicineEditControllerProvider(medicineId)).when(
+              data: (_) => const _ViewBody(),
+              error: (err, stackTrace) {
+                return Center(
+                  child: Text('$err', style: const TextStyle(color: Colors.red)),
+                );
+              },
+              loading: () {
+                return const Center(
+                  child: CircularProgressIndicator(),
+                );
+              },
+            ),
       ),
     );
   }
+}
 
-  Widget _onLoading(BuildContext context, WidgetRef ref) {
-    Future.delayed(Duration.zero).then((_) async {
-      ref.read(medicineEditViewModelProvider).init(_medicine);
-    });
-    return const Center(
-      child: CircularProgressIndicator(),
-    );
-  }
+class _ViewBody extends StatelessWidget {
+  const _ViewBody();
 
-  Widget _onSuccess(BuildContext context, WidgetRef ref) {
+  @override
+  Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(left: 16.0, right: 16.0),
       child: ListView(
-        children: [
-          const SizedBox(height: 16.0),
-          _editFieldName(context, ref),
-          const SizedBox(height: 8.0),
-          _editFieldOverview(context, ref),
-          const SizedBox(height: 8.0),
-          _selectType(context, ref),
-          _selectImageView(context, ref),
-          const SizedBox(height: 8.0),
-          _editFieldMemo(context, ref),
-          const SizedBox(height: 8.0),
-          _saveButton(context, ref),
-          const SizedBox(height: 16.0),
+        children: const [
+          SizedBox(height: 16.0),
+          _ViewEditFieldName(),
+          SizedBox(height: 8.0),
+          _ViewEditFieldOverview(),
+          SizedBox(height: 8.0),
+          _ViewSelectType(),
+          SizedBox(height: 8.0),
+          _ViewEditFieldMemo(),
+          SizedBox(height: 8.0),
+          _ViewSaveButton(),
+          SizedBox(height: 16.0),
         ],
       ),
     );
   }
+}
 
-  Widget _editFieldName(BuildContext context, WidgetRef ref) {
+class _ViewEditFieldName extends ConsumerWidget {
+  const _ViewEditFieldName();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
     return AppTextField(
-      label: AppStrings.medicineNameLabel,
-      initValue: _medicine.name,
+      label: 'お薬名',
+      initValue: ref.read(medicineUiStateProvider).name,
       isRequired: true,
-      onChanged: (String v) => ref.read(medicineEditViewModelProvider).inputName(v),
+      onChanged: (String v) => ref.read(medicineEditMethodsProvider).inputName(v),
     );
   }
+}
 
-  Widget _editFieldOverview(BuildContext context, WidgetRef ref) {
+class _ViewEditFieldOverview extends ConsumerWidget {
+  const _ViewEditFieldOverview();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
     return AppTextField(
-      label: AppStrings.medicineOverviewLabel,
-      initValue: _medicine.overview,
+      label: '一言メモ',
+      initValue: ref.read(medicineUiStateProvider).overview,
       isRequired: true,
-      onChanged: (String v) => ref.read(medicineEditViewModelProvider).inputOverview(v),
+      onChanged: (String v) => ref.read(medicineEditMethodsProvider).inputOverview(v),
     );
   }
+}
 
-  Widget _selectType(BuildContext context, WidgetRef ref) {
+class _ViewSelectType extends ConsumerWidget {
+  const _ViewSelectType();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
     return MedicineTypeRadio(
-      initSelectedType: _medicine.type,
-      onChange: (MedicineType t) => ref.read(medicineEditViewModelProvider).inputOral(t),
+      initSelectedType: ref.read(medicineUiStateProvider).type,
+      onChange: (MedicineType t) => ref.read(medicineEditMethodsProvider).inputOral(t),
     );
   }
+}
 
-  Widget _editFieldMemo(BuildContext context, WidgetRef ref) {
+class _ViewEditFieldMemo extends ConsumerWidget {
+  const _ViewEditFieldMemo();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
     return MultiLineTextField(
-      label: AppStrings.medicineMemoLabel,
-      initValue: _medicine.memo,
+      label: '詳細メモ',
+      initValue: ref.read(medicineUiStateProvider).memo,
       limitLine: 3,
-      hintText: AppStrings.medicineMemoHint,
-      onChanged: (String v) => ref.read(medicineEditViewModelProvider).inputMemo(v),
+      hintText: '詳細な情報を残したい場合はここに記載してください。',
+      onChanged: (String v) => ref.read(medicineEditMethodsProvider).inputMemo(v),
     );
   }
+}
 
-  Widget _selectImageView(BuildContext context, WidgetRef ref) {
-    final imagePath = ref.watch(medicineEditViewModelProvider).imageFilePath;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        Padding(
-          padding: const EdgeInsets.only(top: 8.0, bottom: 8.0),
-          child: AppImage.large(path: imagePath),
-        ),
-        Text(AppStrings.medicineImageOverviewLabel, style: Theme.of(context).textTheme.caption),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            OutlinedButton.icon(
-              icon: const Icon(Icons.camera_alt),
-              label: const Text(AppStrings.medicineStartCameraLabel),
-              onPressed: () async {
-                final imagePicker = ImagePicker();
-                final image = await imagePicker.pickImage(source: ImageSource.camera, imageQuality: 10);
-                if (image != null) {
-                  AppLogger.d('カメラ撮影しました。 path=${image.path}');
-                  ref.read(medicineEditViewModelProvider).inputImagePath(image.path);
-                }
-              },
-            ),
-          ],
-        ),
-      ],
-    );
-  }
+class _ViewSaveButton extends ConsumerWidget {
+  const _ViewSaveButton();
 
-  Widget _saveButton(BuildContext context, WidgetRef ref) {
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final canSave = ref.watch(canSaveMedicineEditStateProvider);
     return ElevatedButton(
-      onPressed: () async => await _processSave(context, ref),
-      child: const Text(AppStrings.medicineSaveButton, style: TextStyle(color: Colors.white)),
+      onPressed: canSave ? () async => await _processSave(context, ref) : null,
+      child: const Text('この内容で保存する', style: TextStyle(color: Colors.white)),
     );
   }
 
   Future<void> _processSave(BuildContext context, WidgetRef ref) async {
-    final canSave = ref.watch(medicineEditViewModelProvider).canSave;
-    if (!canSave) {
-      AppDialog.onlyOk(message: AppStrings.medicineNotSaveAttention).show(context);
-      return;
-    }
-
     const progressDialog = AppProgressDialog<void>();
     await progressDialog.show(
       context,
-      execute: ref.read(medicineEditViewModelProvider).save,
+      execute: ref.read(medicineEditMethodsProvider).save,
       onSuccess: (_) => Navigator.pop(context, true),
       onError: (err) => AppDialog.onlyOk(message: err).show(context),
     );

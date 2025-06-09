@@ -1,34 +1,46 @@
-import 'package:hive/hive.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:dyphic/repository/local/local_data_source.dart';
 import 'package:dyphic/model/medicine.dart';
 import 'package:dyphic/repository/local/entity/medicine_entity.dart';
+import 'package:isar/isar.dart';
 
-final medicineDaoProvider = Provider((ref) => const _MedicineDao());
+final medicineDaoProvider = Provider((ref) => _MedicineDao(ref));
 
 class _MedicineDao {
-  const _MedicineDao();
+  const _MedicineDao(this._ref);
 
-  Future<List<Medicine>> findAll() async {
-    final box = await Hive.openBox<MedicineEntity>(MedicineEntity.boxName);
-    if (box.isEmpty) {
-      return [];
+  final Ref _ref;
+
+  Future<Medicine?> find(int id) async {
+    final isar = _ref.read(localDataSourceProvider).isar;
+    final medicine = await isar.medicineEntitys.get(id);
+    if (medicine == null) {
+      return null;
     }
-
-    return box.values.map((m) => _toMedicine(m)).toList();
+    return _toMedicine(medicine);
   }
 
-  Future<void> saveAll(List<Medicine> medicines) async {
-    final box = await Hive.openBox<MedicineEntity>(MedicineEntity.boxName);
-    final entities = medicines.map((c) => _toEntity(c)).toList();
-    for (var entity in entities) {
-      await box.put(entity.id, entity);
-    }
+  Future<List<Medicine>> findAll() async {
+    final isar = _ref.read(localDataSourceProvider).isar;
+    final medicines = await isar.medicineEntitys.where().findAll();
+    return medicines.map((m) => _toMedicine(m)).toList();
   }
 
   Future<void> save(Medicine medicine) async {
-    final box = await Hive.openBox<MedicineEntity>(MedicineEntity.boxName);
-    final entity = _toEntity(medicine);
-    await box.put(entity.id, entity);
+    final isar = _ref.read(localDataSourceProvider).isar;
+    await isar.writeTxn(() async {
+      final entity = _toEntity(medicine);
+      await isar.medicineEntitys.put(entity);
+    });
+  }
+
+  Future<void> saveAll(List<Medicine> medicines) async {
+    final isar = _ref.read(localDataSourceProvider).isar;
+    await isar.writeTxn(() async {
+      final entities = medicines.map((r) => _toEntity(r)).toList();
+      await isar.medicineEntitys.clear();
+      await isar.medicineEntitys.putAll(entities);
+    });
   }
 
   Medicine _toMedicine(MedicineEntity entity) {
@@ -38,7 +50,6 @@ class _MedicineDao {
       overview: entity.overview,
       type: Medicine.toType(entity.typeIndex),
       memo: entity.memo,
-      imagePath: entity.imagePath,
       order: entity.order,
     );
   }
@@ -50,7 +61,6 @@ class _MedicineDao {
       overview: m.overview,
       typeIndex: m.type.index,
       memo: m.memo,
-      imagePath: m.imagePath,
       order: m.order,
     );
   }

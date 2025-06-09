@@ -3,32 +3,48 @@ import 'package:dyphic/model/note.dart';
 import 'package:dyphic/repository/local/dao/note_dao.dart';
 import 'package:dyphic/repository/remote/note_api.dart';
 
-final noteRepositoryProvider = Provider((ref) => _NoteRepository(ref.read));
+final noteRepositoryProvider = Provider((ref) => _NoteRepository(ref));
 
 class _NoteRepository {
-  const _NoteRepository(this._read);
+  const _NoteRepository(this._ref);
 
-  final Reader _read;
+  final Ref _ref;
 
   ///
-  /// ノート情報をローカルから取得する。
-  /// データがローカルにない場合はリモートから取得する。
-  /// isForceUpdate がtrueの場合はリモートのデータで最新化する。
+  /// 指定したIDのノート情報を取得する
+  /// 取得先: ローカルストレージ
   ///
-  Future<List<Note>> findAll({required bool isForceUpdate}) async {
-    final notes = await _read(noteDaoProvider).findAll();
-    if (notes.isNotEmpty && !isForceUpdate) {
-      return notes;
-    }
-
-    // API経由でデータ取得
-    final newNotes = await _read(noteApiProvider).findAll();
-    await _read(noteDaoProvider).saveAll(newNotes);
-    return newNotes;
+  Future<Note?> find(int id) async {
+    return await _ref.read(noteDaoProvider).find(id);
   }
 
-  Future<void> save(Note note) async {
-    await _read(noteApiProvider).save(note);
-    await _read(noteDaoProvider).save(note);
+  ///
+  /// 保持している全てのノート情報を取得する
+  /// 取得先: ローカルストレージ
+  ///
+  Future<List<Note>> findAll() async {
+    final notes = await _ref.read(noteDaoProvider).findAll();
+    if (notes.isEmpty) {
+      return [];
+    }
+    return notes;
+  }
+
+  ///
+  /// ノート情報をサーバーから取得してローカルストレージのデータを最新化する
+  /// 取得先: サーバー
+  ///
+  Future<void> onLoadLatest() async {
+    final newNotes = await _ref.read(noteApiProvider).findAll();
+    await _ref.read(noteDaoProvider).saveAll(newNotes);
+  }
+
+  ///
+  /// ノート情報を保存する
+  /// 保存先: ローカルストレージ, サーバー
+  ///
+  Future<void> save(Note newNote) async {
+    await _ref.read(noteApiProvider).save(newNote);
+    await _ref.read(noteDaoProvider).save(newNote);
   }
 }
