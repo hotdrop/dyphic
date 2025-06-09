@@ -52,6 +52,7 @@ class AppTheme {
     ),
     floatingActionButtonTheme: const FloatingActionButtonThemeData(
       backgroundColor: themeColor,
+      foregroundColor: Colors.white,
     ),
     progressIndicatorTheme: const ProgressIndicatorThemeData(
       color: themeColor,

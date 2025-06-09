@@ -38,7 +38,7 @@ class _NoteDao {
     final isar = _ref.read(localDataSourceProvider).isar;
     await isar.writeTxn(() async {
       final entities = notes.map((c) => _toEntity(c)).toList();
-      await isar.clear();
+      await isar.noteEntitys.clear();
       await isar.noteEntitys.putAll(entities);
     });
   }

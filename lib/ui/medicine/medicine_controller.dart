@@ -33,4 +33,4 @@ final isSignInProvider = Provider((ref) => ref.read(accountRepositoryProvider).i
 final medicineUiStateProvider = StateProvider<List<Medicine>>((_) => []);
 
 // スクロールでFabの表示非表示を切り替える
-final isShowFabStateProvider = StateProvider<bool>((_) => false);
+final isShowFabStateProvider = StateProvider<bool>((_) => true);

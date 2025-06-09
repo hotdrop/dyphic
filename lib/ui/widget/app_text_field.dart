@@ -33,8 +33,23 @@ class _AppTextFieldState extends State<AppTextField> {
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        _createTextFormField(),
+      children: [
+        TextFormField(
+          textCapitalization: TextCapitalization.words,
+          decoration: InputDecoration(
+            labelText: widget.label,
+            hintText: widget.hintText,
+            border: const OutlineInputBorder(
+              borderRadius: BorderRadius.all(Radius.circular(10.0)),
+            ),
+          ),
+          initialValue: widget.initValue,
+          onChanged: (String value) {
+            setState(() {
+              widget.onChanged(value);
+            });
+          },
+        ),
         if (widget.isRequired && _haveValue())
           const Padding(
             padding: EdgeInsets.only(left: 8.0),
@@ -48,25 +63,6 @@ class _AppTextFieldState extends State<AppTextField> {
   }
 
   bool _haveValue() => _value?.isNotEmpty ?? false;
-
-  TextFormField _createTextFormField() {
-    return TextFormField(
-      textCapitalization: TextCapitalization.words,
-      decoration: InputDecoration(
-        labelText: widget.label,
-        hintText: widget.hintText,
-        border: const OutlineInputBorder(
-          borderRadius: BorderRadius.all(Radius.circular(10.0)),
-        ),
-      ),
-      initialValue: widget.initValue,
-      onChanged: (String value) {
-        setState(() {
-          widget.onChanged(value);
-        });
-      },
-    );
-  }
 }
 
 ///

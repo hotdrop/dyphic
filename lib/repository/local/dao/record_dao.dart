@@ -47,7 +47,7 @@ class _RecordDao {
     final isar = _ref.read(localDataSourceProvider).isar;
     await isar.writeTxn(() async {
       final entities = records.map((r) => _toEntity(r)).toList();
-      await isar.clear();
+      await isar.recordEntitys.clear();
       await isar.recordEntitys.putAll(entities);
     });
   }

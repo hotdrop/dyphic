@@ -29,7 +29,7 @@ class _ConditionDao {
     final isar = _ref.read(localDataSourceProvider).isar;
     await isar.writeTxn(() async {
       final entities = conditions.map((c) => _toEntity(c)).toList();
-      await isar.clear();
+      await isar.conditionEntitys.clear();
       await isar.conditionEntitys.putAll(entities);
     });
   }

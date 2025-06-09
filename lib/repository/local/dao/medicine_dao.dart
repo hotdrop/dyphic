@@ -38,7 +38,7 @@ class _MedicineDao {
     final isar = _ref.read(localDataSourceProvider).isar;
     await isar.writeTxn(() async {
       final entities = medicines.map((r) => _toEntity(r)).toList();
-      await isar.clear();
+      await isar.medicineEntitys.clear();
       await isar.medicineEntitys.putAll(entities);
     });
   }

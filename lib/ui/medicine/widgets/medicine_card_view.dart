@@ -20,7 +20,11 @@ class MedicineCardView extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.all(4.0),
       child: ExpansionTileCard(
-        leading: MedicineImage(id: medicine.id),
+        leading: SizedBox(
+          width: 50,
+          height: 50,
+          child: MedicineImage(id: medicine.id),
+        ),
         title: Text(medicine.name),
         subtitle: Text(
           medicine.overview,

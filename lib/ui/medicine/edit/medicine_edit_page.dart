@@ -134,19 +134,14 @@ class _ViewSaveButton extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final canSave = ref.watch(canSaveMedicineEditStateProvider);
     return ElevatedButton(
-      onPressed: () async => await _processSave(context, ref),
+      onPressed: canSave ? () async => await _processSave(context, ref) : null,
       child: const Text('この内容で保存する', style: TextStyle(color: Colors.white)),
     );
   }
 
   Future<void> _processSave(BuildContext context, WidgetRef ref) async {
-    final canSave = ref.watch(canSaveMedicineEditStateProvider);
-    if (!canSave) {
-      AppDialog.onlyOk(message: 'お薬の名前が未入力です。').show(context);
-      return;
-    }
-
     const progressDialog = AppProgressDialog<void>();
     await progressDialog.show(
       context,
