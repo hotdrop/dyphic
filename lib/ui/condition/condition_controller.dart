@@ -15,33 +15,31 @@ part 'condition_controller.g.dart';
 class ConditionController extends _$ConditionController {
   @override
   Future<void> build() async {
-    ref.onDispose(() {
-      ref.read(conditionNameEditController).dispose();
-    });
-
     final conditions = await ref.read(conditionRepositoryProvider).findAll();
     ref.read(conditionUiStateProvider.notifier).state = _UiState(
       conditions: conditions,
       selectId: _UiState.emptyId,
+      inputName: '',
     );
   }
 
   void selectCondition(Condition condition) {
     ref.read(conditionUiStateProvider.notifier).update((c) => c.copyWith(
           selectId: condition.id,
+          inputName: condition.name,
         ));
     ref.read(conditionNameEditController).text = condition.name;
   }
 
-  // TODO これ不要では？
-  // void input(String name) {
-  //   ref.read(conditionNameEditController).text = name;
-  // }
+  void inputName(String newVal) {
+    ref.read(conditionUiStateProvider.notifier).update(
+          (state) => state.copyWith(inputName: newVal),
+        );
+  }
 
   Future<void> save() async {
     try {
-      final inputName = ref.read(conditionNameEditController).text;
-      final newCondition = ref.read(conditionUiStateProvider).createCondition(inputName);
+      final newCondition = ref.read(conditionUiStateProvider).createCondition();
       await ref.read(conditionRepositoryProvider).save(newCondition);
     } catch (e, s) {
       await AppLogger.e('体調情報の保存に失敗しました。', e, s);
@@ -52,6 +50,7 @@ class ConditionController extends _$ConditionController {
   void clear() {
     ref.read(conditionUiStateProvider.notifier).update((c) => c.copyWith(
           selectId: _UiState.emptyId,
+          inputName: '',
         ));
     ref.read(conditionNameEditController).clear();
   }
@@ -63,14 +62,18 @@ final isSignInProvider = Provider((ref) => ref.read(accountRepositoryProvider).i
 // 体調名のTextEditingController
 final conditionNameEditController = Provider((_) => TextEditingController());
 
+// 同名の症状がすでに登録されているか？enableSaveConditionProviderとほぼ同じだがエラーメッセージを表示したかったので別に作る
+final conditionNameDuplicateProvider = Provider<bool>((ref) {
+  final inputName = ref.watch(conditionUiStateProvider).inputName;
+  final isExist = ref.watch(conditionUiStateProvider).isExist();
+  return inputName.isNotEmpty && isExist;
+});
+
 // 入力した体調情報が保存可能か？
 final enableSaveConditionProvider = Provider((ref) {
-  final inputText = ref.watch(conditionNameEditController).text;
-  if (inputText.isEmpty) {
-    return false;
-  }
-  final isExist = ref.read(conditionUiStateProvider).isExist(inputText);
-  return !isExist;
+  final inputName = ref.watch(conditionUiStateProvider).inputName;
+  final isDuplicate = ref.watch(conditionNameDuplicateProvider);
+  return inputName.isNotEmpty && !isDuplicate;
 });
 
 final conditionUiStateProvider = StateProvider<_UiState>((_) => _UiState.empty());
@@ -79,14 +82,16 @@ class _UiState {
   _UiState({
     required this.conditions,
     required this.selectId,
+    required this.inputName,
   });
 
   factory _UiState.empty() {
-    return _UiState(conditions: [], selectId: emptyId);
+    return _UiState(conditions: [], selectId: emptyId, inputName: '');
   }
 
   List<Condition> conditions;
   int selectId;
+  String inputName;
 
   static const emptyId = -1;
 
@@ -99,7 +104,7 @@ class _UiState {
     return selectId != emptyId;
   }
 
-  bool isExist(String inputName) {
+  bool isExist() {
     final condition = conditions.firstWhereOrNull((c) => c.name == inputName);
     if (condition == null) {
       return false;
@@ -112,7 +117,7 @@ class _UiState {
     return selectId != condition.id;
   }
 
-  Condition createCondition(String inputName) {
+  Condition createCondition() {
     if (selectId == emptyId) {
       return Condition(_createNewId(), inputName);
     } else {
@@ -127,10 +132,12 @@ class _UiState {
   _UiState copyWith({
     List<Condition>? conditions,
     int? selectId,
+    String? inputName,
   }) {
     return _UiState(
       conditions: conditions ?? this.conditions,
       selectId: selectId ?? this.selectId,
+      inputName: inputName ?? this.inputName,
     );
   }
 }

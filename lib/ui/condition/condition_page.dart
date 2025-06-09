@@ -34,13 +34,14 @@ class _ViewBody extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('体調管理'),
+        title: const Text('体調'),
       ),
       body: GestureDetector(
         onTap: () {
           FocusScope.of(context).unfocus();
         },
         child: ListView(
+          padding: const EdgeInsets.all(16),
           children: [
             const _ViewOverview(),
             const _ViewClearButton(),
@@ -49,7 +50,8 @@ class _ViewBody extends ConsumerWidget {
             const Divider(),
             const SizedBox(height: 16),
             const _ViewInputTextField(),
-            const SizedBox(height: 16),
+            const _ViewSameNameErrorLabel(),
+            const SizedBox(height: 36),
             if (isSigniIn) const _ViewSaveButton(),
             const SizedBox(height: 36),
           ],
@@ -64,19 +66,16 @@ class _ViewOverview extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(left: 16, right: 16, top: 16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text('この画面では体調に関する症状を登録・編集できます。'),
-          const SizedBox(height: 8),
-          Text(
-            '「頭痛」や「腹痛」など大まかな症状を登録し、細かい症状は日々の記録画面にある体調メモに書いていくことをオススメします。',
-            style: Theme.of(context).textTheme.bodySmall,
-          ),
-        ],
-      ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text('この画面では体調に関する症状を登録・編集できます。'),
+        const SizedBox(height: 8),
+        Text(
+          '「頭痛」や「腹痛」など大まかな症状を登録し、細かい症状は日々の記録画面にある体調メモに書いていくことをオススメします。',
+          style: Theme.of(context).textTheme.bodySmall,
+        ),
+      ],
     );
   }
 }
@@ -91,7 +90,7 @@ class _ViewClearButton extends ConsumerWidget {
       mainAxisSize: MainAxisSize.max,
       children: [
         Padding(
-          padding: const EdgeInsets.only(right: 16),
+          padding: const EdgeInsets.only(right: 16, top: 8),
           child: OutlinedButton(
             onPressed: () => ref.read(conditionControllerProvider.notifier).clear(),
             child: const Text('選択をクリアする'),
@@ -141,8 +140,31 @@ class _ViewInputTextField extends ConsumerWidget {
         border: OutlineInputBorder(),
         filled: true,
       ),
+      onFieldSubmitted: (String newVal) {
+        ref.read(conditionControllerProvider.notifier).inputName(newVal);
+      },
       autovalidateMode: AutovalidateMode.always,
     );
+  }
+}
+
+class _ViewSameNameErrorLabel extends ConsumerWidget {
+  const _ViewSameNameErrorLabel();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final isDuplicate = ref.watch(conditionNameDuplicateProvider);
+    if (isDuplicate) {
+      return const Text(
+        '同名の症状がすでに登録されています',
+        style: TextStyle(color: Colors.red),
+      );
+    } else {
+      return const Text(
+        '入力したら必ずEnterを押してください',
+        style: TextStyle(color: Colors.blueAccent),
+      );
+    }
   }
 }
 
@@ -157,7 +179,10 @@ class _ViewSaveButton extends ConsumerWidget {
 
     return ElevatedButton(
       onPressed: canSaved ? () async => await _save(context, ref) : null,
-      child: Text(buttonName),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 16),
+        child: Text(buttonName),
+      ),
     );
   }
 

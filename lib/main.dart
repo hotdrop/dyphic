@@ -44,8 +44,10 @@ class _ViewLoadingScreen extends StatelessWidget {
       ),
       body: const Center(
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text('起動までしばらくお待ちください'),
+            SizedBox(height: 16),
             CircularProgressIndicator(),
           ],
         ),
