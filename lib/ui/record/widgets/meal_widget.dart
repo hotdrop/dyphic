@@ -109,7 +109,16 @@ class _MealCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Center(child: Image.asset(iconImagePath)),
-                _detailLabel(),
+                Flexible(
+                  child: Padding(
+                    padding: const EdgeInsets.only(top: 8),
+                    child: Text(
+                      initValue,
+                      maxLines: 4,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                ),
               ],
             ),
           ),
@@ -126,19 +135,6 @@ class _MealCard extends StatelessWidget {
         ) ??
         '';
     onSubmitted(inputValue);
-  }
-
-  Widget _detailLabel() {
-    return Flexible(
-      child: Padding(
-        padding: const EdgeInsets.only(top: 8),
-        child: Text(
-          initValue,
-          maxLines: 4,
-          overflow: TextOverflow.ellipsis,
-        ),
-      ),
-    );
   }
 }
 

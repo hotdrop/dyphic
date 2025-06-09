@@ -4,7 +4,7 @@ import 'package:dyphic/res/app_theme.dart';
 import 'package:dyphic/ui/record/record_controller.dart';
 import 'package:dyphic/ui/record/widgets/thermomenter_icon.dart';
 
-class MorningTemperatureWidget extends StatelessWidget {
+class MorningTemperatureWidget extends ConsumerWidget {
   const MorningTemperatureWidget({
     super.key,
     required this.currentValue,
@@ -15,87 +15,58 @@ class MorningTemperatureWidget extends StatelessWidget {
   final Function(double) onSubmitted;
 
   @override
-  Widget build(BuildContext context) {
-    return TemperatureView(
-      temperature: currentValue ?? 0,
-      color: AppTheme.morningTemperature,
-      title: '朝の体温',
-      thermometerIcon: ThermometerIcon.morning(),
-      dialogTitle: '朝の体温',
-      onSubmitted: onSubmitted,
-    );
-  }
-}
-
-class TemperatureView extends ConsumerWidget {
-  const TemperatureView({
-    super.key,
-    required this.temperature,
-    required this.color,
-    required this.title,
-    required this.thermometerIcon,
-    required this.onSubmitted,
-    required this.dialogTitle,
-  });
-
-  final String dialogTitle;
-  final Color color;
-  final String title;
-  final ThermometerIcon thermometerIcon;
-  final double temperature;
-  final Function(double) onSubmitted;
-
-  @override
   Widget build(BuildContext context, WidgetRef ref) {
     final isSignIn = ref.read(isSignInProvider);
+    final temperature = currentValue ?? 0;
+
     return Card(
       elevation: 4.0,
       child: InkWell(
-        onTap: isSignIn ? () async => await _showEditDialog(context) : null,
+        onTap: isSignIn ? () async => await _showEditDialog(context, temperature) : null,
         child: Row(
-          children: <Widget>[
-            _VerticalLine(color),
+          children: [
+            const _VerticalLine(),
             const SizedBox(width: 24.0),
             Column(
-              children: <Widget>[
-                _viewTitle(context),
+              children: [
+                const Text('朝の体温', style: TextStyle(color: AppTheme.morningTemperature)),
                 const SizedBox(height: 4),
-                _viewTemperatureLabel(context),
+                _ViewTemperatureLabel(temperature),
               ],
             ),
             const SizedBox(width: 24.0),
-            _VerticalLine(color),
+            const _VerticalLine(),
           ],
         ),
       ),
     );
   }
 
-  Future<void> _showEditDialog(BuildContext context) async {
+  Future<void> _showEditDialog(BuildContext context, double temperature) async {
     final inputValue = await _TemperatureEditDialog.show(
           context,
-          dialogTitle: dialogTitle,
-          color: color,
+          dialogTitle: '朝の体温',
+          color: AppTheme.morningTemperature,
           initValue: temperature,
         ) ??
         0.0;
     onSubmitted(inputValue);
   }
+}
 
-  Widget _viewTitle(BuildContext context) {
-    return Text(
-      title,
-      style: TextStyle(color: color),
-    );
-  }
+class _ViewTemperatureLabel extends StatelessWidget {
+  const _ViewTemperatureLabel(this.temperature);
 
-  Widget _viewTemperatureLabel(BuildContext context) {
+  final double temperature;
+
+  @override
+  Widget build(BuildContext context) {
     final temperatureStr = (temperature > 0) ? '$temperature 度' : '未登録';
-    final fontColor = (temperature > 0) ? color : Colors.grey;
+    final fontColor = (temperature > 0) ? AppTheme.morningTemperature : Colors.grey;
     return Row(
       crossAxisAlignment: CrossAxisAlignment.end,
       children: [
-        thermometerIcon,
+        ThermometerIcon.morning(),
         const SizedBox(width: 4),
         Text(temperatureStr, style: TextStyle(color: fontColor, fontSize: 24)),
       ],
@@ -104,18 +75,16 @@ class TemperatureView extends ConsumerWidget {
 }
 
 class _VerticalLine extends StatelessWidget {
-  const _VerticalLine(this.color);
-
-  final Color color;
+  const _VerticalLine();
 
   @override
   Widget build(BuildContext context) {
     return Container(
       height: 80,
       width: 3,
-      decoration: BoxDecoration(
-        color: color,
-        borderRadius: const BorderRadius.all(Radius.circular(4.0)),
+      decoration: const BoxDecoration(
+        color: AppTheme.morningTemperature,
+        borderRadius: BorderRadius.all(Radius.circular(4.0)),
       ),
     );
   }

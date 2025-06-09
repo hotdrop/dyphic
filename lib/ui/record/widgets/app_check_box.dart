@@ -27,12 +27,8 @@ class AppCheckBox extends StatelessWidget {
             }
           },
         ),
-        Text(_getLabel(), style: const TextStyle(fontSize: 20)),
+        Text(isWalking ? '🚶‍♀️散歩' : '💩排便', style: const TextStyle(fontSize: 20)),
       ],
     );
-  }
-
-  String _getLabel() {
-    return isWalking ? '🚶‍♀️散歩' : '💩排便';
   }
 }
