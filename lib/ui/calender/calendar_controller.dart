@@ -36,15 +36,27 @@ class CalendarController extends _$CalendarController {
 
   void onDaySelected(DateTime selectDate, {Record? selectedItem}) {
     final id = DyphicID.createId(selectDate);
-    ref.read(calendarSelectedRecordStateProvider.notifier).state = ref.read(calendarRecordsMapStateProvder)[id] ?? Record.createEmpty(selectDate);
+    final recordMap = ref.read(calendarRecordsMapStateProvder);
+    // TODO ここひどいので改善したい
+    if (recordMap.containsKey(id)) {
+      final record = recordMap[id]!;
+      ref.read(calendarSelectedRecordStateProvider.notifier).state = record;
+      ref.read(calendarSelectedDateStateProvider.notifier).state = selectDate;
+    } else {
+      final newRecord = Record.createEmpty(id);
+      recordMap[id] = newRecord;
+      ref.read(calendarRecordsMapStateProvder.notifier).state = recordMap;
+      ref.read(calendarSelectedRecordStateProvider.notifier).state = newRecord;
+      ref.read(calendarSelectedDateStateProvider.notifier).state = selectDate;
+    }
     ref.read(calendarFocusDateStateProvider.notifier).state = selectDate;
-    ref.read(calendarSelectedDateStateProvider.notifier).state = selectDate;
   }
 
   Future<void> refresh(int id) async {
     final updateRecord = await ref.read(recordRepositoryProvider).find(id);
     final newRecordsMap = {...ref.read(calendarRecordsMapStateProvder)};
-    newRecordsMap[id] = updateRecord;
+    // リフレッシュで指定されたidは必ず存在する前提
+    newRecordsMap[id] = updateRecord!;
     ref.read(calendarRecordsMapStateProvder.notifier).state = newRecordsMap;
     ref.read(calendarSelectedRecordStateProvider.notifier).state = updateRecord;
   }
@@ -59,7 +71,7 @@ final calendarRecordsMapStateProvder = StateProvider<Map<int, Record>>((ref) => 
 
 // 選択した日付の記録データ
 final calendarSelectedRecordStateProvider = StateProvider<Record>((ref) {
-  return Record.createEmpty(DateTime.now());
+  return Record.createEmptyForDate(DateTime.now());
 });
 
 // 選択した日付

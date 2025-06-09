@@ -167,9 +167,9 @@ class _ViewSelectedDayInfoCard extends ConsumerWidget {
     final recordKeysMap = ref.read(calendarRecordsMapStateProvder).keys.toList();
     recordKeysMap.sort((a, b) => a.compareTo(b));
 
+    // TODO 登録キーをMapに全部詰める方法は無理があるので他の手段にしたい
     final selectedRecord = ref.read(calendarSelectedRecordStateProvider);
     final index = recordKeysMap.indexWhere((id) => id == selectedRecord.id);
-
     await RecordsPageView.start(context, recordIds: recordKeysMap, selectedIndex: index);
 
     // TODO ここは今カレンダーの情報全更新しているが、更新した記録情報のIDをリストで保持し、該当IDのものののみ更新した方がいい

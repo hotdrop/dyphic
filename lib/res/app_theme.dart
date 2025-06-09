@@ -33,9 +33,13 @@ class AppTheme {
       selectedItemColor: themeColor,
     ),
     outlinedButtonTheme: OutlinedButtonThemeData(
-      style: OutlinedButton.styleFrom(
-        foregroundColor: themeAccent,
-        side: const BorderSide(color: themeAccent),
+      style: ButtonStyle(
+        foregroundColor: WidgetStateProperty.resolveWith<Color>((states) {
+          return states.contains(WidgetState.disabled) ? Colors.grey : themeColor;
+        }),
+        side: WidgetStateProperty.resolveWith<BorderSide>((states) {
+          return states.contains(WidgetState.disabled) ? const BorderSide(color: Colors.grey) : const BorderSide(color: themeColor);
+        }),
       ),
     ),
     elevatedButtonTheme: ElevatedButtonThemeData(
@@ -47,7 +51,7 @@ class AppTheme {
     ),
     textButtonTheme: TextButtonThemeData(
       style: TextButton.styleFrom(
-        backgroundColor: themeAccent,
+        foregroundColor: themeAccent,
       ),
     ),
     floatingActionButtonTheme: const FloatingActionButtonThemeData(

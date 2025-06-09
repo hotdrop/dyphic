@@ -14,7 +14,7 @@ class _RecordRepository {
   /// 指定したIDの記録情報を取得する
   /// 取得先: ローカルストレージ
   ///
-  Future<Record> find(int id) async {
+  Future<Record?> find(int id) async {
     return await _ref.read(recordDaoProvider).find(id);
   }
 

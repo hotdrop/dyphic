@@ -1,3 +1,4 @@
+import 'package:dyphic/res/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
@@ -157,7 +158,12 @@ class _ViewBodyState extends ConsumerState<_ViewBody> {
           // 体調
           _ViewConditionArea(
             children: [
-              const _ContentsTitle(title: '体調', appIcon: Icon(Icons.sentiment_satisfied_alt_sharp)),
+              const _ContentsTitle(
+                  title: '体調',
+                  appIcon: Icon(
+                    Icons.sentiment_satisfied_alt_sharp,
+                    color: AppTheme.condition,
+                  )),
               const Divider(),
               ConditionSelectChips(
                 selectIds: _inputSelectConditionIds,
@@ -192,7 +198,7 @@ class _ViewBodyState extends ConsumerState<_ViewBody> {
                   setState(() => _inputConditionMemo = newVal);
                 },
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: 16),
               OutlinedButton(
                 onPressed: (isSignIn) ? () async => await _processSaveCondition(context) : null,
                 child: const Text('体調情報を保存する'),
@@ -203,7 +209,12 @@ class _ViewBodyState extends ConsumerState<_ViewBody> {
           // お薬
           _ViewMedicineArea(
             children: [
-              const _ContentsTitle(title: '服用した薬', appIcon: Icon(Icons.medication)),
+              const _ContentsTitle(
+                  title: '服用した薬',
+                  appIcon: Icon(
+                    Icons.medication,
+                    color: AppTheme.medicine,
+                  )),
               const Divider(),
               MedicineSelectChips(
                 selectIds: _inputSelectMedicineIds,
@@ -212,6 +223,7 @@ class _ViewBodyState extends ConsumerState<_ViewBody> {
                   setState(() => _inputSelectMedicineIds = ids);
                 },
               ),
+              const SizedBox(height: 16),
               OutlinedButton(
                 onPressed: isSignIn ? () async => await _processSaveMedicine(context) : null,
                 child: const Text('選択した薬を保存する'),
@@ -233,7 +245,7 @@ class _ViewBodyState extends ConsumerState<_ViewBody> {
                   }
                 },
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: 16),
               OutlinedButton(
                 onPressed: (isSignIn) ? () async => await _processSaveMemo(context) : null,
                 child: const Text('メモを保存する'),
@@ -259,6 +271,7 @@ class _ViewBodyState extends ConsumerState<_ViewBody> {
                   setState(() => _inputEventName = newVal);
                 },
               ),
+              const SizedBox(height: 16),
               OutlinedButton(
                 onPressed: (isSignIn) ? () async => await _processSaveEvent(context) : null,
                 child: const Text('予定を保存する'),

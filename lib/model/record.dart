@@ -24,9 +24,14 @@ class Record {
     required this.memo,
   }) : date = DyphicID.idToDate(id);
 
-  factory Record.createEmpty(DateTime idDate) {
+  factory Record.createEmptyForDate(DateTime idDate) {
+    final id = DyphicID.dateToId(idDate);
+    return Record.createEmpty(id);
+  }
+
+  factory Record.createEmpty(int id) {
     return Record(
-      id: DyphicID.dateToId(idDate),
+      id: id,
       isWalking: false,
       isToilet: false,
       conditions: [],

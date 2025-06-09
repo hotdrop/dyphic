@@ -29,8 +29,12 @@ class RecordController extends _$RecordController {
       final conditions = await ref.read(conditionRepositoryProvider).findAll();
       ref.read(conditionsStateProvier.notifier).state = conditions;
     }
-
-    return await ref.read(recordRepositoryProvider).find(id);
+    final record = await ref.read(recordRepositoryProvider).find(id);
+    if (record != null) {
+      return record;
+    } else {
+      return Record.createEmpty(id);
+    }
   }
 
   Future<void> inputBreakfast({required int id, required String newVal}) async {

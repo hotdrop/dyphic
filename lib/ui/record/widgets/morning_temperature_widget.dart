@@ -291,9 +291,16 @@ class _NumberCircleButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ElevatedButton(
-      onPressed: onTap,
-      child: Center(child: Text('$number')),
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: ElevatedButton(
+        onPressed: onTap,
+        child: Center(
+            child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 16),
+          child: Text('$number'),
+        )),
+      ),
     );
   }
 }
@@ -309,9 +316,16 @@ class _IconCircleButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ElevatedButton(
-      onPressed: onTap,
-      child: Center(child: Icon(icon)),
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: ElevatedButton(
+        onPressed: onTap,
+        child: Center(
+            child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 16),
+          child: Icon(icon),
+        )),
+      ),
     );
   }
 }

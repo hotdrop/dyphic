@@ -16,11 +16,11 @@ class _RecordDao {
 
   final Ref _ref;
 
-  Future<Record> find(int id) async {
+  Future<Record?> find(int id) async {
     final isar = _ref.read(localDataSourceProvider).isar;
     final record = await isar.recordEntitys.get(id);
     if (record == null) {
-      throw Exception('Record not found');
+      return null;
     }
     final conditions = await _ref.read(conditionDaoProvider).findAll();
     final medicines = await _ref.read(medicineDaoProvider).findAll();

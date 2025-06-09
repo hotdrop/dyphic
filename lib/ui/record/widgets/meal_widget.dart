@@ -107,7 +107,7 @@ class _MealCard extends StatelessWidget {
             padding: const EdgeInsets.all(8.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
+              children: [
                 Center(child: Image.asset(iconImagePath)),
                 _detailLabel(),
               ],
@@ -188,7 +188,7 @@ class _MealEditDialogState extends ConsumerState<_MealEditDialog> {
           border: OutlineInputBorder(),
         ),
       ),
-      actions: <Widget>[
+      actions: [
         TextButton(
           onPressed: () => Navigator.pop(context),
           child: const Text('キャンセル'),
