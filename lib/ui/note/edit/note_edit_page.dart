@@ -47,11 +47,11 @@ class NoteEditPage extends ConsumerWidget {
   }
 }
 
-class _ViewBody extends ConsumerWidget {
+class _ViewBody extends StatelessWidget {
   const _ViewBody();
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: ListView(

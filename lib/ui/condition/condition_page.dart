@@ -25,13 +25,11 @@ class ConditionPage extends ConsumerWidget {
   }
 }
 
-class _ViewBody extends ConsumerWidget {
+class _ViewBody extends StatelessWidget {
   const _ViewBody();
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final isSigniIn = ref.watch(isSignInProvider);
-
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('体調'),
@@ -42,18 +40,18 @@ class _ViewBody extends ConsumerWidget {
         },
         child: ListView(
           padding: const EdgeInsets.all(16),
-          children: [
-            const _ViewOverview(),
-            const _ViewClearButton(),
-            const Divider(),
-            const _ViewConditionArea(),
-            const Divider(),
-            const SizedBox(height: 16),
-            const _ViewInputTextField(),
-            const _ViewSameNameErrorLabel(),
-            const SizedBox(height: 36),
-            if (isSigniIn) const _ViewSaveButton(),
-            const SizedBox(height: 36),
+          children: const [
+            _ViewOverview(),
+            _ViewClearButton(),
+            Divider(),
+            _ViewConditionArea(),
+            Divider(),
+            SizedBox(height: 16),
+            _ViewInputTextField(),
+            _ViewSameNameErrorLabel(),
+            SizedBox(height: 36),
+            _ViewSaveButton(),
+            SizedBox(height: 36),
           ],
         ),
       ),
@@ -173,9 +171,14 @@ class _ViewSaveButton extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final isSigniIn = ref.watch(isSignInProvider);
     final uiState = ref.watch(conditionUiStateProvider);
     final buttonName = uiState.isSelected() ? '症状名を修正する' : '新しく登録する';
     final canSaved = ref.watch(enableSaveConditionProvider);
+
+    if (!isSigniIn) {
+      return const SizedBox.shrink();
+    }
 
     return ElevatedButton(
       onPressed: canSaved ? () async => await _save(context, ref) : null,

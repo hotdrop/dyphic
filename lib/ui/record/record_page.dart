@@ -42,21 +42,12 @@ class RecordPage extends ConsumerWidget {
             if (snapshot.hasData) {
               return _ViewBody(snapshot.data!);
             }
-            return const _ViewLoading();
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
           },
         ),
       ),
-    );
-  }
-}
-
-class _ViewLoading extends ConsumerWidget {
-  const _ViewLoading();
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    return const Center(
-      child: CircularProgressIndicator(),
     );
   }
 }

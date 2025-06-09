@@ -48,11 +48,11 @@ class MedicineEditPage extends ConsumerWidget {
   }
 }
 
-class _ViewBody extends ConsumerWidget {
+class _ViewBody extends StatelessWidget {
   const _ViewBody();
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(left: 16.0, right: 16.0),
       child: ListView(
