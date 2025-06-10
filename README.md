@@ -8,7 +8,7 @@
 
 # お薬情報の画像について
 `Firebase Storage`の有料化に伴い、使えなくなったのでローカルで固定にします。
-`/sserts/images/medicines/`ディレクトリの中に`[id].jpeg`というファイルを置くと自動で読み込みます。
+`/assets/images/medicines/`ディレクトリの中に`[id].jpeg`というファイルを置くと自動で読み込みます。
 
 # 利用サービス
 - FirebaseAuth
