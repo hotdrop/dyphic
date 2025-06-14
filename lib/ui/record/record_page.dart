@@ -1,3 +1,4 @@
+import 'package:dyphic/model/medicine.dart';
 import 'package:dyphic/res/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -207,11 +208,19 @@ class _ViewBodyState extends ConsumerState<_ViewBody> {
                     color: AppTheme.medicine,
                   )),
               const Divider(),
-              MedicineSelectChips(
-                selectIds: _inputSelectMedicineIds,
-                medicines: ref.watch(medicinesStateProvier),
-                onChanged: (Set<int> ids) {
-                  setState(() => _inputSelectMedicineIds = ids);
+              FutureBuilder(
+                future: ref.read(recordControllerProvider.notifier).fetchMedicines(),
+                builder: (BuildContext context, AsyncSnapshot<List<Medicine>> snapshot) {
+                  if (snapshot.hasData) {
+                    return MedicineSelectChips(
+                      selectIds: _inputSelectMedicineIds,
+                      medicines: snapshot.data!,
+                      onChanged: (Set<int> ids) {
+                        setState(() => _inputSelectMedicineIds = ids);
+                      },
+                    );
+                  }
+                  return const Center(child: CircularProgressIndicator());
                 },
               ),
               const SizedBox(height: 16),

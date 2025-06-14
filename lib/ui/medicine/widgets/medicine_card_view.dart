@@ -32,7 +32,7 @@ class MedicineCardView extends StatelessWidget {
           medicine.overview,
           style: Theme.of(context).textTheme.bodySmall,
         ),
-        trailing: !isEditable
+        trailing: isEditable
             ? Switch(
                 value: medicine.isDefault,
                 onChanged: (value) => onChangedDefaultState(value),

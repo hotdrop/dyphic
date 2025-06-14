@@ -15,3 +15,4 @@
 
 ## 現在のタスク
 - [x] `lib/ui/record/widgets/chips_medicine.dart` を改修し、`isDefault` フラグに応じて表示を切り替えるロジックと `ExpansionTile` を実装する。
+- [x] 記録画面でのお薬表示が更新されないバグを修正する。
