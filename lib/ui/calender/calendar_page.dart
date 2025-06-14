@@ -172,7 +172,7 @@ class _ViewSelectedDayInfoCard extends ConsumerWidget {
     final index = recordKeysMap.indexWhere((id) => id == selectedRecord.id);
     await RecordsPageView.start(context, recordIds: recordKeysMap, selectedIndex: index);
 
-    // TODO ここは今カレンダーの情報全更新しているが、更新した記録情報のIDをリストで保持し、該当IDのものののみ更新した方がいい
+    // ここは今カレンダーの情報全更新しているが、更新した記録情報のIDをリストで保持し、該当IDのものののみ更新した方がいい
     final isUpdate = ref.read(updateEditRecordStateProvider);
     AppLogger.d('記録情報の更新有無: $isUpdate');
     if (isUpdate) {
