@@ -1,0 +1,22 @@
+.env
+*.pem
+**/secrets.*
+ios/Runner/GoogleService-Info.plist
+android/app/google-services.json
+**/keystore.*
+*.key.json
+
+# ビルド成果物や不要な大容量ファイルも無視（パフォーマンス向上のため）
+build/
+.dart_tool/
+ios/Pods/
+pubspec.lock
+*.g.dart
+*.freezed.dart
+
+# その他の除外例
+**/node_modules/**
+**/vendor/**
+*.log
+*.swp
+.DS_Store
