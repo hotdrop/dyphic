@@ -165,14 +165,18 @@ class _ViewSelectedDayInfoCard extends ConsumerWidget {
 
   Future<void> _onTap(BuildContext context, WidgetRef ref) async {
     final selectedDate = ref.read(calendarSelectedDateStateProvider);
+    final now = DateTime.now();
 
     // 選択日の前後1ヶ月のIDリストを生成する
     final startDate = DateUtils.addMonthsToMonthDate(selectedDate, -1);
-    final endDate = DateUtils.addMonthsToMonthDate(selectedDate, 1);
+    final oneMonthLater = DateUtils.addMonthsToMonthDate(selectedDate, 1);
+
+    // 終了日は「選択日の1ヶ月後」と「今日」を比べて、過去の方にする
+    // これにより、未来へのスワイプは今日までしかできなくなる
+    final endDate = oneMonthLater.isAfter(now) ? now : oneMonthLater;
 
     final recordIds = <int>[];
-    // endDateも範囲に含めるため、add(Duration(days: 1)) する
-    for (var date = startDate; date.isBefore(endDate.add(const Duration(days: 1))); date = date.add(const Duration(days: 1))) {
+    for (var date = startDate; date.isBefore(endDate); date = date.add(const Duration(days: 1))) {
       recordIds.add(DyphicID.createId(date));
     }
 
