@@ -9,11 +9,13 @@ class MedicineCardView extends StatelessWidget {
     required this.medicine,
     required this.isEditable,
     required this.onTapEvent,
+    required this.onChangedDefaultState,
   });
 
   final Medicine medicine;
   final bool isEditable;
   final Function onTapEvent;
+  final Function(bool) onChangedDefaultState;
 
   @override
   Widget build(BuildContext context) {
@@ -30,6 +32,12 @@ class MedicineCardView extends StatelessWidget {
           medicine.overview,
           style: Theme.of(context).textTheme.bodySmall,
         ),
+        trailing: isEditable
+            ? Switch(
+                value: medicine.isDefault,
+                onChanged: (value) => onChangedDefaultState(value),
+              )
+            : null,
         children: [
           const Divider(),
           Row(

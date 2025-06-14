@@ -24,6 +24,20 @@ class MedicineController extends _$MedicineController {
     final medicines = ref.read(medicineUiStateProvider);
     return (medicines.isNotEmpty) ? medicines.map((e) => e.id).reduce(max) + 1 : 1;
   }
+
+  Future<void> updateDefaultState(int medicineId, bool isDefault) async {
+    await ref.read(medicineRepositoryProvider).updateDefaultState(medicineId, isDefault);
+
+    // UIの状態も更新
+    final currentMedicines = ref.read(medicineUiStateProvider);
+    final updatedMedicines = currentMedicines.map((medicine) {
+      if (medicine.id == medicineId) {
+        return medicine.copyWith(isDefault: isDefault);
+      }
+      return medicine;
+    }).toList();
+    ref.read(medicineUiStateProvider.notifier).state = updatedMedicines;
+  }
 }
 
 // 現在、アプリにサインインしているか？

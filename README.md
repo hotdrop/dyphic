@@ -22,8 +22,5 @@
 flutter build appbundle
 ```
 
-# TODO 機能開発/修正
-- お薬ページ
-  - 一覧でリストのアイテムを並び替えられるようにしてorderを更新する。記録入力画面で並び順を反映する
-- カレンダー機能
-  - カレンダーから記録ページに遷移し、いくつか記録情報を編集してカレンダーに戻ってきたとき、今は`calendar_page.dart`の`_ViewSelectedDayInfoCard`でコントローラの`onLoadRecords`を実行しているがこれは無駄な処理。大体は1、2箇所の記録データしか更新しないので更新したRecordのidをリストで保持しておき`CalendarController`の`refresh`で1つずつ更新した方が効率が良いと思う。
+# TODO
+- イベント情報が反映できていない

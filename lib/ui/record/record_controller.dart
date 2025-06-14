@@ -18,12 +18,7 @@ class RecordController extends _$RecordController {
   void build() {}
 
   Future<Record> find(int id) async {
-    // もしお薬情報と体調情報のマスターデータがロードされていなければここで行う
-    final currentM = ref.read(medicinesStateProvier);
-    if (currentM.isEmpty) {
-      final medicines = await ref.read(medicineRepositoryProvider).findAll();
-      ref.read(medicinesStateProvier.notifier).state = medicines;
-    }
+    // 体調情報のマスターデータがロードされていなければここで行う
     final currentC = ref.read(conditionsStateProvier);
     if (currentC.isEmpty) {
       final conditions = await ref.read(conditionRepositoryProvider).findAll();
@@ -35,6 +30,10 @@ class RecordController extends _$RecordController {
     } else {
       return Record.createEmpty(id);
     }
+  }
+
+  Future<List<Medicine>> fetchMedicines() async {
+    return await ref.read(medicineRepositoryProvider).findAll();
   }
 
   Future<void> inputBreakfast({required int id, required String newVal}) async {
@@ -144,5 +143,4 @@ final scrollPositionStateProvider = StateProvider<double>((ref) => 0);
 // 現在、アプリにサインインしているか？
 final isSignInProvider = Provider((ref) => ref.read(accountRepositoryProvider).isSignIn);
 
-final medicinesStateProvier = StateProvider<List<Medicine>>((_) => []);
 final conditionsStateProvier = StateProvider<List<Condition>>((_) => []);
