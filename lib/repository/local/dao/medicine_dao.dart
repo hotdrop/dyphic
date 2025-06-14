@@ -43,6 +43,25 @@ class _MedicineDao {
     });
   }
 
+  Future<void> updateDefaultState(int medicineId, bool isDefault) async {
+    final isar = _ref.read(localDataSourceProvider).isar;
+    await isar.writeTxn(() async {
+      final entity = await isar.medicineEntitys.get(medicineId);
+      if (entity != null) {
+        final updatedEntity = MedicineEntity(
+          id: entity.id,
+          name: entity.name,
+          overview: entity.overview,
+          typeIndex: entity.typeIndex,
+          memo: entity.memo,
+          order: entity.order,
+          isDefault: isDefault,
+        );
+        await isar.medicineEntitys.put(updatedEntity);
+      }
+    });
+  }
+
   Medicine _toMedicine(MedicineEntity entity) {
     return Medicine(
       id: entity.id,

@@ -28,6 +28,35 @@ class AppTheme {
     ),
     toggleButtonsTheme: const ToggleButtonsThemeData(
       color: themeAccent,
+      selectedColor: themeColor,
+    ),
+    switchTheme: SwitchThemeData(
+      trackColor: WidgetStateProperty.resolveWith<Color>((states) {
+        if (states.contains(WidgetState.selected)) {
+          return themeColor; // ON時のトラックの色
+        }
+        return Colors.grey.shade100; // OFF時のトラックの色
+      }),
+      thumbColor: WidgetStateProperty.resolveWith<Color?>(
+        (states) {
+          if (states.contains(WidgetState.selected)) {
+            return Colors.white; // ON時のサムの色
+          }
+          return Colors.grey; // OFF時のサムの色
+        },
+      ),
+    ),
+    checkboxTheme: CheckboxThemeData(
+      fillColor: WidgetStateProperty.resolveWith<Color>(
+        (states) {
+          if (states.contains(WidgetState.selected)) {
+            return themeColor; // チェックが入ってる時の色
+          }
+          return Colors.white; // チェックがない時の色
+        },
+      ),
+      // チェックマークの色
+      checkColor: WidgetStateProperty.all<Color>(Colors.white),
     ),
     bottomNavigationBarTheme: const BottomNavigationBarThemeData(
       selectedItemColor: themeColor,

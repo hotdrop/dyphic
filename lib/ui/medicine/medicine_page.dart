@@ -107,6 +107,9 @@ class _ViewContents extends ConsumerWidget {
               ref.read(medicineControllerProvider.notifier).onLoad();
             }
           },
+          onChangedDefaultState: (value) async {
+            await ref.read(medicineControllerProvider.notifier).updateDefaultState(medicines[index].id, value);
+          },
         );
       },
     );

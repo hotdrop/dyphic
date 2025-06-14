@@ -60,4 +60,12 @@ class _MedicineRepository {
     await _ref.read(medicineApiProvider).save(newMedicine);
     await _ref.read(medicineDaoProvider).save(newMedicine);
   }
+
+  ///
+  /// お薬のデフォルト表示状態を更新する
+  /// 更新先: ローカルストレージ
+  ///
+  Future<void> updateDefaultState(int medicineId, bool isDefault) async {
+    await _ref.read(medicineDaoProvider).updateDefaultState(medicineId, isDefault);
+  }
 }
