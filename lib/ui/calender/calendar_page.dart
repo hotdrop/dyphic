@@ -217,7 +217,7 @@ class _ViewHeaderOnInfoCard extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final dateStr = ref.watch(calendarSelectedRecordStateProvider).showFormatDate();
     final eventName = ref.watch(calendarSelectedRecordStateProvider).eventName;
-    if (eventName != null) {
+    if (eventName != null && eventName.isNotEmpty) {
       return Center(
         child: Text(
           '$dateStr($eventName)',
