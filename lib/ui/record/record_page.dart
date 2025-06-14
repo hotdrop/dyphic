@@ -323,6 +323,8 @@ class _ViewBodyState extends ConsumerState<_ViewBody> {
       onSuccess: (_) {/* 成功時は何もしない */},
       onError: (err) => AppDialog.onlyOk(message: err).show(context),
     );
+    // フォーカスを外す
+    FocusScope.of(context).unfocus();
   }
 
   Future<void> _processSaveMedicine(BuildContext context) async {
@@ -340,6 +342,8 @@ class _ViewBodyState extends ConsumerState<_ViewBody> {
       onSuccess: (_) {/* 成功時は何もしない */},
       onError: (err) => AppDialog.onlyOk(message: err).show(context),
     );
+    // フォーカスを外す
+    FocusScope.of(context).unfocus();
   }
 
   Future<void> _processSaveMemo(BuildContext context) async {
@@ -354,6 +358,8 @@ class _ViewBodyState extends ConsumerState<_ViewBody> {
       onSuccess: (_) {/* 成功時は何もしない */},
       onError: (err) => AppDialog.onlyOk(message: err).show(context),
     );
+    // フォーカスを外す
+    FocusScope.of(context).unfocus();
   }
 
   Future<void> _processSaveEvent(BuildContext context) async {
@@ -368,6 +374,8 @@ class _ViewBodyState extends ConsumerState<_ViewBody> {
       onSuccess: (_) {/* 成功時は何もしない */},
       onError: (err) => AppDialog.onlyOk(message: err).show(context),
     );
+    // フォーカスを外す
+    FocusScope.of(context).unfocus();
   }
 }
 
