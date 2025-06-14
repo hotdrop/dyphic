@@ -164,31 +164,16 @@ class _ViewSelectedDayInfoCard extends ConsumerWidget {
   }
 
   Future<void> _onTap(BuildContext context, WidgetRef ref) async {
-    final selectedDate = ref.read(calendarSelectedDateStateProvider);
-    final now = DateTime.now();
-
-    // 選択日の前後1ヶ月のIDリストを生成する
-    final startDate = DateUtils.addMonthsToMonthDate(selectedDate, -1);
-    final oneMonthLater = DateUtils.addMonthsToMonthDate(selectedDate, 1);
-
-    // 終了日は「選択日の1ヶ月後」と「今日」を比べて、過去の方にする
-    // これにより、未来へのスワイプは今日までしかできなくなる
-    final endDate = oneMonthLater.isAfter(now) ? now : oneMonthLater;
-
-    final recordIds = <int>[];
-    for (var date = startDate; date.isBefore(endDate); date = date.add(const Duration(days: 1))) {
-      recordIds.add(DyphicID.createId(date));
+    // 未来日を選択している場合は何もしない
+    final selectDate = ref.read(calendarSelectedDateStateProvider);
+    final isAfterDay = ref.read(calendarControllerProvider.notifier).isSelectedAfterToday();
+    if (isAfterDay) {
+      return;
     }
 
-    final selectedRecord = ref.read(calendarSelectedRecordStateProvider);
-    var index = recordIds.indexWhere((id) => id == selectedRecord.id);
-    if (index == -1) {
-      // 万が一見つからなかった場合は、リストに追加してソートし、インデックスを再取得する
-      recordIds.add(selectedRecord.id);
-      recordIds.sort();
-      index = recordIds.indexWhere((id) => id == selectedRecord.id);
-    }
-
+    final recordIds = ref.read(calendarControllerProvider.notifier).createSwipeRangeRecordIds();
+    final selectId = DyphicID.dateToId(selectDate);
+    var index = recordIds.indexWhere((id) => id == selectId);
     await RecordsPageView.start(context, recordIds: recordIds, selectedIndex: index);
 
     // ここは今カレンダーの情報全更新しているが、更新した記録情報のIDをリストで保持し、該当IDのものののみ更新した方がいい
@@ -253,13 +238,10 @@ class _ViewDetailOnInfoCard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final record = ref.watch(calendarSelectedRecordStateProvider);
+
     if (record.notRegister()) {
-      return const Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text('この日の記録は未登録です。\nここをタップして記録しましょう。'),
-        ],
-      );
+      final isAfterDay = ref.read(calendarControllerProvider.notifier).isSelectedAfterToday();
+      return (isAfterDay) ? const _ViewNotRegisterAfterToday() : const _ViewNotRegisterLabel();
     }
 
     final widgets = <Widget>[];
@@ -298,6 +280,37 @@ class _ViewDetailOnInfoCard extends ConsumerWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: widgets,
+    );
+  }
+}
+
+class _ViewNotRegisterLabel extends StatelessWidget {
+  const _ViewNotRegisterLabel();
+
+  @override
+  Widget build(BuildContext context) {
+    return const Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text('この日の記録は未登録です。\nここをタップして記録しましょう。'),
+      ],
+    );
+  }
+}
+
+class _ViewNotRegisterAfterToday extends StatelessWidget {
+  const _ViewNotRegisterAfterToday();
+
+  @override
+  Widget build(BuildContext context) {
+    return const Center(
+      child: Padding(
+        padding: EdgeInsets.all(36),
+        child: Text(
+          '翌日以降の記録はできません',
+          style: TextStyle(color: Colors.red),
+        ),
+      ),
     );
   }
 }
