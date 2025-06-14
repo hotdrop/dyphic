@@ -157,11 +157,19 @@ class _ViewBodyState extends ConsumerState<_ViewBody> {
                     color: AppTheme.condition,
                   )),
               const Divider(),
-              ConditionSelectChips(
-                selectIds: _inputSelectConditionIds,
-                conditions: ref.watch(conditionsStateProvier),
-                onChange: (Set<int> ids) {
-                  setState(() => _inputSelectConditionIds = ids);
+              FutureBuilder(
+                future: ref.read(recordControllerProvider.notifier).fetchConditions(),
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    return ConditionSelectChips(
+                      selectIds: _inputSelectConditionIds,
+                      conditions: snapshot.data!,
+                      onChange: (Set<int> ids) {
+                        setState(() => _inputSelectConditionIds = ids);
+                      },
+                    );
+                  }
+                  return const Center(child: CircularProgressIndicator());
                 },
               ),
               Row(
@@ -332,8 +340,6 @@ class _ViewBodyState extends ConsumerState<_ViewBody> {
       onSuccess: (_) {/* 成功時は何もしない */},
       onError: (err) => AppDialog.onlyOk(message: err).show(context),
     );
-    // フォーカスを外す
-    FocusScope.of(context).unfocus();
   }
 
   Future<void> _processSaveMedicine(BuildContext context) async {
@@ -351,8 +357,6 @@ class _ViewBodyState extends ConsumerState<_ViewBody> {
       onSuccess: (_) {/* 成功時は何もしない */},
       onError: (err) => AppDialog.onlyOk(message: err).show(context),
     );
-    // フォーカスを外す
-    FocusScope.of(context).unfocus();
   }
 
   Future<void> _processSaveMemo(BuildContext context) async {
@@ -367,8 +371,6 @@ class _ViewBodyState extends ConsumerState<_ViewBody> {
       onSuccess: (_) {/* 成功時は何もしない */},
       onError: (err) => AppDialog.onlyOk(message: err).show(context),
     );
-    // フォーカスを外す
-    FocusScope.of(context).unfocus();
   }
 
   Future<void> _processSaveEvent(BuildContext context) async {
@@ -383,8 +385,6 @@ class _ViewBodyState extends ConsumerState<_ViewBody> {
       onSuccess: (_) {/* 成功時は何もしない */},
       onError: (err) => AppDialog.onlyOk(message: err).show(context),
     );
-    // フォーカスを外す
-    FocusScope.of(context).unfocus();
   }
 }
 
