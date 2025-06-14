@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:table_calendar/table_calendar.dart';
+import 'package:dyphic/model/dyphic_id.dart';
 import 'package:dyphic/res/app_images.dart';
 import 'package:dyphic/ui/record/records_page_view.dart';
 import 'package:dyphic/common/app_logger.dart';
@@ -163,14 +164,28 @@ class _ViewSelectedDayInfoCard extends ConsumerWidget {
   }
 
   Future<void> _onTap(BuildContext context, WidgetRef ref) async {
-    // indexでページスワイプをするので必ずソートする
-    final recordKeysMap = ref.read(calendarRecordsMapStateProvder).keys.toList();
-    recordKeysMap.sort((a, b) => a.compareTo(b));
+    final selectedDate = ref.read(calendarSelectedDateStateProvider);
 
-    // TODO 登録キーをMapに全部詰める方法は無理があるので他の手段にしたい
+    // 選択日の前後1ヶ月のIDリストを生成する
+    final startDate = DateUtils.addMonthsToMonthDate(selectedDate, -1);
+    final endDate = DateUtils.addMonthsToMonthDate(selectedDate, 1);
+
+    final recordIds = <int>[];
+    // endDateも範囲に含めるため、add(Duration(days: 1)) する
+    for (var date = startDate; date.isBefore(endDate.add(const Duration(days: 1))); date = date.add(const Duration(days: 1))) {
+      recordIds.add(DyphicID.createId(date));
+    }
+
     final selectedRecord = ref.read(calendarSelectedRecordStateProvider);
-    final index = recordKeysMap.indexWhere((id) => id == selectedRecord.id);
-    await RecordsPageView.start(context, recordIds: recordKeysMap, selectedIndex: index);
+    var index = recordIds.indexWhere((id) => id == selectedRecord.id);
+    if (index == -1) {
+      // 万が一見つからなかった場合は、リストに追加してソートし、インデックスを再取得する
+      recordIds.add(selectedRecord.id);
+      recordIds.sort();
+      index = recordIds.indexWhere((id) => id == selectedRecord.id);
+    }
+
+    await RecordsPageView.start(context, recordIds: recordIds, selectedIndex: index);
 
     // ここは今カレンダーの情報全更新しているが、更新した記録情報のIDをリストで保持し、該当IDのものののみ更新した方がいい
     final isUpdate = ref.read(updateEditRecordStateProvider);

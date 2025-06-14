@@ -11,9 +11,9 @@
 2.  **`_onTap`のロジック修正**: `CalendarPage`にて、`RecordsPageView`へ渡すIDのリストを、全期間から「選択日の前後1ヶ月」に限定するよう動的に生成するロジックに変更します。
 
 ## 現在のタスク
-- [ ] **`CalendarController`の修正**
-    - [ ] `lib/ui/calender/calendar_controller.dart` の `onDaySelected` メソッドを修正し、未来日を選択した際に`calendarRecordsMapStateProvder`に空の`Record`が追加されないようにする。
-- [ ] **`CalendarPage`の修正**
-    - [ ] `lib/ui/calender/calendar_page.dart` の `_onTap` メソッドを修正し、`RecordsPageView`に渡すIDリストが、選択された日付の前後1ヶ月分になるように動的に生成する。
+- [x] **`CalendarController`の修正**
+    - [x] `lib/ui/calender/calendar_controller.dart` の `onDaySelected` メソッドを修正し、未来日を選択した際に`calendarRecordsMapStateProvder`に空の`Record`が追加されないようにする。
+- [x] **`CalendarPage`の修正**
+    - [x] `lib/ui/calender/calendar_page.dart` の `_onTap` メソッドを修正し、`RecordsPageView`に渡すIDリストが、選択された日付の前後1ヶ月分になるように動的に生成する。
         - 生成するIDリストには、必ず**選択された日付のIDが含まれる**ようにする。
         - `RecordsPageView.start` を呼び出す際、生成したリスト内での選択中IDのインデックスを `selectedIndex` として正しく渡す。

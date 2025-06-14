@@ -37,18 +37,14 @@ class CalendarController extends _$CalendarController {
   void onDaySelected(DateTime selectDate, {Record? selectedItem}) {
     final id = DyphicID.createId(selectDate);
     final recordMap = ref.read(calendarRecordsMapStateProvder);
-    // TODO ここひどいので改善したい
     if (recordMap.containsKey(id)) {
       final record = recordMap[id]!;
       ref.read(calendarSelectedRecordStateProvider.notifier).state = record;
-      ref.read(calendarSelectedDateStateProvider.notifier).state = selectDate;
     } else {
       final newRecord = Record.createEmpty(id);
-      recordMap[id] = newRecord;
-      ref.read(calendarRecordsMapStateProvder.notifier).state = recordMap;
       ref.read(calendarSelectedRecordStateProvider.notifier).state = newRecord;
-      ref.read(calendarSelectedDateStateProvider.notifier).state = selectDate;
     }
+    ref.read(calendarSelectedDateStateProvider.notifier).state = selectDate;
     ref.read(calendarFocusDateStateProvider.notifier).state = selectDate;
   }
 
