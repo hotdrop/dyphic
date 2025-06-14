@@ -8,14 +8,10 @@
 
 ### 計画概要
 1.  **[完了] データモデルの更新:** `Medicine` と `MedicineEntity` に表示設定用の `isDefault` フラグを追加する。
-2.  **お薬設定UIの追加:** お薬一覧画面 (`medicine_page.dart`) で、各お薬の `isDefault` を切り替えるUI (`Switch`) を追加する。
-3.  **記録画面の改修:** 記録画面 (`record_page.dart`) のお薬選択UI (`chips_medicine.dart`) を改修し、`isDefault` フラグに応じて表示を分ける。`false` のものは `ExpansionTile` で初期非表示にする。
-4.  **リポジトリ/DAOの更新:** `isDefault` フラグをローカルDB (Isar) で更新するためのメソッドを追加する。
-5.  **[完了] コード生成:** Isarのエンティティ変更に伴い、`build_runner` を実行する。
+2.  **[完了] コード生成:** Isarのエンティティ変更に伴い、`build_runner` を実行する。
+3.  **[完了] お薬設定UIの追加:** お薬一覧画面 (`medicine_page.dart`) で、各お薬の `isDefault` を切り替えるUI (`Switch`) を追加する。
+4.  **[完了] リポジトリ/DAOの更新:** `isDefault` フラグをローカルDB (Isar) で更新するためのメソッドを追加する。
+5.  **[完了] 記録画面の改修:** 記録画面 (`record_page.dart`) のお薬選択UI (`chips_medicine.dart`) を改修し、`isDefault` フラグに応じて表示を分ける。`false` のものは `ExpansionTile` で初期非表示にする。
 
 ## 現在のタスク
-- [x] `lib/repository/local/dao/medicine_dao.dart` に `isDefault` を更新するメソッドを追加する。
-- [x] `lib/repository/medicine_repository.dart` に `isDefault` を更新するメソッドを追加する。
-- [x] `lib/ui/medicine/medicine_controller.dart` に `isDefault` を更新するメソッドとUI状態を更新するロジックを追加する。
-- [x] `lib/ui/medicine/widgets/medicine_card_view.dart` に `Switch` を追加し、状態変更を通知するコールバックを実装する。
-- [x] `lib/ui/medicine/medicine_page.dart` で `MedicineCardView` のコールバックをハンドリングし、コントローラーのメソッドを呼び出す。
+- [x] `lib/ui/record/widgets/chips_medicine.dart` を改修し、`isDefault` フラグに応じて表示を切り替えるロジックと `ExpansionTile` を実装する。

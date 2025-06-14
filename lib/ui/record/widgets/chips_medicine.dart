@@ -47,15 +47,34 @@ class _MedicineSelectChipsState extends ConsumerState<MedicineSelectChips> {
 
   @override
   Widget build(BuildContext context) {
-    return Wrap(
-      direction: Axis.horizontal,
-      spacing: 4.0,
-      children: _makeChips(context),
+    final defaultMedicines = widget.medicines.where((m) => m.isDefault).toList();
+    final otherMedicines = widget.medicines.where((m) => !m.isDefault).toList();
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Wrap(
+          direction: Axis.horizontal,
+          spacing: 4.0,
+          children: _makeChips(context, defaultMedicines),
+        ),
+        if (otherMedicines.isNotEmpty)
+          ExpansionTile(
+            title: const Text('その他のお薬'),
+            children: [
+              Wrap(
+                direction: Axis.horizontal,
+                spacing: 4.0,
+                children: _makeChips(context, otherMedicines),
+              ),
+            ],
+          ),
+      ],
     );
   }
 
-  List<Widget> _makeChips(BuildContext context) {
-    return widget.medicines.map((medicine) {
+  List<Widget> _makeChips(BuildContext context, List<Medicine> medicines) {
+    return medicines.map((medicine) {
       return Tooltip(
         message: medicine.overview,
         child: FilterChip(
@@ -69,7 +88,7 @@ class _MedicineSelectChipsState extends ConsumerState<MedicineSelectChips> {
           showCheckmark: false,
           key: ValueKey<String>(medicine.name),
           label: Text(medicine.name, style: const TextStyle(fontSize: 12.0)),
-          selected: _selectedIds.contains(medicine.id) ? true : false,
+          selected: _selectedIds.contains(medicine.id),
           onSelected: (isSelect) => updateState(isSelect, medicine.id),
           selectedColor: AppTheme.medicine,
         ),
