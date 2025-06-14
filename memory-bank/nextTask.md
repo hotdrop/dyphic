@@ -2,9 +2,12 @@
 この`nextTask.md`はタスクの仕様をユーザーが詳細に記載します。更新はしないでください。
 
 # やりたいこと
-Calendar画面で選択した日付の記録情報画面(`record_page.dart`)を表示した後、記録画面を左右にスワイプすると前の日付や次の日付の記録情報を表示できます。
-この機能を実現するため、Calendar画面(`calendar_page.dart`)では全てのRecordのidをKeyとしてMap型の変数を`calendarRecordsMapStateProvder`につめています。
-該当処理は`calendar_page.dart`と`calendar_controller.dart`のTODOコメントを確認してください。
+記録画面(record_page.dart)において、当日服用したお薬(medicine)をchipsで選択するUIがあるが、ここに登録されているお薬が全部表示されてしまう。選択肢としては残しておきたいが、服用しない期間もあるので普段服用しない薬はexpandなどで閉じて見えないようにしてほしい。
+ただし、表示して選択したいので完全に消さずファーストビューで表示されていなければ良い。
 
-カレンダーから記録ページに遷移し、いくつか記録情報を編集してカレンダーに戻ってきたとき、今は`calendar_page.dart`の`_ViewSelectedDayInfoCard`でコントローラの`onLoadRecords`を実行しているが、これは無駄な処理だと考えます。
-大体は1、2箇所の記録データしか更新しないので更新したRecordのidをリストで保持しておき`CalendarController`の`refresh`で1つずつ更新した方が効率が良いのではと思います。
+# 詳細
+- お薬一覧画面(`medicine/medicine_page`)にて、1つ1つ登録されているお薬に対して「記録画面で初回表示にするか、またはしないか？」の設定ができるようにする
+- お薬一覧画面で、UI的に表示・非表示設定が難しいようであれば編集画面(medicine_edit_page)で実現しても構わない
+- 設定値はローカルDB(Isar)に保持し、Firestoreには保持しない。
+- Firestoreから取得したときのデフォルト値は全て「表示する」とする
+- 記録画面(record_page.dart)では「表示」設定されているお薬のChipsを表示し、「非表示」設定にしている薬はExpandで初回は見えないようにする。ただしExpandを開くと選択可能にする。

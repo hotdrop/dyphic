@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:table_calendar/table_calendar.dart';
+import 'package:dyphic/model/dyphic_id.dart';
 import 'package:dyphic/res/app_images.dart';
 import 'package:dyphic/ui/record/records_page_view.dart';
 import 'package:dyphic/common/app_logger.dart';
@@ -163,16 +164,19 @@ class _ViewSelectedDayInfoCard extends ConsumerWidget {
   }
 
   Future<void> _onTap(BuildContext context, WidgetRef ref) async {
-    // indexでページスワイプをするので必ずソートする
-    final recordKeysMap = ref.read(calendarRecordsMapStateProvder).keys.toList();
-    recordKeysMap.sort((a, b) => a.compareTo(b));
+    // 未来日を選択している場合は何もしない
+    final selectDate = ref.read(calendarSelectedDateStateProvider);
+    final isAfterDay = ref.read(calendarControllerProvider.notifier).isSelectedAfterToday();
+    if (isAfterDay) {
+      return;
+    }
 
-    // TODO 登録キーをMapに全部詰める方法は無理があるので他の手段にしたい
-    final selectedRecord = ref.read(calendarSelectedRecordStateProvider);
-    final index = recordKeysMap.indexWhere((id) => id == selectedRecord.id);
-    await RecordsPageView.start(context, recordIds: recordKeysMap, selectedIndex: index);
+    final recordIds = ref.read(calendarControllerProvider.notifier).createSwipeRangeRecordIds();
+    final selectId = DyphicID.dateToId(selectDate);
+    var index = recordIds.indexWhere((id) => id == selectId);
+    await RecordsPageView.start(context, recordIds: recordIds, selectedIndex: index);
 
-    // TODO ここは今カレンダーの情報全更新しているが、更新した記録情報のIDをリストで保持し、該当IDのものののみ更新した方がいい
+    // ここは今カレンダーの情報全更新しているが、更新した記録情報のIDをリストで保持し、該当IDのものののみ更新した方がいい
     final isUpdate = ref.read(updateEditRecordStateProvider);
     AppLogger.d('記録情報の更新有無: $isUpdate');
     if (isUpdate) {
@@ -213,7 +217,7 @@ class _ViewHeaderOnInfoCard extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final dateStr = ref.watch(calendarSelectedRecordStateProvider).showFormatDate();
     final eventName = ref.watch(calendarSelectedRecordStateProvider).eventName;
-    if (eventName != null) {
+    if (eventName != null && eventName.isNotEmpty) {
       return Center(
         child: Text(
           '$dateStr($eventName)',
@@ -234,13 +238,10 @@ class _ViewDetailOnInfoCard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final record = ref.watch(calendarSelectedRecordStateProvider);
+
     if (record.notRegister()) {
-      return const Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text('この日の記録は未登録です。\nここをタップして記録しましょう。'),
-        ],
-      );
+      final isAfterDay = ref.read(calendarControllerProvider.notifier).isSelectedAfterToday();
+      return (isAfterDay) ? const _ViewNotRegisterAfterToday() : const _ViewNotRegisterLabel();
     }
 
     final widgets = <Widget>[];
@@ -279,6 +280,37 @@ class _ViewDetailOnInfoCard extends ConsumerWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: widgets,
+    );
+  }
+}
+
+class _ViewNotRegisterLabel extends StatelessWidget {
+  const _ViewNotRegisterLabel();
+
+  @override
+  Widget build(BuildContext context) {
+    return const Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text('この日の記録は未登録です。\nここをタップして記録しましょう。'),
+      ],
+    );
+  }
+}
+
+class _ViewNotRegisterAfterToday extends StatelessWidget {
+  const _ViewNotRegisterAfterToday();
+
+  @override
+  Widget build(BuildContext context) {
+    return const Center(
+      child: Padding(
+        padding: EdgeInsets.all(36),
+        child: Text(
+          '翌日以降の記録はできません',
+          style: TextStyle(color: Colors.red),
+        ),
+      ),
     );
   }
 }

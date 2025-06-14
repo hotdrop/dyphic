@@ -17,15 +17,13 @@
   - 初期値は不要です。アプリで保存したデータを登録・更新します。
 - Crashlytics
 
-# command
+# AAB作成
 ```
-// build
-flutter build apk --release --split-per-abi
 flutter build appbundle
 ```
 
 # TODO 機能開発/修正
 - お薬ページ
-  - `expansion_tile_card`がカタつくのでライブラリを使わず自作して解消したい
-  - 今使っている薬と今は服用していない薬の2択を区別できるようにして、それを記録入力画面では「今服用していない薬」をExpanded/collespondで閉じるようにしたい
   - 一覧でリストのアイテムを並び替えられるようにしてorderを更新する。記録入力画面で並び順を反映する
+- カレンダー機能
+  - カレンダーから記録ページに遷移し、いくつか記録情報を編集してカレンダーに戻ってきたとき、今は`calendar_page.dart`の`_ViewSelectedDayInfoCard`でコントローラの`onLoadRecords`を実行しているがこれは無駄な処理。大体は1、2箇所の記録データしか更新しないので更新したRecordのidをリストで保持しておき`CalendarController`の`refresh`で1つずつ更新した方が効率が良いと思う。
