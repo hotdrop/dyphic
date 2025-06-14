@@ -51,6 +51,7 @@ class _MedicineDao {
       type: Medicine.toType(entity.typeIndex),
       memo: entity.memo,
       order: entity.order,
+      isDefault: entity.isDefault,
     );
   }
 
@@ -62,6 +63,7 @@ class _MedicineDao {
       typeIndex: m.type.index,
       memo: m.memo,
       order: m.order,
+      isDefault: m.isDefault,
     );
   }
 }

@@ -4,16 +4,17 @@
 現在のタスクに書かれた内容は必ず1つずつ「Plan/Act」を経てユーザーに確認しながら実装すること。Planで実装計画を立てた後、Actで実装に入った場合「現在のタスク」に列挙されたタスクを一度に全部こなしてはいけません。必ず1つずつPlan→Actを行い、1つ完了したらユーザーに確認し、Planで再び実装計画から行ってください。
 
 ## 実装計画
-`RecordPage`のスワイプ機能を、選択日の前後1ヶ月に限定することで、UIの応答性を改善し、不要なデータ生成を抑制します。カレンダー自体のマーカー表示（全期間）は維持します。
+記録画面のお薬選択UIについて、普段服用しない薬は初回表示では折りたたんでおく機能を実装する。
 
 ### 計画概要
-1.  **`onDaySelected`のロジック修正**: `CalendarController`にて、未来日が選択された場合に`calendarRecordsMapStateProvder`に不要な空データを追加する処理を停止します。
-2.  **`_onTap`のロジック修正**: `CalendarPage`にて、`RecordsPageView`へ渡すIDのリストを、全期間から「選択日の前後1ヶ月」に限定するよう動的に生成するロジックに変更します。
+1.  **データモデルの更新:** `Medicine` と `MedicineEntity` に表示設定用の `isDefault` フラグを追加する。
+2.  **お薬設定UIの追加:** お薬一覧画面 (`medicine_page.dart`) で、各お薬の `isDefault` を切り替えるUI (`Switch`) を追加する。
+3.  **記録画面の改修:** 記録画面 (`record_page.dart`) のお薬選択UI (`chips_medicine.dart`) を改修し、`isDefault` フラグに応じて表示を分ける。`false` のものは `ExpansionTile` で初期非表示にする。
+4.  **リポジトリ/DAOの更新:** `isDefault` フラグをローカルDB (Isar) で更新するためのメソッドを追加する。
+5.  **コード生成:** Isarのエンティティ変更に伴い、`build_runner` を実行する。
 
 ## 現在のタスク
-- [x] **`CalendarController`の修正**
-    - [x] `lib/ui/calender/calendar_controller.dart` の `onDaySelected` メソッドを修正し、未来日を選択した際に`calendarRecordsMapStateProvder`に空の`Record`が追加されないようにする。
-- [x] **`CalendarPage`の修正**
-    - [x] `lib/ui/calender/calendar_page.dart` の `_onTap` メソッドを修正し、`RecordsPageView`に渡すIDリストが、選択された日付の前後1ヶ月分になるように動的に生成する。
-        - 生成するIDリストには、必ず**選択された日付のIDが含まれる**ようにする。
-        - `RecordsPageView.start` を呼び出す際、生成したリスト内での選択中IDのインデックスを `selectedIndex` として正しく渡す。
+- [x] `lib/repository/local/entity/medicine_entity.dart` に `isDefault` フィールドを追加する。
+- [x] `lib/model/medicine.dart` に `isDefault` フィールドを追加する。
+- [x] `lib/repository/local/dao/medicine_dao.dart` のマッピング処理を更新する。
+- [x] `build_runner` を実行して `*.g.dart` を更新する。

@@ -11,6 +11,7 @@ class MedicineEntity {
     required this.typeIndex,
     required this.memo,
     required this.order,
+    this.isDefault = true,
   });
 
   final Id id;
@@ -19,4 +20,5 @@ class MedicineEntity {
   final int typeIndex;
   final String memo;
   final int order;
+  final bool isDefault;
 }

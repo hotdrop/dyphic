@@ -6,6 +6,7 @@ class Medicine {
     required this.type,
     this.memo = '',
     required this.order,
+    this.isDefault = true,
   });
 
   final int id;
@@ -14,15 +15,24 @@ class Medicine {
   final MedicineType type;
   final String memo;
   final int order;
+  final bool isDefault;
 
-  Medicine copyWith({required String imageUrl}) {
+  Medicine copyWith({
+    String? name,
+    String? overview,
+    MedicineType? type,
+    String? memo,
+    int? order,
+    bool? isDefault,
+  }) {
     return Medicine(
       id: id,
-      name: name,
-      overview: overview,
-      type: type,
-      order: order,
-      memo: memo,
+      name: name ?? this.name,
+      overview: overview ?? this.overview,
+      type: type ?? this.type,
+      order: order ?? this.order,
+      memo: memo ?? this.memo,
+      isDefault: isDefault ?? this.isDefault,
     );
   }
 
