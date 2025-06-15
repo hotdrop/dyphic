@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:dyphic/model/record.dart';
+import 'package:line_icons/line_icons.dart';
 
 class EventRadioGroup extends StatelessWidget {
   const EventRadioGroup({
@@ -30,7 +31,7 @@ class EventRadioGroup extends StatelessWidget {
         Column(
           children: [
             Icon(
-              Icons.medical_information_outlined,
+              LineIcons.hospital,
               size: _iconSize,
               color: _getColor(EventType.hospital == selectValue, context),
             ),
@@ -40,7 +41,7 @@ class EventRadioGroup extends StatelessWidget {
         Column(
           children: [
             Icon(
-              Icons.medical_services,
+              LineIcons.syringe,
               size: _iconSize,
               color: _getColor(EventType.injection == selectValue, context),
             ),
