@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:dyphic/ui/calender/calendar_page.dart';
 import 'package:dyphic/ui/note/notes_page.dart';
 import 'package:dyphic/ui/setting/settings_page.dart';
+import 'package:line_icons/line_icons.dart';
 
 class MainPage extends StatefulWidget {
   const MainPage({super.key});
@@ -64,8 +65,8 @@ class Destination {
 
 const _allDestinations = <Destination>[
   Destination('カレンダー', Icons.calendar_today),
-  Destination('お薬', Icons.medication),
-  Destination('体調', Icons.sentiment_satisfied_alt_sharp),
-  Destination('ノート', Icons.note),
+  Destination('お薬', LineIcons.capsules),
+  Destination('体調', Icons.sentiment_satisfied_rounded),
+  Destination('ノート', LineIcons.edit),
   Destination('設定', Icons.settings),
 ];

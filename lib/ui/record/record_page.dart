@@ -15,6 +15,7 @@ import 'package:dyphic/ui/widget/app_dialog.dart';
 import 'package:dyphic/ui/widget/app_progress_dialog.dart';
 import 'package:dyphic/model/record.dart';
 import 'package:dyphic/ui/record/record_controller.dart';
+import 'package:line_icons/line_icons.dart';
 
 ///
 /// このページはRecordsPageViewから構築されるのでスワイプでページ移動可能になっている。
@@ -151,11 +152,10 @@ class _ViewBodyState extends ConsumerState<_ViewBody> {
           _ViewConditionArea(
             children: [
               const _ContentsTitle(
-                  title: '体調',
-                  appIcon: Icon(
-                    Icons.sentiment_satisfied_alt_sharp,
-                    color: AppTheme.condition,
-                  )),
+                title: '体調',
+                titleColor: AppTheme.condition,
+                appIcon: Icon(Icons.sentiment_satisfied_rounded, color: AppTheme.condition),
+              ),
               const Divider(),
               FutureBuilder(
                 future: ref.read(recordControllerProvider.notifier).fetchConditions(),
@@ -210,11 +210,10 @@ class _ViewBodyState extends ConsumerState<_ViewBody> {
           _ViewMedicineArea(
             children: [
               const _ContentsTitle(
-                  title: '服用した薬',
-                  appIcon: Icon(
-                    Icons.medication,
-                    color: AppTheme.medicine,
-                  )),
+                title: '服用した薬',
+                titleColor: AppTheme.medicine,
+                appIcon: Icon(LineIcons.capsules, color: AppTheme.medicine),
+              ),
               const Divider(),
               FutureBuilder(
                 future: ref.read(recordControllerProvider.notifier).fetchMedicines(),
@@ -489,20 +488,22 @@ class _ViewEventArea extends StatelessWidget {
 class _ContentsTitle extends StatelessWidget {
   const _ContentsTitle({
     required this.title,
+    required this.titleColor,
     required this.appIcon,
   });
 
   final String title;
+  final Color titleColor;
   final Icon appIcon;
 
   @override
   Widget build(BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
-      children: <Widget>[
+      children: [
         appIcon,
         const SizedBox(width: 8),
-        Text(title),
+        Text(title, style: TextStyle(color: titleColor)),
       ],
     );
   }

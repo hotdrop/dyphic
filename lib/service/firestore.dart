@@ -52,8 +52,6 @@ class _Firestore {
         isToilet: _getBool(map, _recordOverviewIsToilet),
         conditionStringIds: _getString(map, _recordConditionIDsField),
         conditionMemo: _getString(map, _recordConditionMemoField),
-        eventType: Record.toEventType(_getInt(map, _recordEventTypeField)),
-        eventName: _getString(map, _recordEventNameField),
       );
     }).toList();
   }
@@ -78,8 +76,6 @@ class _Firestore {
       isToilet: _getBool(map, _recordOverviewIsToilet),
       conditionStringIds: _getString(map, _recordConditionIDsField),
       conditionMemo: _getString(map, _recordConditionMemoField),
-      eventType: Record.toEventType(_getInt(map, _recordEventTypeField)),
-      eventName: _getString(map, _recordEventNameField),
     );
   }
 
@@ -132,6 +128,8 @@ class _Firestore {
         breakfast: _getString(map, _recordBreakFastField),
         lunch: _getString(map, _recordLunchField),
         dinner: _getString(map, _recordDinnerField),
+        eventType: Record.toEventType(_getInt(map, _recordEventTypeField)),
+        eventName: _getString(map, _recordEventNameField),
         memo: _getString(map, _recordMemoField),
       );
     }).toList();
@@ -157,6 +155,8 @@ class _Firestore {
       breakfast: _getString(map, _recordBreakFastField),
       lunch: _getString(map, _recordLunchField),
       dinner: _getString(map, _recordDinnerField),
+      eventType: Record.toEventType(_getInt(map, _recordEventTypeField)),
+      eventName: _getString(map, _recordEventNameField),
       memo: _getString(map, _recordMemoField),
     );
   }

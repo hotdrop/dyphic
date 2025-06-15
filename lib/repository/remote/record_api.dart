@@ -65,8 +65,8 @@ class _RecordApi {
       isToilet: overview.isToilet,
       conditions: Record.toConditions(conditions, overview.conditionStringIds),
       conditionMemo: overview.conditionMemo,
-      eventType: overview.eventType,
-      eventName: overview.eventName,
+      eventType: detail?.eventType ?? EventType.none,
+      eventName: detail?.eventName,
       morningTemperature: temp?.morningTemperature,
       nightTemperature: temp?.nightTemperature,
       medicines: Record.toMedicines(medicines, detail?.medicineStrIds),
@@ -135,8 +135,6 @@ class _RecordApi {
       isToilet: record.isToilet,
       conditionStringIds: record.toConditionIdsStr(),
       conditionMemo: record.conditionMemo ?? '',
-      eventType: record.eventType,
-      eventName: record.eventName ?? '',
     );
     await _ref.read(firestoreProvider).saveOverview(doc);
   }
