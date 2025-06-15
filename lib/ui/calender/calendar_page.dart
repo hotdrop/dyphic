@@ -121,7 +121,7 @@ class _ViewMarker extends StatelessWidget {
       markers.add(Image.asset(AppImages.icHospital, width: _iconSize, height: _iconSize));
     } else if (record.typeInjection) {
       markers.add(Image.asset(AppImages.icInject, width: _iconSize, height: _iconSize));
-    } else if (record.morningTemperature != null) {
+    } else if (record.morningTemperature != null && record.morningTemperature! > 0.0) {
       markers.add(Image.asset(AppImages.icThermometerMorning, width: _iconSize, height: _iconSize));
     } else {
       markers.add(const SizedBox(width: _iconSize));

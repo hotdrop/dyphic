@@ -323,7 +323,10 @@ class _ViewBodyState extends ConsumerState<_ViewBody> {
 
   Future<void> _processSaveCondition(BuildContext context) async {
     // キーボードが出ている場合は閉じる
-    FocusScope.of(context).unfocus();
+    final FocusScopeNode currentScope = FocusScope.of(context);
+    if (!currentScope.hasPrimaryFocus && currentScope.hasFocus) {
+      FocusManager.instance.primaryFocus?.unfocus();
+    }
     const progressDialog = AppProgressDialog<void>();
     await progressDialog.show(
       context,
@@ -343,7 +346,10 @@ class _ViewBodyState extends ConsumerState<_ViewBody> {
 
   Future<void> _processSaveMedicine(BuildContext context) async {
     // キーボードが出ている場合は閉じる
-    FocusScope.of(context).unfocus();
+    final FocusScopeNode currentScope = FocusScope.of(context);
+    if (!currentScope.hasPrimaryFocus && currentScope.hasFocus) {
+      FocusManager.instance.primaryFocus?.unfocus();
+    }
     const progressDialog = AppProgressDialog<void>();
     await progressDialog.show(
       context,
@@ -360,7 +366,10 @@ class _ViewBodyState extends ConsumerState<_ViewBody> {
 
   Future<void> _processSaveMemo(BuildContext context) async {
     // キーボードが出ている場合は閉じる
-    FocusScope.of(context).unfocus();
+    final FocusScopeNode currentScope = FocusScope.of(context);
+    if (!currentScope.hasPrimaryFocus && currentScope.hasFocus) {
+      FocusManager.instance.primaryFocus?.unfocus();
+    }
     const progressDialog = AppProgressDialog<void>();
     await progressDialog.show(
       context,
@@ -374,7 +383,10 @@ class _ViewBodyState extends ConsumerState<_ViewBody> {
 
   Future<void> _processSaveEvent(BuildContext context) async {
     // キーボードが出ている場合は閉じる
-    FocusScope.of(context).unfocus();
+    final FocusScopeNode currentScope = FocusScope.of(context);
+    if (!currentScope.hasPrimaryFocus && currentScope.hasFocus) {
+      FocusManager.instance.primaryFocus?.unfocus();
+    }
     const progressDialog = AppProgressDialog<void>();
     await progressDialog.show(
       context,
