@@ -18,9 +18,4 @@
 - Crashlytics
 
 # AAB作成
-```
 flutter build appbundle
-```
-
-# TODO
-- イベント情報が反映できていない
